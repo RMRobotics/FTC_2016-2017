@@ -1,0 +1,32 @@
+{
+  "motors":[
+    {
+      "name":"DriveLeftOne",
+      "minPower":0.15,
+      "maxPower":1.0,
+      "direction":"REVERSE",
+      "motorType":"NVRST_40"
+    },
+    {
+      "name":"DriveLeftTwo",
+      "minPower":0.15,
+      "maxPower":1.0,
+      "direction":"REVERSE",
+      "motorType":"NVRST_40"
+    },
+    {
+     "name":"DriveRightOne",
+      "minPower":0.15,
+      "maxPower":1.0,
+      "direction":"FORWARD",
+      "motorType":"NVRST_40"
+    },
+    {
+      "name":"DriveLeftTwo",
+      "minPower":0.15,
+      "maxPower":1.0,
+      "direction":"FORWARD",
+      "motorType":"NVRST_40"
+    }
+  ]
+}
