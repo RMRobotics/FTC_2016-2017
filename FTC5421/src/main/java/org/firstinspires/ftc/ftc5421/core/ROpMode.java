@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.ftc5421.core;
 
-//import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.ftc5421.control.RControl;
 import org.firstinspires.ftc.ftc5421.hardware.RMotor;
 import org.firstinspires.ftc.ftc5421.hardware.RServo;
+import org.firstinspires.ftc.ftc5421.util.JSONLoader;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-//import org.firstinspires.ftc.ftc5421.util.JSONLoader;
-//import org.json.simple.parser.ParseException;
-//import java.io.IOException;
 
 public abstract class ROpMode extends OpMode {
 
@@ -61,7 +60,7 @@ public abstract class ROpMode extends OpMode {
     protected abstract String setConfigurationPath();
 
     protected void configureHardware() {
-        /*JSONLoader jsonLoader = null;
+        JSONLoader jsonLoader = null;
         try {
             jsonLoader = new JSONLoader(configPath, hardwareMap);
         } catch (IOException e) {
@@ -74,7 +73,7 @@ public abstract class ROpMode extends OpMode {
             telemetry.addData("Null","null JSON configureHardware");
         }
         motorMap = jsonLoader.getMotorMap();
-        servoMap = jsonLoader.getServoMap();*/
+        servoMap = jsonLoader.getServoMap();
         telemetry.addData("lolololol", "lolololol"); //Placeholder until further action taken on incorporating or phasing out JSONLoader
     }
 
