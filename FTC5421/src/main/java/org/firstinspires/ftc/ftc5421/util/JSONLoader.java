@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.ftc5421.util;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.ftc5421.hardware.MotorType;
-import org.firstinspires.ftc.ftc5421.hardware.RMotor;
-import org.firstinspires.ftc.ftc5421.hardware.RServo;
+import org.firstinspires.ftc.ftc5421.hardware.crservo;
+import org.firstinspires.ftc.ftc5421.hardware.motor;
+import org.firstinspires.ftc.ftc5421.hardware.servo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,8 +20,9 @@ import java.util.Map;
 
 public class JSONLoader {
 
-    private Map<String, RMotor> motorImportMap = new HashMap<String, RMotor>();
-    private Map<String, RServo> servoImportMap =  new HashMap<String, RServo>();
+    private Map<String, motor> motorImportMap = new HashMap<String, motor>();
+    private Map<String, servo> servoImportMap =  new HashMap<String, servo>();
+    private Map<String, crservo> crservoImportMap = new HashMap<String, crservo>();
     private final HardwareMap hardwareMap;
 
     public JSONLoader(String filePath, final HardwareMap hMap) throws IOException, ParseException {
@@ -30,8 +32,10 @@ public class JSONLoader {
         JSONObject jsonFile = (JSONObject) jsonParser.parse(loadJSONFromAsset(filePath));
         JSONArray jsonMotors = (JSONArray) jsonFile.get("motors");
         JSONArray jsonServos = (JSONArray) jsonFile.get("servos");
+        JSONArray jsonCRServos = (JSONArray) jsonFile.get("crservos");
         configureMotors(jsonMotors);
         configureServos(jsonServos);
+        configureCRServos(jsonCRServos);
     }
 
     public String loadJSONFromAsset(String path) {
@@ -54,12 +58,12 @@ public class JSONLoader {
         for (Object mObj : JSONMotors) {
             JSONObject mJSON = (JSONObject) mObj;
             String motorName = (String) mJSON.get("name");
-            double minPower = (Double) mJSON.get("minPower");
-            double maxPower = (Double) mJSON.get("maxPower");
+            DcMotor.RunMode r = DcMotor.RunMode.valueOf((String) mJSON.get("runMode"));
+            DcMotor.ZeroPowerBehavior z = DcMotor.ZeroPowerBehavior.valueOf((String) mJSON.get("zeroMode")); //ToDo check if valueOf actually works
             DcMotor dcParent = hardwareMap.dcMotor.get(motorName);
-            DcMotor.Direction d = stringToMotorDirection((String) mJSON.get("direction"));
-            MotorType mT = stringToMotorType((String) mJSON.get("motorType"));
-            RMotor m = new RMotor(dcParent, d, minPower, maxPower, mT);
+            DcMotor.Direction d = DcMotor.Direction.valueOf((String) mJSON.get("direction"));
+            MotorType mT = MotorType.toType((int) mJSON.get("motorType"));
+            motor m = new motor(dcParent, d, r, z, mT);
             motorImportMap.put(motorName, m);
         }
     }
@@ -71,50 +75,29 @@ public class JSONLoader {
             double minPosition = (Double) sJSON.get("minPosition");
             double maxPosition = (Double) sJSON.get("maxPosition");
             Servo sParent = hardwareMap.servo.get(servoName);
-            Servo.Direction d = stringToServoDirection((String) sJSON.get("direction"));
+            Servo.Direction d = Servo.Direction.valueOf((String) sJSON.get("direction"));
             double init = (Double) sJSON.get("init");
-            RServo s = new RServo(sParent, d, minPosition, maxPosition, init);
+            servo s = new servo(sParent, d, minPosition, maxPosition, init);
             servoImportMap.put(servoName, s);
         }
     }
 
-    private DcMotor.Direction stringToMotorDirection(String stringD) { //ToDo check if valueOf works as expected
-        if (stringD.equals("FORWARD")) {
-            return DcMotor.Direction.FORWARD;
-        } else if (stringD.equals("REVERSE")) {
-            return DcMotor.Direction.REVERSE;
-        } else {
-            return DcMotor.Direction.valueOf(stringD);
+    private void configureCRServos(JSONArray JSONCRServos) {
+        for (Object cObj : JSONCRServos) {
+            JSONObject cJSON = (JSONObject) cObj;
+            String crservoName = (String) cJSON.get("name");
+            CRServo cParent = hardwareMap.crservo.get(crservoName);
+            CRServo.Direction d = CRServo.Direction.valueOf((String) cJSON.get("direction"));
+            crservo c = new crservo(cParent, d);
+            crservoImportMap.put(crservoName, c);
         }
     }
 
-    private Servo.Direction stringToServoDirection(String stringD) {
-        if (stringD.equals("FORWARD")) {
-            return Servo.Direction.FORWARD;
-        } else if (stringD.equals("REVERSE")) {
-            return Servo.Direction.REVERSE;
-        } else {
-            return Servo.Direction.valueOf(stringD);
-        }
-    }
-
-    private MotorType stringToMotorType(String stringD) {
-        if (stringD.equals("NVRST_20")) {
-            return MotorType.NVRST_20;
-        } else if (stringD.equals("NVRST_40")) {
-            return MotorType.NVRST_40;
-        } else if (stringD.equals("NVRST_60")) {
-            return MotorType.NVRST_60;
-        } else {
-            return MotorType.TETRIX;
-        }
-    }
-
-    public Map<String,RMotor> getMotorMap() {
+    public Map<String,motor> getMotorMap() {
         return motorImportMap;
     }
 
-    public Map<String, RServo> getServoMap() {
+    public Map<String, servo> getServoMap() {
         return servoImportMap;
     }
 

@@ -5,8 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.ftc5421.control.RControl;
-import org.firstinspires.ftc.ftc5421.hardware.RMotor;
-import org.firstinspires.ftc.ftc5421.hardware.RServo;
+import org.firstinspires.ftc.ftc5421.hardware.crservo;
+import org.firstinspires.ftc.ftc5421.hardware.motor;
+import org.firstinspires.ftc.ftc5421.hardware.servo;
 import org.firstinspires.ftc.ftc5421.util.JSONLoader;
 import org.json.simple.parser.ParseException;
 
@@ -16,8 +17,9 @@ import java.util.Map;
 
 public abstract class ROpMode extends OpMode {
 
-    protected Map<String, RMotor> motorMap = new HashMap<String, RMotor>();
-    protected Map<String, RServo> servoMap =  new HashMap<String, RServo>();
+    protected Map<String, motor> motorMap = new HashMap<String, motor>();
+    protected Map<String, servo> servoMap =  new HashMap<String, servo>();
+    protected Map<String, crservo> crservoMap = new HashMap<String, crservo>();
     protected RControl control;
     private String configPath;
 
@@ -27,10 +29,11 @@ public abstract class ROpMode extends OpMode {
         configureHardware();
 
         this.control = new RControl(gamepad1, gamepad2);
-        for (RMotor m : motorMap.values()) {
-            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        for (motor m : motorMap.values()) {
+            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            m.setMode(m.getRMode());
         }
-        for (RServo s : servoMap.values()) {
+        for (servo s : servoMap.values()) {
             s.setInitPos();
         }
     }
@@ -47,13 +50,14 @@ public abstract class ROpMode extends OpMode {
     protected abstract void calculate();
 
     protected void updateHardware() {
-        for (RMotor m : motorMap.values()) {
-            m.updateCurrentPower();
+        for (motor m : motorMap.values()) {
             m.setCurrentPower();
         }
-        for (RServo s : servoMap.values()) {
-            s.updateCurrentPosition();
-            s.setPosition();
+        for (servo s : servoMap.values()) {
+            s.setCurPosition();
+        }
+        for (crservo c : crservoMap.values()) {
+            c.setCurrentPower();
         }
     }
 
@@ -74,7 +78,6 @@ public abstract class ROpMode extends OpMode {
         }
         motorMap = jsonLoader.getMotorMap();
         servoMap = jsonLoader.getServoMap();
-        telemetry.addData("lolololol", "lolololol"); //Placeholder until further action taken on incorporating or phasing out JSONLoader
     }
 
 }
