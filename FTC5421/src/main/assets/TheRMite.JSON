@@ -1,0 +1,32 @@
+{
+  "motors":[
+    {
+      "name":"FL",
+      "runMode":"RUN_USING_ENCODER",
+      "zeroMode":"float",
+      "direction":"FORWARD",
+      "motorType":"NVRST_40"
+    },
+    {
+      "name":"FR",
+      "runMode":"RUN_USING_ENCODER",
+      "zeroMode":"float",
+      "direction":"REVERSE",
+      "motorType":"NVRST_40"
+    },
+    {
+      "name":"BL",
+      "runMode":"RUN_USING_ENCODER",
+      "zeroMode":"float",
+      "direction":"FORWARD",
+      "motorType":"NVRST_40"
+    },
+    {
+      "name":"BR",
+      "runMode":"RUN_USING_ENCODER",
+      "zeroMode":"float",
+      "direction":"REVERSE",
+      "motorType":"NVRST_40"
+    }
+  ]
+}

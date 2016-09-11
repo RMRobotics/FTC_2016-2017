@@ -51,6 +51,10 @@ public class motor {
         parent.setPower(absDesPower);
     }
 
+    public double getPower() {
+        return parent.getPower();
+    }
+
     public void setTarPos(double r) {
         parent.setTargetPosition(rotToEnc(r));
     }
