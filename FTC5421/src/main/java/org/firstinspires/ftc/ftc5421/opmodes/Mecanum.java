@@ -3,23 +3,20 @@ package org.firstinspires.ftc.ftc5421.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.ftc5421.control.Axis;
 import org.firstinspires.ftc.ftc5421.control.Controller;
 import org.firstinspires.ftc.ftc5421.control.Joystick;
-import org.firstinspires.ftc.ftc5421.core.ROpMode;
 import org.firstinspires.ftc.ftc5421.core.RTeleOp;
 import org.firstinspires.ftc.ftc5421.hardware.motor;
-import org.firstinspires.ftc.robotcontroller.internal.testcode.MatrixControllerDemo;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@TeleOp(name="MecTeleOp", group="5421")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Mecanum", group="5421")  // @Autonomous(...) is the other common choice
 @Disabled
-public class MecTeleOp extends RTeleOp {
+public class Mecanum extends RTeleOp {
     ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     motor FL;
@@ -45,11 +42,7 @@ public class MecTeleOp extends RTeleOp {
     protected void calculate() {
         double forward = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
         double strafe = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.X);
-        double rotate = control.joystickValue(Controller.TWO, Joystick.LEFT, Axis.X);
-        ArrayList<Double> list = new ArrayList<Double>();
-        list.add(forward);
-        list.add(strafe);
-        list.add(rotate);
+        double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);
         double max = maxCheck(forward, strafe, rotate);
 
         FL.setPower((forward + strafe + rotate)/max);
@@ -76,7 +69,11 @@ public class MecTeleOp extends RTeleOp {
         l.add(Math.abs(f - s - r));
         l.add(Math.abs(f - s + r));
         l.add(Math.abs(f + s - r));
-        return (double) Collections.max(l);
+        if ((double) Collections.max(l) > 1) {
+            return (double) Collections.max(l);
+        } else {
+            return 1;
+        }
     }
 
     private void addTelemetry() {

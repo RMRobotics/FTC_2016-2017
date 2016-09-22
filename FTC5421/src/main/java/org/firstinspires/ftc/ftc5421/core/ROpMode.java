@@ -45,6 +45,16 @@ public abstract class ROpMode extends OpMode {
         this.updateHardware();
     }
 
+    public void stop() {
+        for (motor m : motorMap.values()) {
+            m.setPower(0);
+        }
+        for (crservo c : crservoMap.values()) {
+            c.setPower(0);
+        }
+        updateHardware();
+    }
+
     protected abstract void updateInput();
 
     protected abstract void calculate();
