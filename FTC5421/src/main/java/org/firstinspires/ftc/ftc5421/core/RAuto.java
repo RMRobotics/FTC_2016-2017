@@ -8,8 +8,8 @@ public abstract class RAuto extends ROpMode {
     }
 
     @Override
-    public void updateInput(){
-        //TODO: Add state machine input
+    public void loop(){
+
     }
 
 }

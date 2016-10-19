@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.ftc5421.opmodes;
+package org.firstinspires.ftc.ftc5421.opmodes.TheRMite;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,13 +10,13 @@ import org.firstinspires.ftc.ftc5421.control.Joystick;
 import org.firstinspires.ftc.ftc5421.core.RTeleOp;
 import org.firstinspires.ftc.ftc5421.hardware.motor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+/**
+ * Created by Simon on 9/22/2016.
+ */
 
-@TeleOp(name="Mecanum", group="5421")  // @Autonomous(...) is the other common choice
+@TeleOp(name="Tank", group="TheRMite")  // @Autonomous(...) is the other common choice
 @Disabled
-public class Mecanum extends RTeleOp {
+public class Tank extends RTeleOp{
     ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
     motor FL;
@@ -40,15 +40,14 @@ public class Mecanum extends RTeleOp {
 
     @Override
     protected void calculate() {
-        double forward = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
-        double strafe = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.X);
-        double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);
-        double max = maxCheck(forward, strafe, rotate);
+        double left = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
+        double right = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.Y);
 
-        FL.setPower((forward + strafe + rotate)/max);
-        FR.setPower((forward - strafe - rotate)/max);
-        BL.setPower((forward - strafe + rotate)/max);
-        BR.setPower((forward + strafe - rotate)/max);
+
+        FL.setPower(left);
+        FR.setPower(right);
+        BL.setPower(left);
+        BR.setPower(right);
 
         addTelemetry();
     }
@@ -56,24 +55,6 @@ public class Mecanum extends RTeleOp {
     @Override
     protected String setConfigurationPath() {
         return "TheRMite.json";
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    private double maxCheck(double f, double s, double r) {
-        List l = new ArrayList();
-        l.add(Math.abs(f + s + r));
-        l.add(Math.abs(f - s - r));
-        l.add(Math.abs(f - s + r));
-        l.add(Math.abs(f + s - r));
-        if ((double) Collections.max(l) > 1) {
-            return (double) Collections.max(l);
-        } else {
-            return 1;
-        }
     }
 
     private void addTelemetry() {
