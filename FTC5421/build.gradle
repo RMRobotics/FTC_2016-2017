@@ -11,5 +11,5 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 dependencies {
-    compile files('C:/Users/micha/Desktop/FTC_2016-2017/libs/json-simple-1.1.1.jar')
+    compile files('../libs/json-simple-1.1.1.jar')
 }
