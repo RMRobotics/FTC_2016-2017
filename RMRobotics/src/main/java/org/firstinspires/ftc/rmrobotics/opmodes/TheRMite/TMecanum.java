@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.TheRMite;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.rmrobotics.control.Axis;
-import org.firstinspires.ftc.rmrobotics.control.Controller;
-import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
 import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
@@ -18,11 +14,6 @@ import java.util.List;
 public class TMecanum extends RTeleOp {
 
     private TheRMite config = new TheRMite(hardwareMap);
-
-    @Override
-    public void start() {
-        runtime.reset();
-    }
 
     @Override
     protected void calculate() {
@@ -43,7 +34,7 @@ public class TMecanum extends RTeleOp {
     }
 
     @Override
-    protected Robot setConfiguration() {
+    protected Robot setRobot() {
         return config;
     }
 

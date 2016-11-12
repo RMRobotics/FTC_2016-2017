@@ -15,12 +15,12 @@ import java.util.ArrayList;
 @SuppressWarnings("unchecked")
 public abstract class ROpMode extends OpMode {
 
-    private ArrayList<motor> motors = new ArrayList<motor>();
-    private ArrayList<servo> servos =  new ArrayList<servo>();
-    private ArrayList<crservo> crservos = new ArrayList<crservo>();
+    private ArrayList<motor> motors = new ArrayList<>();
+    private ArrayList<servo> servos =  new ArrayList<>();
+    private ArrayList<crservo> crservos = new ArrayList<>();
     protected ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     protected RControl control;
-    protected Robot config;
+    protected Robot robot;
 
     @Override
     public void init() {
@@ -38,7 +38,12 @@ public abstract class ROpMode extends OpMode {
     }
 
     public void init_loop() {
-        addTelemetry();
+        this.addTelemetry();
+    }
+
+    @Override
+    public void start(){
+        runtime.reset();
     }
 
     @Override
@@ -46,7 +51,7 @@ public abstract class ROpMode extends OpMode {
         this.updateInput();
         this.calculate();
         this.updateHardware();
-        addTelemetry();
+        this.addTelemetry();
     }
 
     public void stop() {
@@ -76,13 +81,13 @@ public abstract class ROpMode extends OpMode {
         }
     }
 
-    protected abstract Robot setConfiguration();
+    protected abstract Robot setRobot();
 
     protected void configureHardware() {
-        config = setConfiguration();
-        motors = config.motors();
-        servos = config.servos();
-        crservos = config.crservos();
+        robot = setRobot();
+        motors = robot.motors();
+        servos = robot.servos();
+        crservos = robot.crservos();
     }
 
     protected void addTelemetry() {

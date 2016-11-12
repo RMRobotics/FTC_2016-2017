@@ -2,13 +2,6 @@ package org.firstinspires.ftc.rmrobotics.control;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.rmrobotics.control.Axis;
-import org.firstinspires.ftc.rmrobotics.control.Button;
-import org.firstinspires.ftc.rmrobotics.control.Controller;
-import org.firstinspires.ftc.rmrobotics.control.Dpad;
-import org.firstinspires.ftc.rmrobotics.control.Joystick;
-import org.firstinspires.ftc.rmrobotics.control.Trigger;
-
 public class RControl {
 
     private ControllerInput currentInput;
@@ -33,6 +26,7 @@ public class RControl {
         boolean curr = currentInput.button(c, b);
         return curr && !prev;
     }
+
     public boolean buttonHeld(Controller c, Button b){
         boolean prev = prevInput.button(c, b);
         boolean curr = currentInput.button(c, b);

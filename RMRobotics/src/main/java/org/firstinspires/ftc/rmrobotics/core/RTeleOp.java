@@ -9,7 +9,7 @@ public abstract class RTeleOp extends ROpMode {
 
     @Override
     public void updateInput(){
-        //control.update(gamepad1, gamepad2);
+        control.update(gamepad1, gamepad2);
     }
 
 }
