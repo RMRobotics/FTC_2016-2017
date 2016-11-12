@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public abstract class Robot {
 
     protected HardwareMap hMap;
-    protected ArrayList<motor> motors;
-    protected ArrayList<servo> servos;
-    protected ArrayList<crservo> crservos;
+    protected ArrayList<motor> motors = new ArrayList<>();
+    protected ArrayList<servo> servos = new ArrayList<>();
+    protected ArrayList<crservo> crservos = new ArrayList<>();
 
     public Robot(HardwareMap h){
         hMap = h;

@@ -38,7 +38,7 @@ public abstract class ROpMode extends OpMode {
     }
 
     public void init_loop() {
-        this.addTelemetry();
+        //this.addTelemetry();
     }
 
     @Override
@@ -51,7 +51,7 @@ public abstract class ROpMode extends OpMode {
         this.updateInput();
         this.calculate();
         this.updateHardware();
-        this.addTelemetry();
+        //this.addTelemetry();
     }
 
     public void stop() {
@@ -62,7 +62,7 @@ public abstract class ROpMode extends OpMode {
             c.setPower(0);
         }
         updateHardware();
-        addTelemetry();
+        //addTelemetry();
     }
 
     protected abstract void updateInput();

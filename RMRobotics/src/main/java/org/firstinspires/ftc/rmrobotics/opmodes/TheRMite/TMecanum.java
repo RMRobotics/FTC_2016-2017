@@ -2,6 +2,9 @@ package org.firstinspires.ftc.rmrobotics.opmodes.TheRMite;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.rmrobotics.control.Axis;
+import org.firstinspires.ftc.rmrobotics.control.Controller;
+import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
 import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
@@ -13,29 +16,26 @@ import java.util.List;
 @TeleOp(name="TMecanum", group="TheRMite")
 public class TMecanum extends RTeleOp {
 
-    private TheRMite config = new TheRMite(hardwareMap);
+    private TheRMite config;
 
     @Override
     protected void calculate() {
-        /*double forward = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
+        double forward = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
         double strafe = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.X);
-        double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);*/
-        double forward = gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-        double rotate = gamepad1.right_stick_x;
+        double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);
         double max = maxCheck(forward, strafe, rotate);
 
-        config.FL().setPower((forward + strafe + rotate)/max);
-        config.FR().setPower((forward - strafe - rotate)/max);
-        config.BL().setPower((forward - strafe + rotate)/max);
-        config.BR().setPower((forward + strafe - rotate)/max);
+        config.FL().setPower((forward + strafe - rotate)/max);
+        config.FR().setPower((forward - strafe + rotate)/max);
+        config.BL().setPower((forward - strafe - rotate)/max);
+        config.BR().setPower((forward + strafe + rotate)/max);
 
         addTelemetry();
     }
 
     @Override
     protected Robot setRobot() {
-        return config;
+        return config = new TheRMite(hardwareMap);
     }
 
     private double maxCheck(double f, double s, double r) {
