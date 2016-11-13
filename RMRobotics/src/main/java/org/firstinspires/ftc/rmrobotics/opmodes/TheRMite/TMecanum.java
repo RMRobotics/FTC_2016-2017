@@ -6,6 +6,7 @@ import org.firstinspires.ftc.rmrobotics.control.Axis;
 import org.firstinspires.ftc.rmrobotics.control.Controller;
 import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
+import org.firstinspires.ftc.rmrobotics.util.DriveUtil;
 import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
 
@@ -25,10 +26,20 @@ public class TMecanum extends RTeleOp {
         double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);
         double max = maxCheck(forward, strafe, rotate);
 
+        /**
         config.FL().setPower((forward + strafe - rotate)/max);
         config.FR().setPower((forward - strafe + rotate)/max);
         config.BL().setPower((forward - strafe - rotate)/max);
         config.BR().setPower((forward + strafe + rotate)/max);
+        **/
+
+        double driveWeight = 1.0;
+        double turnWeight = 1.0;
+        double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight);
+        config.FL().setPower(voltages[0]);
+        config.FR().setPower(voltages[1]);
+        config.BL().setPower(voltages[2]);
+        config.BR().setPower(voltages[3]);
 
         addTelemetry();
     }
