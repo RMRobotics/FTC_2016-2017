@@ -1,5 +1,8 @@
-package org.firstinspires.ftc.rmrobotics.util.config;
+package org.firstinspires.ftc.rmrobotics.util;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.rmrobotics.hardware.crservo;
@@ -14,6 +17,8 @@ public abstract class Robot {
     protected ArrayList<motor> motors = new ArrayList<>();
     protected ArrayList<servo> servos = new ArrayList<>();
     protected ArrayList<crservo> crservos = new ArrayList<>();
+    protected boolean opMode; //true for teleOp
+    protected DcMotor.RunMode motorMode;
 
     public Robot(HardwareMap h){
         hMap = h;

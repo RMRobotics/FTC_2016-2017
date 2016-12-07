@@ -8,6 +8,15 @@ public abstract class RTeleOp extends ROpMode {
     }
 
     @Override
+    public void loop(){
+        updateInput();
+        calculate();
+        updateHardware();
+        addTelemetry();
+    }
+
+    protected abstract void calculate();
+
     public void updateInput(){
         control.update(gamepad1, gamepad2);
     }

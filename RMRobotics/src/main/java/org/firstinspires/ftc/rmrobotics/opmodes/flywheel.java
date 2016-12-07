@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Created by Simon on 11/10/16.
  */
 
-@TeleOp(name="flywheel", group="5421")
+@TeleOp(name="flywheel")
+@Disabled
 public class flywheel extends OpMode {
     DcMotor m1;
     DcMotor m2;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.TheRMite;
+package org.firstinspires.ftc.rmrobotics.opmodes.theRMite;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,17 +8,17 @@ import org.firstinspires.ftc.rmrobotics.control.Controller;
 import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
 import org.firstinspires.ftc.rmrobotics.util.DriveUtil;
-import org.firstinspires.ftc.rmrobotics.util.config.Robot;
+import org.firstinspires.ftc.rmrobotics.util.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
 
-@TeleOp(name="TMecanum", group="TheRMite")
+@TeleOp(name="tMecanum", group="TheRMite")
 public class TMecanum extends RTeleOp {
 
     private TheRMite config;
     private boolean resTog = false;
 
     @Override
-    protected void calculate() {
+    public void calculate() {
         double forward = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.Y);
         double strafe = control.joystickValue(Controller.ONE, Joystick.LEFT, Axis.X);
         double rotate = control.joystickValue(Controller.ONE, Joystick.RIGHT, Axis.X);
@@ -46,9 +46,9 @@ public class TMecanum extends RTeleOp {
     @Override
     protected void addTelemetry() {
         telemetry.addData("TIME", runtime.time());
-        telemetry.addData("FL", config.FL().getPower());
-        telemetry.addData("FR", config.FR().getPower());
-        telemetry.addData("BL", config.BL().getPower());
-        telemetry.addData("BR", config.BR().getPower());
+        telemetry.addData("FL", config.FL().getPower() + " " + config.FL().getCurPos());
+        telemetry.addData("FR", config.FR().getPower() + " " + config.FR().getCurPos());
+        telemetry.addData("BL", config.BL().getPower() + " " + config.BL().getCurPos());
+        telemetry.addData("BR", config.BR().getPower() + " " + config.BR().getCurPos());
     }
 }

@@ -105,10 +105,7 @@ public class motor {
     }
 
     private boolean inRange(double x, double y, double r) {
-        if (x < y + Math.abs(r) && x > y - Math.abs(r)) {
-            return true;
-        }
-        return false;
+        return x < y + Math.abs(r) && x > y - Math.abs(r);
     }
 
     private int rotToEnc(double r) {
