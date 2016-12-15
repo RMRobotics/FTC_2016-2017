@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.competition;
 
+
+import com.kauailabs.navx.ftc.AHRS;
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -27,6 +33,24 @@ public class FeRMiAuto extends LinearOpMode{
     private Servo harvester;
     private Servo index;
 
+    private final int NAVX_DIM_I2C_PORT = 0;
+    private AHRS navx;
+    private navXPIDController yawPIDController;
+    private final byte NAVX_UPDATE_RATE_HZ = 50;
+
+    private double TARGET_ANGLE_DEGREES = 0;
+    private final double TOLERANCE_DEGREES = 1.5;
+    private final double MIN_MOTOR_OUTPUT_VALUE = -0.2;
+    private final double MAX_MOTOR_OUTPUT_VALUE = 0.2;
+    private final double YAW_PID_P = 0.005;
+    private final double YAW_PID_I = 0.0;
+    private final double YAW_PID_D = 0.0;
+    navXPIDController.PIDResult yawPIDResult;
+
+    byte[] linecache;
+    I2cDevice line;
+    I2cDeviceSynch linereader;
+
     @Override
     public void runOpMode() throws InterruptedException {
         FL = hardwareMap.dcMotor.get("FL");
@@ -46,7 +70,23 @@ public class FeRMiAuto extends LinearOpMode{
         harvester = hardwareMap.servo.get("h");
         index = hardwareMap.servo.get("indexer");
 
+        navx = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"), NAVX_DIM_I2C_PORT, AHRS.DeviceDataType.kProcessedData, NAVX_UPDATE_RATE_HZ);
+        yawPIDController = new navXPIDController(navx, navXPIDController.navXTimestampedDataSource.YAW);
+        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+        yawPIDController.setContinuous(true);
+        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+        yawPIDController.enable(true);
+
+        line = hardwareMap.i2cDevice.get("cL");
+        linereader = new I2cDeviceSynchImpl(line, I2cAddr.create8bit(0x50), false);
+        linereader.engage();
+        linereader.write8(3, 0);
+
         waitForStart();
+        navx.zeroYaw();
+        yawPIDResult = new navXPIDController.PIDResult();
 
         setEncoder(1120, 0.2);
         sleep(2000);
@@ -54,9 +94,23 @@ public class FeRMiAuto extends LinearOpMode{
         flyL.setPower(1.0);
         flyR.setPower(1.0);
         belt.setPower(1.0);
+        sleep(500);
+
+        index.setPosition(1.0);
         sleep(7500);
 
-
+        index.setPosition(0);
+        flyL.setPower(0);
+        flyR.setPower(0);
+        belt.setPower(0);
+        while (!yawPIDController.isOnTarget()) {
+            double output = yawPIDResult.getOutput();
+            setDrive(output, -output);
+        }
+        while (linereader.read(0x04, 1)[0] != 16) {
+            double output = yawPIDResult.getOutput();
+            setDrive(0.3 + output, 0.3 - output);
+        }
     }
 
     private void setDrive(double p) {
@@ -81,35 +135,35 @@ public class FeRMiAuto extends LinearOpMode{
     }
 
     private void setEncoder(int e, double p) {
-        FL.setTargetPosition(e);
+        FL.setTargetPosition(FL.getCurrentPosition() + e);
         FL.setPower(p);
-        FR.setTargetPosition(e);
+        FR.setTargetPosition(FR.getCurrentPosition() + e);
         FR.setPower(p);
-        BL.setTargetPosition(e);
+        BL.setTargetPosition(BL.getCurrentPosition() + e);
         BL.setPower(p);
-        BR.setTargetPosition(e);
+        BR.setTargetPosition(BR.getCurrentPosition() + e);
         BR.setPower(p);
     }
 
     private void setEncoder(int e1, int e2, double p1, double p2) {
-        FL.setTargetPosition(e1);
+        FL.setTargetPosition(FL.getCurrentPosition() + e1);
         FL.setPower(p1);
-        FR.setTargetPosition(e2);
+        FR.setTargetPosition(FR.getCurrentPosition() + e2);
         FR.setPower(p2);
-        BL.setTargetPosition(e1);
+        BL.setTargetPosition(BL.getCurrentPosition() + e1);
         BL.setPower(p1);
-        BR.setTargetPosition(e2);
+        BR.setTargetPosition(BR.getCurrentPosition() + e2);
         BR.setPower(p2);
     }
 
     private void setEncoder(int e1, int e2, int e3, int e4, double p1, double p2, double p3, double p4) {
-        FL.setTargetPosition(e1);
+        FL.setTargetPosition(FL.getCurrentPosition() + e1);
         FL.setPower(p1);
-        FR.setTargetPosition(e2);
+        FR.setTargetPosition(FR.getCurrentPosition() + e2);
         FR.setPower(p2);
-        BL.setTargetPosition(e3);
+        BL.setTargetPosition(BL.getCurrentPosition() + e3);
         BL.setPower(p3);
-        BR.setTargetPosition(e4);
+        BR.setTargetPosition(BR.getCurrentPosition() + e4);
         BR.setPower(p4);
     }
 }
