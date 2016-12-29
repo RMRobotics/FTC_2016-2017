@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 
 @Autonomous(name = "sensors2")
 public class sensorAutoTest2 extends OpMode {
+    //refer to comments in sensorAutoTest
     DcMotor FL;
     DcMotor FR;
     DcMotor BL;
@@ -106,12 +107,14 @@ public class sensorAutoTest2 extends OpMode {
         telemetry.addData("2 A", colorLinereader.getI2cAddress().get8Bit());
 
         if (!lineSeen) {
-            if (colorLinecache[0] != 14) {
-                setDrive(-0.5, 0, 0, -0.5);
+        //if line isn't seen
+            if (colorLinecache[0] != 14) {//if white color is not seen
+                setDrive(-0.5, 0, 0, -0.5); //drive diagonally without yaw correction
             } else {
-                lineSeen = true;
+                lineSeen = true; //if white color is seen, set lineSeen to true
             }
         } else {
+        //if line is seen, stop robot
             setDrive(0, 0, 0, 0);
         }
     }

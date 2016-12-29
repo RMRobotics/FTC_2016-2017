@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 
 @Autonomous(name = "sensors3")
 public class sensorAutoTest3 extends OpMode {
+    //refer to comments in sensorAutoTest
     DcMotor FL;
     DcMotor FR;
     DcMotor BL;
@@ -42,8 +43,8 @@ public class sensorAutoTest3 extends OpMode {
 
     private boolean calibration_complete = false;
     private boolean lineSeen = false;
-    private boolean turn1 = false;
-    private boolean turn2 = false;
+    private boolean turn1 = false;//turn towards beacon
+    private boolean turn2 = false;//turn towards wall
 
     navXPIDController.PIDResult yawPIDResult;
     DecimalFormat df;
@@ -112,27 +113,31 @@ public class sensorAutoTest3 extends OpMode {
         telemetry.addData("enc", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
 
         if (!turn1) {
-            if (Math.abs(35 + navx.getYaw()) < 2) {
-                turn1 = true;
-            } else if (35 + navx.getYaw() > 0) {
-                setDrive(-0.3, 0, -0.3, 0);
+        //robot isn't turned towards beacon
+            if (Math.abs(35 + navx.getYaw()) < 2) {//if robot has turned 35 degrees
+                turn1 = true;//change turn1 to true
+            } else if (35 + navx.getYaw() > 0) {//if robot has turned left less than 35 degrees
+                setDrive(-0.3, 0, -0.3, 0);//turn the robot left
             } else {
-                setDrive(0.3, 0, 0.3, 0);
+                setDrive(0.3, 0, 0.3, 0);//turn the robot right
             }
         } else if (!lineSeen) {
-            setDrive(-0.3, -0.3, -0.3, -0.3);
-            if (colorLinecache[0] == 14) {
+        //if line isn't seen
+            setDrive(-0.3, -0.3, -0.3, -0.3);//drive towards beacon
+            if (colorLinecache[0] == 14) {//if white color is detected, turn lineSeen to true
                 lineSeen = true;
             }
         } else if (!turn2) {
-            if (Math.abs(80 + navx.getYaw()) < 2) {
+        //if robot isn't aligned with the wall
+            if (Math.abs(80 + navx.getYaw()) < 2) {//if robot has turned 80 degrees, set turn2 to true
                 turn2 = true;
-            } else if (80 + navx.getYaw() > 0) {
-                setDrive(-0.3, 0, -0.3, 0);
+            } else if (80 + navx.getYaw() > 0) {//if robot has turned left less than 80 degrees
+                setDrive(-0.3, 0, -0.3, 0);//turn the robot left
             } else {
-                setDrive(0.3, 0, 0.3, 0);
+                setDrive(0.3, 0, 0.3, 0);//turn the robot right
             }
         } else {
+        //stop robot when done
             setDrive(0, 0, 0, 0);
         }
     }
