@@ -39,7 +39,7 @@ public class sensorAutoTest4sue extends OpMode {
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
 
-    private double yaw;
+    private double timeStart;
 
     private boolean calibration_complete = false;
     private Beacon target;
@@ -129,21 +129,35 @@ public class sensorAutoTest4sue extends OpMode {
                 BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 if (Math.abs(navx.getYaw() + 45) < 2) {
                     status = State.DRIVE_2;
+                    timeStart = runtime.milliseconds();
                 } else {
                     double power = -(navx.getYaw() + 45) / 25;
-                    if (Math.abs(power) > 1) {
-                        power /= Math.abs(power);
+                    if (Math.abs(power) > 0.5) {
+                        power /= 2*Math.abs(power);
                     }
                     setDrive(power, 0, power, 0);
+                    telemetry.addData("power", power);
+                }
+                break;
+            case ALIGN_1:
+                if (runtime.milliseconds() - timeStart < 10000) {
+                    double power = -(navx.getYaw() + 45) / 25;
+                    if (Math.abs(power) > 0.4) {
+                        power /= 2*Math.abs(power);
+                    }
+                    setDrive(power, 0, power, 0);
+                    telemetry.addData("power", power);
+                } else {
+                    status = State.DRIVE_2;
                 }
                 break;
             case DRIVE_2:
                 setDrive(-0.3, -0.3, -0.3, -0.3);//drive towards beacon
                 if (colorLinecache[0] == 14) {//if white color is detected, turn lineSeen to true
-                    status = State.ALIGN;
+                    status = State.ALIGN_2;
                 }
                 break;
-            case ALIGN:
+            case ALIGN_2:
                 if (Math.abs(80 + navx.getYaw()) < 2) {//if robot has turned 80 degrees, set turn2 to true
                     status = State.PUSH;
                 } else if (80 + navx.getYaw() > 0) {//if robot has turned left less than 80 degrees
@@ -187,7 +201,7 @@ public class sensorAutoTest4sue extends OpMode {
 }
 
 enum State {
-    DRIVE_1, SHOOT, TURN_1, DRIVE_2, ALIGN, PUSH,
+    DRIVE_1, SHOOT, TURN_1, ALIGN_1, DRIVE_2, ALIGN_2, PUSH,
     STRAFE, TURN_2, DRIVE_3, END
 }
 
