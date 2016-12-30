@@ -42,9 +42,7 @@ public class sensorAutoTest4sue extends OpMode {
     private double yaw;
 
     private boolean calibration_complete = false;
-    private boolean lineSeen = false;
-    private boolean turn1 = false;//turn towards beacon
-    private boolean turn2 = false;//turn towards wall
+    private Beacon target;
 
     navXPIDController.PIDResult yawPIDResult;
     DecimalFormat df;
@@ -64,10 +62,14 @@ public class sensorAutoTest4sue extends OpMode {
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         navx = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData,
@@ -93,6 +95,7 @@ public class sensorAutoTest4sue extends OpMode {
         navx.zeroYaw();
         yawPIDResult = new navXPIDController.PIDResult();
         status = State.DRIVE_1;
+        target = Beacon.ONE;
     }
 
     @Override
@@ -107,52 +110,66 @@ public class sensorAutoTest4sue extends OpMode {
 
         switch (status) {
             case DRIVE_1:
-                status = State.SHOOT;
+                FL.setTargetPosition(-560);
+                FR.setTargetPosition(-560);
+                BL.setTargetPosition(-560);
+                BR.setTargetPosition(-560);
+                setDrive(0.5,0.5,0.5,0.5);
+                if(Math.abs(FL.getCurrentPosition() - FL.getTargetPosition()) < 10) {
+                    status = State.SHOOT;
+                }
                 break;
             case SHOOT:
                 status = State.TURN_1;
                 break;
             case TURN_1:
-                if (Math.abs(35 + navx.getYaw()) < 2) {//if robot has turned 35 degrees
-                    status = State.DRIVE_2;//change turn1 to true
-                } else if (35 + navx.getYaw() > 0) {//if robot has turned left less than 35 degrees
-                    setDrive(-0.3, 0, -0.3, 0);//turn the robot left
+                FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                if (Math.abs(navx.getYaw() + 45) < 2) {
+                    status = State.DRIVE_2;
                 } else {
-                    setDrive(0.3, 0, 0.3, 0);//turn the robot right
+                    double power = -(navx.getYaw() + 45) / 25;
+                    if (Math.abs(power) > 1) {
+                        power /= Math.abs(power);
+                    }
+                    setDrive(power, 0, power, 0);
                 }
                 break;
             case DRIVE_2:
                 setDrive(-0.3, -0.3, -0.3, -0.3);//drive towards beacon
                 if (colorLinecache[0] == 14) {//if white color is detected, turn lineSeen to true
-                    status = State.ALIGN_1;
+                    status = State.ALIGN;
                 }
                 break;
-            case ALIGN_1:
+            case ALIGN:
                 if (Math.abs(80 + navx.getYaw()) < 2) {//if robot has turned 80 degrees, set turn2 to true
-                    status = State.PUSH_1;
+                    status = State.PUSH;
                 } else if (80 + navx.getYaw() > 0) {//if robot has turned left less than 80 degrees
                     setDrive(-0.3, 0, -0.3, 0);//turn the robot left
                 } else {
                     setDrive(0.3, 0, 0.3, 0);//turn the robot right
                 }
                 break;
-            case PUSH_1:
+            case PUSH:
+                //Once end condition is reached
+                if(target == Beacon.ONE){
+                    target = Beacon.TwO;
+                    status = State.STRAFE;
+                }else if(target == Beacon.TwO){
+                    status = State.TURN_2;
+                }
 
                 break;
             case STRAFE:
-
-                break;
-            case ALIGN_2:
-
-                break;
-            case PUSH_2:
-
+                status = State.PUSH;
                 break;
             case TURN_2:
-
+                status = State.DRIVE_3;
                 break;
             case DRIVE_3:
-
+                status = State.END;
                 break;
             case END:
                 setDrive(0, 0, 0, 0);
@@ -170,8 +187,11 @@ public class sensorAutoTest4sue extends OpMode {
 }
 
 enum State {
-    DRIVE_1, SHOOT, TURN_1, DRIVE_2, ALIGN_1, PUSH_1,
-    STRAFE, ALIGN_2, PUSH_2, TURN_2, DRIVE_3, END
+    DRIVE_1, SHOOT, TURN_1, DRIVE_2, ALIGN, PUSH,
+    STRAFE, TURN_2, DRIVE_3, END
 }
 
+enum Beacon {
+    ONE, TwO,
+}
 
