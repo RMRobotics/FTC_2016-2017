@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name = "sensors5")
-public class sensorAutoLinear2 extends LinearOpMode {
+public class sensorAutoLinear3 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     DcMotor FL;
@@ -256,6 +256,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
         FR.setTargetPosition(p2);
         BL.setTargetPosition(p3);
         BR.setTargetPosition(p4);
+    }
+
+    private void scaleOpticsPower(int US, int ODS, double p1, double p2, double p3, double p4){
+
     }
 
 }
