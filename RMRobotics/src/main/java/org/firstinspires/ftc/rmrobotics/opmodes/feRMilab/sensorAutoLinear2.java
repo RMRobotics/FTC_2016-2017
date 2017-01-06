@@ -12,11 +12,11 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Created by Simon on 12/30/16.
+ * Created by Memers on 1/6/16.
  */
 
 @Autonomous(name = "sensors5")
-public class sensorAutoLinear extends LinearOpMode {
+public class sensorAutoLinear2 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     DcMotor FL;
@@ -37,9 +37,9 @@ public class sensorAutoLinear extends LinearOpMode {
     private final double YAW_PID_D = 0.0;
     navXPIDController.PIDResult yawPIDResult;
 
-    byte[] colorLineCache;
-    I2cDevice colorLine;
-    I2cDeviceSynch colorLineReader;
+    byte[] colorBackCache;
+    I2cDevice colorBack;
+    I2cDeviceSynch colorBackReader;
 
     byte[] rangeCache;
 
@@ -75,10 +75,10 @@ public class sensorAutoLinear extends LinearOpMode {
         }
         telemetry.addData("Status", "Initialized");
 
-        colorLine = hardwareMap.i2cDevice.get("colorBack");
-        colorLineReader = new I2cDeviceSynchImpl(colorLine, I2cAddr.create8bit(0x50), false);
-        colorLineReader.engage();
-        colorLineReader.write8(3,0);
+        colorBack = hardwareMap.i2cDevice.get("colorBack");
+        colorBackReader = new I2cDeviceSynchImpl(colorBack, I2cAddr.create8bit(0x50), false);
+        colorBackReader.engage();
+        colorBackReader.write8(3,0);
 
         range = hardwareMap.i2cDevice.get("range");
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x60), false);
@@ -104,16 +104,16 @@ public class sensorAutoLinear extends LinearOpMode {
             addTelemetry();
         }
 
-        colorLineCache = colorLineReader.read(0x04, 1);
-        while (opModeIsActive() && colorLineCache[0] != 14) {
-            telemetry.addData("color", colorLineCache[0]);
+        colorBackCache = colorBackReader.read(0x04, 1);
+        while (opModeIsActive() && colorBackCache[0] != 14) {
+            telemetry.addData("color", colorBackCache[0]);
             if (FL.getCurrentPosition() > -3800) {
                 setDrive(-0.3, -0.3, -0.3, -0.3);
             } else {
                 setDrive(-0.12, -0.12, -0.12, -0.12);
             }
             addTelemetry();
-            colorLineCache = colorLineReader.read(0x04, 1);
+            colorBackCache = colorBackReader.read(0x04, 1);
         }
 
         setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -147,19 +147,19 @@ public class sensorAutoLinear extends LinearOpMode {
 
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        colorLineCache = colorLineReader.read(0x04, 1);
-        while (opModeIsActive() && colorLineCache[0] == 14) {
+        colorBackCache = colorBackReader.read(0x04, 1);
+        while (opModeIsActive() && colorBackCache[0] == 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
-            colorLineCache = colorLineReader.read(0x04, 1);
+            colorBackCache = colorBackReader.read(0x04, 1);
             addTelemetry();
         }
 
         sleep(100);
 
-        while (opModeIsActive() && colorLineCache[0] != 14) {
+        while (opModeIsActive() && colorBackCache[0] != 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
             addTelemetry();
-            colorLineCache = colorLineReader.read(0x04, 1);
+            colorBackCache = colorBackReader.read(0x04, 1);
         }
 
         while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
@@ -185,7 +185,7 @@ public class sensorAutoLinear extends LinearOpMode {
     private void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
-        telemetry.addData("3 Color", colorLineCache[0] & 0xFF);
+        telemetry.addData("3 Color", colorBackCache[0] & 0xFF);
         telemetry.addData("4 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("5 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
         telemetry.update();
@@ -217,5 +217,9 @@ public class sensorAutoLinear extends LinearOpMode {
         FR.setTargetPosition(p2);
         BL.setTargetPosition(p3);
         BR.setTargetPosition(p4);
+    }
+
+    private void scaleToOptics(int US,int ODS, double p1, double p2, double p3, double p4){
+
     }
 }

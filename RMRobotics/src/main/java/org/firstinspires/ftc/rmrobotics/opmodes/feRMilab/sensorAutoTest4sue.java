@@ -84,7 +84,7 @@ public class sensorAutoTest4sue extends OpMode {
 
         df = new DecimalFormat("#.##");
         telemetry.addData("Status", "Initialized");
-        colorLine = hardwareMap.i2cDevice.get("colorLine");
+        colorLine = hardwareMap.i2cDevice.get("colorBack");
         colorLinereader = new I2cDeviceSynchImpl(colorLine, I2cAddr.create8bit(0x50), false);
         colorLinereader.engage();
         colorLinereader.write8(3,0);

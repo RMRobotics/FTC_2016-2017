@@ -98,7 +98,7 @@ public class sensorAutoTest extends OpMode {
         df = new DecimalFormat("#.##");
         //formats output into desired decimal format
         telemetry.addData("Status", "Initialized");
-        colorLine = hardwareMap.i2cDevice.get("colorLine");
+        colorLine = hardwareMap.i2cDevice.get("colorBack");
         //sets up color line sensor
         colorLinereader = new I2cDeviceSynchImpl(colorLine, I2cAddr.create8bit(0x50), false);
         //sets up sensor reader with address
