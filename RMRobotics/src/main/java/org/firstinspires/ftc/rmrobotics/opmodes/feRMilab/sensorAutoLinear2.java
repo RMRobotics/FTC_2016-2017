@@ -40,6 +40,9 @@ public class sensorAutoLinear2 extends LinearOpMode {
     byte[] colorBackCache;
     I2cDevice colorBack;
     I2cDeviceSynch colorBackReader;
+    byte[] colorCenterCache;
+    I2cDevice colorCenter;
+    I2cDeviceSynch colorCenterReader;
 
     byte[] rangeCache;
 
@@ -79,6 +82,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
         colorBackReader = new I2cDeviceSynchImpl(colorBack, I2cAddr.create8bit(0x50), false);
         colorBackReader.engage();
         colorBackReader.write8(3,0);
+        colorCenter = hardwareMap.i2cDevice.get("colorCenter");
+        colorCenterReader = new I2cDeviceSynchImpl(colorCenter, I2cAddr.create8bit(0x52), false);
+        colorCenterReader.engage();
+        colorCenterReader.write8(3,0);
 
         range = hardwareMap.i2cDevice.get("range");
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x60), false);
@@ -104,20 +111,34 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
         }
 
-        colorBackCache = colorBackReader.read(0x04, 1);
-        while (opModeIsActive() && colorBackCache[0] != 14) {
-            telemetry.addData("color", colorBackCache[0]);
+        colorCenterCache = colorCenterReader.read(0x04, 1);
+        while (opModeIsActive() && colorCenterCache[0] != 14) {
+            telemetry.addData("color", colorCenterCache[0]);
             if (FL.getCurrentPosition() > -3800) {
                 setDrive(-0.3, -0.3, -0.3, -0.3);
             } else {
                 setDrive(-0.12, -0.12, -0.12, -0.12);
             }
             addTelemetry();
-            colorBackCache = colorBackReader.read(0x04, 1);
+            colorCenterCache = colorCenterReader.read(0x04, 1);
         }
 
         setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
         while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
+            if (navx.getYaw() + 90 > 10) {
+                setDrive(-0.2, 0.2, -0.2, 0.2);
+            } else if (navx.getYaw() + 90 < -10) {
+                setDrive(0.2, -0.2, 0.2, -0.2);
+            } else if (navx.getYaw() + 90 <= 10 && navx.getYaw() + 90 > 0) {
+                setDrive(-0.1, 0.1, -0.1, 0.1);
+            } else if (navx.getYaw() + 90 >= -10 && navx.getYaw() + 90 < 0) {
+                setDrive(0.1, -0.1, 0.1, -0.1);
+            } else {
+                setDrive(0, 0, 0, 0);
+            }
+            addTelemetry();
+        }
+        /*while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
             if (navx.getYaw() + 90 > 10) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
             } else if (navx.getYaw() + 90 < -10) {
@@ -130,8 +151,26 @@ public class sensorAutoLinear2 extends LinearOpMode {
                 setDrive(0, 0, 0, 0);
             }
             addTelemetry();
+        }*/
+
+        rangeCache = rangeReader.read(0x04, 2);  //Read 2 bytes starting at 0x04
+
+        int LUS = rangeCache[0] & 0xFF;
+        int LODS = rangeCache[1] & 0xFF;
+
+        while (LUS > 7 && LODS < 4) {
+            if (LUS > 20 ) {
+                setDrive(-0.4, -0.4, -0.4, -0.4);
+            } else if (LUS > 13) {
+                setDrive(-0.2, -0.2, -0.2, -0.2);
+            } else {
+                setDrive(-0.1, -0.1, -0.1, -0.1);
+            }
         }
 
+        while (LUS < 20) {
+            setDrive(0.3, 0.3, 0.3, 0.3);
+        }
         setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
                 FR.getCurrentPosition() - 450,
@@ -217,9 +256,5 @@ public class sensorAutoLinear2 extends LinearOpMode {
         FR.setTargetPosition(p2);
         BL.setTargetPosition(p3);
         BR.setTargetPosition(p4);
-    }
-
-    private void scaleToOptics(int US,int ODS, double p1, double p2, double p3, double p4){
-
     }
 }
