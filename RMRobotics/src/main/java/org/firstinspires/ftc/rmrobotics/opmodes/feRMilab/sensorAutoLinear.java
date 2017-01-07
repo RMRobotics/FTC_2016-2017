@@ -94,6 +94,7 @@ public class sensorAutoLinear extends LinearOpMode {
         sleep(2000);
 
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        colorLineCache = colorLineReader.read(0x04, 1);
         while (opModeIsActive() && Math.abs(navx.getYaw() + 50) > 1) {
             double power = -((navx.getYaw() + 50) / 30) * 0.3;
             if (Math.abs(power) > 0.3) {
