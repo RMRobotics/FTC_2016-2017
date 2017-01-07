@@ -2,7 +2,6 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
-import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,8 +15,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by Memers on 1/6/16.
  */
 
-@Autonomous(name = "sensors6")
-public class sensorAutoLinear2 extends LinearOpMode {
+@Autonomous(name = "sensors5")
+public class sensorAutoLinear3 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     DcMotor FL;
@@ -36,7 +35,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
     private final double YAW_PID_P = 0.03;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
-    //navXPIDController.PIDResult yawPIDResult;
+    navXPIDController.PIDResult yawPIDResult;
 
     byte[] colorBackCache;
     I2cDevice colorBack;
@@ -46,12 +45,9 @@ public class sensorAutoLinear2 extends LinearOpMode {
     I2cDeviceSynch colorCenterReader;
 
     byte[] rangeCache;
+
     I2cDevice range;
     I2cDeviceSynch rangeReader;
-    int LUS;
-    int LODS;
-
-    long start;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -98,19 +94,11 @@ public class sensorAutoLinear2 extends LinearOpMode {
         waitForStart();
 
         navx.zeroYaw();
-        sensorUpdate();
-        //yawPIDResult = new navXPIDController.PIDResult();
+        yawPIDResult = new navXPIDController.PIDResult();
 
-        start = System.nanoTime();
         setEnc(-560, -560, -560, -560);
         setDrive(0.3, 0.3, 0.3, 0.3);
-        while (FL.getPower() > 0.1 && FR.getPower() > 0.1 && BL.getPower() > 0.1 && BR.getPower() > 0.1) {
-            addTelemetry();
-        }
-        while (opModeIsActive()) {
-            telemetry.addData("time", (System.nanoTime() - start) / 1000000);
-        }
-        //sleep(2000);
+        sleep(2000);
 
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive() && Math.abs(navx.getYaw() + 50) > 1) {
@@ -123,7 +111,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
         }
 
-        sensorUpdate();
+        colorCenterCache = colorCenterReader.read(0x04, 1);
         while (opModeIsActive() && colorCenterCache[0] != 14) {
             telemetry.addData("color", colorCenterCache[0]);
             if (FL.getCurrentPosition() > -3800) {
@@ -132,7 +120,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
                 setDrive(-0.12, -0.12, -0.12, -0.12);
             }
             addTelemetry();
-            sensorUpdate();
+            colorCenterCache = colorCenterReader.read(0x04, 1);
         }
 
         setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -183,7 +171,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         while (LUS < 20) {
             setDrive(0.3, 0.3, 0.3, 0.3);
         }
-        /*setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
                 FR.getCurrentPosition() - 450,
                 BL.getCurrentPosition() - 450,
@@ -194,9 +182,9 @@ public class sensorAutoLinear2 extends LinearOpMode {
                 FR.getCurrentPosition() + 450,
                 BL.getCurrentPosition() + 450,
                 BR.getCurrentPosition() + 450);
-        sleep(1500);*/
+        sleep(1500);
 
-        //setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         colorBackCache = colorBackReader.read(0x04, 1);
         while (opModeIsActive() && colorBackCache[0] == 14) {
@@ -233,21 +221,12 @@ public class sensorAutoLinear2 extends LinearOpMode {
         stop();
     }
 
-    private void sensorUpdate() {
-        colorCenterCache = colorCenterReader.read(0x04, 1);
-        colorBackCache = colorBackReader.read(0x04, 1);
-        rangeCache = rangeReader.read(0x04, 2);
-        LUS = rangeCache[0] & 0xFF;
-        LODS = rangeCache[1] & 0xFF;
-    }
-
     private void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
         telemetry.addData("3 Color", colorBackCache[0] & 0xFF);
         telemetry.addData("4 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("5 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
-        telemetry.addData("time", (System.nanoTime() - start) / 1000000);
         telemetry.update();
     }
 
@@ -277,6 +256,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
         FR.setTargetPosition(p2);
         BL.setTargetPosition(p3);
         BR.setTargetPosition(p4);
+    }
+
+    private void scaleOpticsPower(int US, int ODS, double p1, double p2, double p3, double p4){
+
     }
 
 }
