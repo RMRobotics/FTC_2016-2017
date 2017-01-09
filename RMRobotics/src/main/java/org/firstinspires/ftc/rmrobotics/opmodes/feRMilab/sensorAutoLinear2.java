@@ -119,6 +119,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
             //turns robot towards first beacon
         }
+        //turns robot towards first beacon
 
         sensorUpdate();
         while (opModeIsActive() && colorCenterCache[0] != 14) {
@@ -132,6 +133,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             sensorUpdate();
             //drives until it senses white line
         }
+        //drives until it senses white line
 
         setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
         while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
@@ -149,6 +151,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
             //aligns with wall
         }
+        //aligns with wall
+
         /*while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
             if (navx.getYaw() + 90 > 10) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
