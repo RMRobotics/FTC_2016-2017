@@ -105,6 +105,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         sleep(800);
         setDrive(0.1, 0.1, 0.1, 0.1);
         sleep(150);
+        //goes forward slow,fast,slow for a little while
 
         sensorUpdate();
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -117,6 +118,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             setDrive(power, 0, power, 0);
             addTelemetry();
         }
+        //turns robot towards first beacon
 
         sensorUpdate();
         while (opModeIsActive() && colorCenterCache[0] != 14) {
@@ -129,6 +131,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
             sensorUpdate();
         }
+        //drives until it senses white line
 
         setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
         while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
@@ -145,6 +148,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
             addTelemetry();
         }
+        //aligns with wall
+
         /*while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
             if (navx.getYaw() + 90 > 10) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
@@ -159,11 +164,12 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
             addTelemetry();
         }*/
+        //different values for aligning with wall
 
         rangeCache = rangeReader.read(0x04, 2);  //Read 2 bytes starting at 0x04
-
-        int LUS = rangeCache[0] & 0xFF;
-        int LODS = rangeCache[1] & 0xFF;
+        //0x04 is color number
+        int LUS = rangeCache[0] & 0xFF;//first byte: ultrasonic reading
+        int LODS = rangeCache[1] & 0xFF;//second byte: optical reading
 
         while (LUS > 7 && LODS < 4) {
             if (LUS > 20 ) {
@@ -174,10 +180,13 @@ public class sensorAutoLinear2 extends LinearOpMode {
                 setDrive(-0.1, -0.1, -0.1, -0.1);
             }
         }
+        //drive forward until close to color beacon
 
         while (LUS < 20) {
             setDrive(0.3, 0.3, 0.3, 0.3);
         }
+        //drive back to drive to next beacon
+
         /*setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
                 FR.getCurrentPosition() - 450,
