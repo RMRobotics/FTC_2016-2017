@@ -24,12 +24,12 @@ public class FeRMiTele extends OpMode {
     private DcMotor BR;
     private DcMotor flyL;
     private DcMotor flyR;
+    private DcMotor belt;
 
     private Servo beaconL;
     private Servo beaconR;
 
     private Servo harvester;
-    private Servo belt;
     private CRServo index;
 
     @Override
@@ -42,12 +42,17 @@ public class FeRMiTele extends OpMode {
         BR = hardwareMap.dcMotor.get("BR");
         flyL = hardwareMap.dcMotor.get("flyL");
         flyR = hardwareMap.dcMotor.get("flyR");
+        belt = hardwareMap.dcMotor.get("belt");
+        belt.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         beaconL = hardwareMap.servo.get("beaconL");
         beaconR = hardwareMap.servo.get("beaconR");
         beaconR.setDirection(Servo.Direction.REVERSE);
         harvester = hardwareMap.servo.get("h");
-        belt = hardwareMap.servo.get("b");
         index = hardwareMap.crservo.get("indexer");
     }
 
@@ -56,13 +61,13 @@ public class FeRMiTele extends OpMode {
         double forward = gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double rotate = gamepad1.right_stick_x;
-        double max = 1;
+        double max = 0.7;
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
         l.add(Math.abs(forward - strafe - rotate));
         l.add(Math.abs(forward - strafe + rotate));
         l.add(Math.abs(forward + strafe - rotate));
-        if ((double) Collections.max(l) > 1) {
+        if ((double) Collections.max(l) > max) {
             max = (double) Collections.max(l);
         }
 
@@ -76,33 +81,34 @@ public class FeRMiTele extends OpMode {
         BL.setPower((forward + strafe - rotate)/max);
         BR.setPower((forward - strafe + rotate)/max);
 
-        boolean harvest = gamepad1.right_bumper;
-        boolean eject = gamepad1.left_bumper;
-        if (harvest && eject) {
-            harvester.setPosition(0.5);
-        } else if (harvest) {
-            harvester.setPosition(0);
-            harvester.setDirection(Servo.Direction.FORWARD);
-        } else if (eject) {
-            harvester.setPosition(0);
-            harvester.setDirection(Servo.Direction.REVERSE);
-        } else {
-            harvester.setPosition(0.5);
-        }
-
-        boolean beltUp = gamepad1.dpad_up;
-        boolean beltDown = gamepad1.dpad_down;
-        if (beltUp && beltDown) {
-            belt.setPosition(0.5);
-        } else if (beltUp) {
-            belt.setPosition(0);
-            belt.setDirection(Servo.Direction.REVERSE);
-        } else if (beltDown) {
-            belt.setPosition(0);
-            belt.setDirection(Servo.Direction.FORWARD);
-        } else {
-            belt.setPosition(0.5);
-        }
+//        boolean harvest = gamepad1.right_bumper;
+//        boolean eject = gamepad1.left_bumper;
+//        if (harvest && eject) {
+//            harvester.setPosition(0.5);
+//        } else if (harvest) {
+//            harvester.setPosition(0);
+//            harvester.setDirection(Servo.Direction.FORWARD);
+//        } else if (eject) {
+//            harvester.setPosition(0);
+//            harvester.setDirection(Servo.Direction.REVERSE);
+//        } else {
+//            harvester.setPosition(0.5);
+//        }
+//
+//        boolean beltUp = gamepad1.dpad_up;
+//        boolean beltDown = gamepad1.dpad_down;
+//        if (beltUp && beltDown) {
+//            belt.setPower(0);
+//        } else if (beltUp) {
+//            belt.setPower(0.6);
+//        } else if (beltDown) {
+//            belt.setPower(-0.6);
+//        } else {
+//            belt.setPower(0);
+//        }
+        belt.setPower(0.7);
+        harvester.setPosition(0);
+        harvester.setDirection(Servo.Direction.FORWARD);
 
         if (gamepad2.left_bumper) {
             beaconL.setPosition(1);

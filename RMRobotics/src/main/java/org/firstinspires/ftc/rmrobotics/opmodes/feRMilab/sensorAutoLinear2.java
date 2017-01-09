@@ -51,8 +51,6 @@ public class sensorAutoLinear2 extends LinearOpMode {
     int LUS;
     int LODS;
 
-    long start;
-
     @Override
     public void runOpMode() throws InterruptedException {
         FL = hardwareMap.dcMotor.get("FL");
@@ -98,24 +96,21 @@ public class sensorAutoLinear2 extends LinearOpMode {
         waitForStart();
 
         navx.zeroYaw();
-        sensorUpdate();
         //yawPIDResult = new navXPIDController.PIDResult();
 
-        start = System.nanoTime();
         setEnc(-560, -560, -560, -560);
+        setDrive(0.1, 0.1, 0.1, 0.1);
+        sleep(150);
         setDrive(0.3, 0.3, 0.3, 0.3);
-        while (FL.getPower() > 0.1 && FR.getPower() > 0.1 && BL.getPower() > 0.1 && BR.getPower() > 0.1) {
-            addTelemetry();
-        }
-        while (opModeIsActive()) {
-            telemetry.addData("time", (System.nanoTime() - start) / 1000000);
-        }
-        //sleep(2000);
+        sleep(800);
+        setDrive(0.1, 0.1, 0.1, 0.1);
+        sleep(150);
 
+        sensorUpdate();
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (opModeIsActive() && Math.abs(navx.getYaw() + 50) > 1) {
-            double power = -((navx.getYaw() + 50) / 30) * 0.3;
-            if (Math.abs(power) > 0.3) {
+        while (opModeIsActive() && Math.abs(navx.getYaw() + 45) > 1) {
+            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
+            if (Math.abs(power) > 0.35) {
                 power /= Math.abs(power);
                 power *= 0.3;
             }
@@ -126,7 +121,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         sensorUpdate();
         while (opModeIsActive() && colorCenterCache[0] != 14) {
             telemetry.addData("color", colorCenterCache[0]);
-            if (FL.getCurrentPosition() > -3800) {
+            if (FL.getCurrentPosition() > -4000) {
                 setDrive(-0.3, -0.3, -0.3, -0.3);
             } else {
                 setDrive(-0.12, -0.12, -0.12, -0.12);
@@ -245,9 +240,9 @@ public class sensorAutoLinear2 extends LinearOpMode {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
         telemetry.addData("3 Color", colorBackCache[0] & 0xFF);
-        telemetry.addData("4 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
-        telemetry.addData("5 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
-        telemetry.addData("time", (System.nanoTime() - start) / 1000000);
+        telemetry.addData("4 Range", rangeCache[0] + " " + rangeCache[1]);
+        telemetry.addData("5 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
+        telemetry.addData("6 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
         telemetry.update();
     }
 

@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by Memers on 1/6/16.
  */
 
-@Autonomous(name = "sensors5")
+@Autonomous(name = "sensors7")
 public class sensorAutoLinear3 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
