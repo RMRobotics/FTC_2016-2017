@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -24,6 +25,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
     DcMotor FR;
     DcMotor BL;
     DcMotor BR;
+
+    Servo swingArm;
 
     private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navx;
@@ -44,6 +47,12 @@ public class sensorAutoLinear2 extends LinearOpMode {
     byte[] colorCenterCache;
     I2cDevice colorCenter;
     I2cDeviceSynch colorCenterReader;
+    byte[] colorRightCache;
+    I2cDevice colorRight;
+    I2cDeviceSynch colorRightReader;
+    byte[] colorLeftCache;
+    I2cDevice colorLeft;
+    I2cDeviceSynch colorLeftReader;
 
     byte[] rangeCache;
     I2cDevice range;
@@ -51,12 +60,15 @@ public class sensorAutoLinear2 extends LinearOpMode {
     int LUS;
     int LODS;
 
+    int teamColor = 0; //-1 is red, 1 is blue
+
     @Override
     public void runOpMode() throws InterruptedException {
         FL = hardwareMap.dcMotor.get("FL");
         FR = hardwareMap.dcMotor.get("FR");
         BL = hardwareMap.dcMotor.get("BL");
         BR = hardwareMap.dcMotor.get("BR");
+        swingArm = hardwareMap.servo.get("swingArm");
         FR.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
         setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -78,16 +90,28 @@ public class sensorAutoLinear2 extends LinearOpMode {
         while (navx.isCalibrating()) {
             telemetry.addData("Status", !navx.isCalibrating());
         }
+
         telemetry.addData("Status", "Initialized");
 
         colorBack = hardwareMap.i2cDevice.get("colorBack");
         colorBackReader = new I2cDeviceSynchImpl(colorBack, I2cAddr.create8bit(0x50), false);
         colorBackReader.engage();
         colorBackReader.write8(3,0);
+
         colorCenter = hardwareMap.i2cDevice.get("colorCenter");
         colorCenterReader = new I2cDeviceSynchImpl(colorCenter, I2cAddr.create8bit(0x52), false);
         colorCenterReader.engage();
         colorCenterReader.write8(3,0);
+
+        colorRight = hardwareMap.i2cDevice.get("colorRight");
+        colorRightReader = new I2cDeviceSynchImpl(colorRight, I2cAddr.create8bit(0x54), false);
+        colorRightReader.engage();
+        colorRightReader.write8(3,0);
+
+        colorLeft = hardwareMap.i2cDevice.get("colorLeft");
+        colorLeftReader = new I2cDeviceSynchImpl(colorLeft, I2cAddr.create8bit(0x56), false);
+        colorLeftReader.engage();
+        colorLeftReader.write8(3,0);
 
         range = hardwareMap.i2cDevice.get("range");
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x60), false);
@@ -131,7 +155,6 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
             addTelemetry();
             sensorUpdate();
-            //drives until it senses white line
         }
         //drives until it senses white line
 
@@ -183,10 +206,29 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
         }
         //drive forward until close to color beacon
+
+        //2 is blue and 11 is red
+        while ((colorLeftCache[0] != 2 || colorLeftCache[0] != 11) || (colorRightCache[0] != 2) || (colorRightCache[0] != 11)){
+            addTelemetry();
+            colorLeftCache = colorLeftReader.read(0x04, 1);
+            colorRightCache = colorRightReader.read(0x04, 1);
+        }
+
+        swingArm.scaleRange(-1,1);
+
+        if (colorLeftCache[0] == 11 && colorRightCache[0] == 2){
+            //left is red, right is blue
+            swingArm.setPosition(1*teamColor);
+        }
+        else if (colorLeftCache[0] == 2 && colorRightCache[0] == 11){
+            swingArm.setPosition(-1*teamColor);
+        }
+
         while (LUS < 20) {
             setDrive(0.3, 0.3, 0.3, 0.3);
         }
         //drive back to drive to next beacon
+
         /*setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
                 FR.getCurrentPosition() - 450,
