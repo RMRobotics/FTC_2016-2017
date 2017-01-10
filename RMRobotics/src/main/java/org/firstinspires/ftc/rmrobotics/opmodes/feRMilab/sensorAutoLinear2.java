@@ -104,12 +104,12 @@ public class sensorAutoLinear2 extends LinearOpMode {
         colorCenterReader.write8(3,0);
 
         colorRight = hardwareMap.i2cDevice.get("colorRight");
-        colorRightReader = new I2cDeviceSynchImpl(colorRight, I2cAddr.create8bit(0x54), false);
+        colorRightReader = new I2cDeviceSynchImpl(colorRight, I2cAddr.create8bit(0x70), false);
         colorRightReader.engage();
         colorRightReader.write8(3,0);
 
         colorLeft = hardwareMap.i2cDevice.get("colorLeft");
-        colorLeftReader = new I2cDeviceSynchImpl(colorLeft, I2cAddr.create8bit(0x56), false);
+        colorLeftReader = new I2cDeviceSynchImpl(colorLeft, I2cAddr.create8bit(0x72), false);
         colorLeftReader.engage();
         colorLeftReader.write8(3,0);
 
