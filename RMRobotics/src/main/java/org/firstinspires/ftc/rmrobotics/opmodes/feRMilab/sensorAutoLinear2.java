@@ -191,7 +191,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
         }*/
         //different values for aligning with wall
-        rangeCache = rangeReader.read(0x04, 2);  //Read 2 bytes starting at 0x04
+        sensorUpdate();
         //0x04 is color number
         int LUS = rangeCache[0] & 0xFF; //first byte: ultrasonic reading
         int LODS = rangeCache[1] & 0xFF; //second byte: optical reading
@@ -210,8 +210,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //2 is blue and 11 is red
         while ((colorLeftCache[0] != 2 || colorLeftCache[0] != 11) || (colorRightCache[0] != 2) || (colorRightCache[0] != 11)){
             addTelemetry();
-            colorLeftCache = colorLeftReader.read(0x04, 1);
-            colorRightCache = colorRightReader.read(0x04, 1);
+            sensorUpdate();
+
         }
 
         swingArm.scaleRange(-1,1);
@@ -244,10 +244,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         //setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        colorBackCache = colorBackReader.read(0x04, 1);
+        sensorUpdate();
         while (opModeIsActive() && colorBackCache[0] == 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
-            colorBackCache = colorBackReader.read(0x04, 1);
+            sensorUpdate();
             addTelemetry();
         }
 
@@ -256,7 +256,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         while (opModeIsActive() && colorBackCache[0] != 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
             addTelemetry();
-            colorBackCache = colorBackReader.read(0x04, 1);
+            sensorUpdate();
         }
 
         while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
@@ -281,6 +281,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
     private void sensorUpdate() {
         colorCenterCache = colorCenterReader.read(0x04, 1);
+        colorLeftCache = colorLeftReader.read(0x04, 1);
+        colorRightCache = colorRightReader.read(0x04, 1);
         colorBackCache = colorBackReader.read(0x04, 1);
         rangeCache = rangeReader.read(0x04, 2);
         LUS = rangeCache[0] & 0xFF;
