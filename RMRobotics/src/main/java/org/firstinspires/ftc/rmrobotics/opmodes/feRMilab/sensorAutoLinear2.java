@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
+import android.os.Looper;
+import android.util.Log;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
@@ -16,6 +19,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Created by Memers on 1/6/16.
  */
+// RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
+
 
 @Autonomous(name = "sensors6")
 public class sensorAutoLinear2 extends LinearOpMode {
@@ -106,12 +111,12 @@ public class sensorAutoLinear2 extends LinearOpMode {
         colorRight = hardwareMap.i2cDevice.get("colorRight");
         colorRightReader = new I2cDeviceSynchImpl(colorRight, I2cAddr.create8bit(0x70), false);
         colorRightReader.engage();
-        colorRightReader.write8(3,0);
+        colorRightReader.write8(3,1);
 
         colorLeft = hardwareMap.i2cDevice.get("colorLeft");
         colorLeftReader = new I2cDeviceSynchImpl(colorLeft, I2cAddr.create8bit(0x72), false);
         colorLeftReader.engage();
-        colorLeftReader.write8(3,0);
+        colorLeftReader.write8(3,1);
 
         range = hardwareMap.i2cDevice.get("range");
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x60), false);
@@ -133,50 +138,70 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sensorUpdate();
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (opModeIsActive() && Math.abs(navx.getYaw() + 45) > 1) {
-            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
-            if (Math.abs(power) > 0.35) {
-                power /= Math.abs(power);
-                power *= 0.3;
+        while (Math.abs(navx.getYaw() + 45) > 3) {
+            if (Math.abs(navx.getYaw()) < 35) {
+                setDrive(-0.2, 0, -0.2, 0);
+            } else {
+                setDrive(-0.1, 0, -0.1, 0);
             }
-            setDrive(power, 0, power, 0);
+//            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
+//            if (Math.abs(power) > 0.35) {
+//                power /= Math.abs(power);
+//                power *= 0.3;
+//            }
+//            setDrive(power, 0, power, 0);
             addTelemetry();
             //turns robot towards first beacon
         }
         //turns robot towards first beacon
 
+        boolean tripped = false;
         sensorUpdate();
-        while (opModeIsActive() && colorCenterCache[0] != 14) {
-            telemetry.addData("color", colorCenterCache[0]);
-            if (FL.getCurrentPosition() > -4000) {
-                setDrive(-0.3, -0.3, -0.3, -0.3);
+        while (colorCenterReader.read(0x08, 1)[0] < 14) {
+            if (!tripped) {
+                if (FL.getCurrentPosition() > -3500) {
+                    setDrive(-0.3, -0.3, -0.3, -0.3);
+                } else {
+                    setDrive(-0.2, -0.2, -0.2, -0.2);
+                }
             } else {
-                setDrive(-0.12, -0.12, -0.12, -0.12);
+                setDrive(-0.1, -0.1, -0.1, -0.1);
             }
+            if (colorBackReader.read(0x08, 1)[0] > 14) {
+                tripped = true;
+            }
+            addLog();
             addTelemetry();
             sensorUpdate();
         }
         //drives until it senses white line
 
-        setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
-        while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
-            if (navx.getYaw() + 90 > 10) {
-                setDrive(-0.2, 0.2, -0.2, 0.2);
-            } else if (navx.getYaw() + 90 < -10) {
-                setDrive(0.2, -0.2, 0.2, -0.2);
-            } else if (navx.getYaw() + 90 <= 10 && navx.getYaw() + 90 > 0) {
-                setDrive(-0.1, 0.1, -0.1, 0.1);
-            } else if (navx.getYaw() + 90 >= -10 && navx.getYaw() + 90 < 0) {
-                setDrive(0.1, -0.1, 0.1, -0.1);
-            } else {
-                setDrive(0, 0, 0, 0);
-            }
+        sensorUpdate();
+        while (colorBackReader.read(0x08, 1)[0] < 14) {
+            setDrive(-0.15, 0.15, -0.15, 0.15);
             addTelemetry();
-            //aligns with wall
+            sensorUpdate();
         }
-        //aligns with wall
 
-        /*while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
+//        setZeroMode(DcMotor.ZeroPowerBehavior.FLOAT);
+//        while (Math.abs(navx.getYaw() + 90) > 1) {
+//            if (navx.getYaw() + 90 > 10) {
+//                setDrive(-0.2, 0.2, -0.2, 0.2);
+//            } else if (navx.getYaw() + 90 < -10) {
+//                setDrive(0.2, -0.2, 0.2, -0.2);
+//            } else if (navx.getYaw() + 90 <= 10 && navx.getYaw() + 90 > 0) {
+//                setDrive(-0.1, 0.1, -0.1, 0.1);
+//            } else if (navx.getYaw() + 90 >= -10 && navx.getYaw() + 90 < 0) {
+//                setDrive(0.1, -0.1, 0.1, -0.1);
+//            } else {
+//                setDrive(0, 0, 0, 0);
+//            }
+//            addTelemetry();
+//            //aligns with wall
+//        }
+//        //aligns with wall
+
+        /*while (Math.abs(navx.getYaw() + 90) > 1) {
             if (navx.getYaw() + 90 > 10) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
             } else if (navx.getYaw() + 90 < -10) {
@@ -193,35 +218,38 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //different values for aligning with wall
         sensorUpdate();
         //0x04 is color number
-        int LUS = rangeCache[0] & 0xFF; //first byte: ultrasonic reading
-        int LODS = rangeCache[1] & 0xFF; //second byte: optical reading
+//        int LUS = rangeCache[0] & 0xFF; //first byte: ultrasonic reading
+//        int LODS = rangeCache[1] & 0xFF; //second byte: optical reading
 
-        while (LUS > 7 && LODS < 4) {
-            if (LUS > 20 ) {
-                setDrive(-0.4, -0.4, -0.4, -0.4);
-            } else if (LUS > 13) {
-                setDrive(-0.2, -0.2, -0.2, -0.2);
+        while (LUS > 7) {
+            double steer = (navx.getYaw() + 90) * 0.01;
+            if (LUS > 13) {
+                setDrive(-0.2 - steer, -0.2 - steer, -0.2, -0.2);
             } else {
-                setDrive(-0.1, -0.1, -0.1, -0.1);
+                setDrive(-0.1 - steer/2, -0.1 - steer/2, -0.1, -0.1);
             }
         }
         //drive forward until close to color beacon
 
         //2 is blue and 11 is red
-        while ((colorLeftCache[0] != 2 || colorLeftCache[0] != 11) || (colorRightCache[0] != 2) || (colorRightCache[0] != 11)){
-            addTelemetry();
-            sensorUpdate();
-
-        }
+//        while ((colorLeftCache[0] != 3 || colorLeftCache[0] != 10) || (colorRightCache[0] != 3) || (colorRightCache[0] != 10)){
+//            addTelemetry();
+//            sensorUpdate();
+//        }
 
         swingArm.scaleRange(-1,1);
 
-        if (colorLeftCache[0] == 11 && colorRightCache[0] == 2){
+        //.72 for left, .15 for right
+        if (colorLeftCache[0] == 10 && colorRightCache[0] == 3){
             //left is red, right is blue
-            swingArm.setPosition(1*teamColor);
+            swingArm.setPosition(.72);
         }
-        else if (colorLeftCache[0] == 2 && colorRightCache[0] == 11){
-            swingArm.setPosition(-1*teamColor);
+        else if (colorLeftCache[0] == 3 && colorRightCache[0] == 10){
+            swingArm.setPosition(.15);
+        }
+
+        while (LODS < 33) {
+            setDrive(-0.15, -0.15, -0.15, -0.15);
         }
 
         while (LUS < 20) {
@@ -245,7 +273,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         sensorUpdate();
-        while (opModeIsActive() && colorBackCache[0] == 14) {
+        while (colorBackCache[0] == 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
             sensorUpdate();
             addTelemetry();
@@ -253,13 +281,13 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sleep(100);
 
-        while (opModeIsActive() && colorBackCache[0] != 14) {
+        while (colorBackCache[0] != 14) {
             setDrive(-0.3, 0.3, 0.3, -0.3);
             addTelemetry();
             sensorUpdate();
         }
 
-        while (opModeIsActive() && Math.abs(navx.getYaw() + 90) > 1) {
+        while (Math.abs(navx.getYaw() + 90) > 1) {
             if (navx.getYaw() + 90 > 10) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
             } else if (navx.getYaw() + 90 < -10) {
@@ -280,10 +308,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
     }
 
     private void sensorUpdate() {
-        colorCenterCache = colorCenterReader.read(0x04, 1);
+        colorCenterCache = colorCenterReader.read(0x08, 1);
+        colorBackCache = colorBackReader.read(0x08, 1);
         colorLeftCache = colorLeftReader.read(0x04, 1);
         colorRightCache = colorRightReader.read(0x04, 1);
-        colorBackCache = colorBackReader.read(0x04, 1);
         rangeCache = rangeReader.read(0x04, 2);
         LUS = rangeCache[0] & 0xFF;
         LODS = rangeCache[1] & 0xFF;
@@ -292,11 +320,26 @@ public class sensorAutoLinear2 extends LinearOpMode {
     private void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
-        telemetry.addData("3 Color", colorBackCache[0] & 0xFF);
-        telemetry.addData("4 Range", rangeCache[0] + " " + rangeCache[1]);
-        telemetry.addData("5 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
-        telemetry.addData("6 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
+        telemetry.addData("3 ColorBack", colorBackCache[0] & 0xFF);
+        telemetry.addData("4 ColorCenter", colorCenterCache[0] & 0xFF);
+        telemetry.addData("5 ColorLeft", colorLeftCache[0] & 0xFF);
+        telemetry.addData("6 ColorRight", colorRightCache[0] & 0xFF);
+        telemetry.addData("7 Range", rangeCache[0] + " " + rangeCache[1]);
+        telemetry.addData("8 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
+        telemetry.addData("9 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
         telemetry.update();
+    }
+
+    private void addLog() {
+        Log.d("1 Time", String.valueOf(runtime.seconds()));
+        Log.d("2 Yaw", String.valueOf(navx.getYaw()));
+        Log.d("3 ColorBack", String.valueOf(colorBackCache[0] & 0xFF));
+        Log.d("4 ColorCenter", String.valueOf(colorCenterCache[0] & 0xFF));
+        Log.d("5 ColorLeft", String.valueOf(colorLeftCache[0] & 0xFF));
+        Log.d("6 ColorRight", String.valueOf(colorRightCache[0] & 0xFF));
+        Log.d("7 Range", rangeCache[0] + " " + rangeCache[1]);
+        Log.d("8 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
+        Log.d("9 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
     }
 
     private void setMode(DcMotor.RunMode r) {
@@ -321,10 +364,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
     }
 
     private void setEnc(int p1, int p2, int p3, int p4) {
-        FL.setTargetPosition(p1);
-        FR.setTargetPosition(p2);
-        BL.setTargetPosition(p3);
-        BR.setTargetPosition(p4);
+        FL.setTargetPosition(FL.getCurrentPosition() + p1);
+        FR.setTargetPosition(FR.getCurrentPosition() + p2);
+        BL.setTargetPosition(BL.getCurrentPosition() + p3);
+        BR.setTargetPosition(BR.getCurrentPosition() + p4);
     }
 
 }
