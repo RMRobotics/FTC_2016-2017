@@ -161,7 +161,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sensorUpdate();
         //while (colorCenterReader.read(0x08, 1)[0] < 25) {
-        while (colorCenterReader.read(0x04, 1)[0] != 14) {
+        while (colorCenterReader.read(0x08, 1)[0] < 25) {
 //            if (!tripped) {
 //                if (FL.getCurrentPosition() > -3500) {
 //                    setDrive(-0.3, -0.3, -0.3, -0.3);
@@ -191,15 +191,17 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //drives until it senses white line
 
         sensorUpdate();
-        while (colorBackReader.read(0x04, 1)[0] != 14) {
+        while (colorBackReader.read(0x08, 1)[0] < 25) {
             if (FL.getCurrentPosition() > -4600) {
-                setDrive(-0.2, 0.2, -0.07, 0.07);
+                setDrive(-0.1, 0.1, -0.1, 0.1);
             } else {
-                setDrive(-0.1, 0.1, -0.05, 0.05);
+                setDrive(-0.06, 0.06, -0.06, 0.06);
             }
             //addTelemetry();
             //sensorUpdate();
         }
+        setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
+        setDrive(0, 0, 0, 0);
 //        while (colorBackReader.read(0x08, 1)[0] < 25) {
 //            if (navx.getYaw() + 70 > 0) {
 //                setDrive(-0.15, 0.15, -0.15, 0.15);
@@ -308,11 +310,32 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sensorUpdate();
         while (LUS < 20) {
-            setDrive(0.3, 0.3, 0.3, 0.3);
+            setDrive(0.1, 0.1, 0.1, 0.1);
             sensorUpdate();
             addTelemetry();
         }
+
+        setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
+        setDrive(0, 0, 0, 0);
         //drive back to drive to next beacon
+
+        sensorUpdate();
+        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        while (Math.abs(navx.getYaw()) > 3) {
+            if (Math.abs(navx.getYaw()) > 25) {
+                setDrive(0.2, 0.2, 0.2, 0.2);
+            } else {
+                setDrive(0.1, 0.1, 0.1, 0.1);
+            }
+//            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
+//            if (Math.abs(power) > 0.35) {
+//                power /= Math.abs(power);
+//                power *= 0.3;
+//            }
+//            setDrive(power, 0, power, 0);
+            addTelemetry();
+            //turns robot towards first beacon
+        }
 
         /*setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
@@ -338,26 +361,26 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sleep(100);
 
-        while (colorBackCache[0] != 14) {
-            setDrive(-0.3, 0.3, 0.3, -0.3);
-            addTelemetry();
-            sensorUpdate();
-        }
+//        while (colorBackCache[0] != 14) {
+//            setDrive(-0.3, 0.3, 0.3, -0.3);
+//            addTelemetry();
+//            sensorUpdate();
+//        }
 
-        while (Math.abs(navx.getYaw() + 90) > 1) {
-            if (navx.getYaw() + 90 > 10) {
-                setDrive(-0.2, 0.2, -0.07, 0.07);
-            } else if (navx.getYaw() + 90 < -10) {
-                setDrive(0.2, -0.2, 0.07, -0.07);
-            } else if (navx.getYaw() + 90 <= 10 && navx.getYaw() + 90 > 0) {
-                setDrive(-0.1, 0.1, -0.035, 0.035);
-            } else if (navx.getYaw() + 90 >= -10 && navx.getYaw() + 90 < 0) {
-                setDrive(0.1, -0.1, 0.035, -0.035);
-            } else {
-                setDrive(0, 0, 0, 0);
-            }
-            addTelemetry();
-        }
+//        while (Math.abs(navx.getYaw() + 90) > 1) {
+//            if (navx.getYaw() + 90 > 10) {
+//                setDrive(-0.2, 0.2, -0.07, 0.07);
+//            } else if (navx.getYaw() + 90 < -10) {
+//                setDrive(0.2, -0.2, 0.07, -0.07);
+//            } else if (navx.getYaw() + 90 <= 10 && navx.getYaw() + 90 > 0) {
+//                setDrive(-0.1, 0.1, -0.035, 0.035);
+//            } else if (navx.getYaw() + 90 >= -10 && navx.getYaw() + 90 < 0) {
+//                setDrive(0.1, -0.1, 0.035, -0.035);
+//            } else {
+//                setDrive(0, 0, 0, 0);
+//            }
+//            addTelemetry();
+//        }
 
         setDrive(0, 0, 0, 0);
 
