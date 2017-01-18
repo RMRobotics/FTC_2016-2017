@@ -161,7 +161,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sensorUpdate();
         //while (colorCenterReader.read(0x08, 1)[0] < 25) {
-        while (colorBackReader.read(0x04, 1)[0] != 14) {
+        while (colorCenterReader.read(0x04, 1)[0] != 14) {
 //            if (!tripped) {
 //                if (FL.getCurrentPosition() > -3500) {
 //                    setDrive(-0.3, -0.3, -0.3, -0.3);
@@ -174,7 +174,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
 //            if (colorBackReader.read(0x08, 1)[0] > 14) {
 //                tripped = true;
 //            }
-            if (FL.getCurrentPosition() > -3800) {
+            if (FL.getCurrentPosition() > -4200) {
                 setDrive(-0.3, -0.3, -0.3, -0.3);
             } else {
                 setDrive(-0.06, -0.06, -0.06, -0.06);
@@ -191,8 +191,8 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //drives until it senses white line
 
         sensorUpdate();
-        while (Math.abs(navx.getYaw() + 90) > 2) {
-            if (Math.abs(navx.getYaw() + 90) > 20) {
+        while (colorBackReader.read(0x04, 1)[0] != 14) {
+            if (FL.getCurrentPosition() > -4600) {
                 setDrive(-0.2, 0.2, -0.07, 0.07);
             } else {
                 setDrive(-0.1, 0.1, -0.05, 0.05);
@@ -384,7 +384,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         telemetry.addData("7 Range", rangeCache[0] + " " + rangeCache[1]);
         telemetry.addData("8 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("9 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
-        telemetry.addData("dipshit", tripped);
+        telemetry.addData("Trip", tripped);
         telemetry.update();
     }
 
