@@ -259,9 +259,12 @@ public class sensorAutoLinear4 extends LinearOpMode {
 
         setDrive(0, 0, 0, 0);
 
-        while (FL.getCurrentPosition() < -6000){
-            
+        double currentFLencoder = FL.getCurrentPosition();
+        while (FL.getCurrentPosition() - currentFLencoder < -600){
+            setDrive(.4, .4, .4, .4);
         }
+
+        setDrive(0, 0, 0, 0);
 
         stop();
     }
