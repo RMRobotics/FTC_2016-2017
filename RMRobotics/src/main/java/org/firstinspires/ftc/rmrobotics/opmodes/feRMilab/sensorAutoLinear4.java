@@ -201,7 +201,67 @@ public class sensorAutoLinear4 extends LinearOpMode {
             addTelemetry();
         }
 
+        // turn until back color sensor also detects the line
+        while (colorBackReader.read(0x08, 1)[0] < 25) {
+            if (FL.getCurrentPosition() > -7000) { //test encoder value
+                setDrive(-0.1, 0.1, -0.1, 0.1);
+            } else {
+                setDrive(-0.06, 0.06, -0.06, 0.06);
+            }
+        }
+
+        // drive forward until close enough to beacon
+        while (rangeReader.read(0x04, 2)[0] > 13) {
+            setDrive(-0.1, -0.1, -0.1, -0.1);
+            addTelemetry();
+        }
+
         setDrive(0, 0, 0, 0);
+
+        // give beacon pusher enough time to detect color of beacon
+        startTime = runtime.milliseconds();
+        while (runtime.milliseconds() - startTime < 2500) {
+            addTelemetry();
+        }
+
+        // move beacon pusher arm to appropriate location
+        if (colorLeftReader.read(0x04, 1)[0] == 10) {// && colorRightCache[0] == 3){
+            //left is red, right is blue
+            swingArm.setPosition(.72);
+        }
+        else if (colorLeftReader.read(0x04, 1)[0] == 3) {// && colorRightCache[0] == 10){
+            swingArm.setPosition(.15);
+        }
+        addTelemetry();
+
+        // drive forward to hit beacon
+        while (rangeReader.read(0x04, 2)[1] < 50) {
+            setDrive(-0.15, -0.15, -0.15, -0.15);
+            addTelemetry();
+        }
+
+        // back away from beacon
+        while (rangeReader.read(0x04, 2)[0] < 20) {
+            setDrive(0.1, 0.1, 0.1, 0.1);
+            addTelemetry();
+        }
+
+        setDrive(0, 0, 0, 0);
+
+        while (Math.abs(navx.getYaw() + 225) > 3){
+            if (Math.abs(navx.getYaw()) < 210) {
+                setDrive(-0.4, 0, -0.4, 0);
+            } else {
+                setDrive(-0.1, 0, -0.1, 0);
+            }
+            addTelemetry();
+        }
+
+        setDrive(0, 0, 0, 0);
+
+        while (FL.getCurrentPosition() < -6000){
+            
+        }
 
         stop();
     }
