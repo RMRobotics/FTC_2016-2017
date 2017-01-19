@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Created by Memers on 1/6/16.
+ * Created by Simon on 1/6/16.
  */
 // RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
 
@@ -35,16 +35,16 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
     private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navx;
-    private navXPIDController yawPIDController;
+//    private navXPIDController yawPIDController;
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-    private final double TARGET_ANGLE_DEGREES = 0.0;
-    private final double TOLERANCE_DEGREES = 1.5;
-    private final double MIN_MOTOR_OUTPUT_VALUE = -0.3;
-    private final double MAX_MOTOR_OUTPUT_VALUE = 0.3;
-    private final double YAW_PID_P = 0.03;
-    private final double YAW_PID_I = 0.0;
-    private final double YAW_PID_D = 0.0;
-    //navXPIDController.PIDResult yawPIDResult;
+//    private final double TARGET_ANGLE_DEGREES = 0.0;
+//    private final double TOLERANCE_DEGREES = 1.5;
+//    private final double MIN_MOTOR_OUTPUT_VALUE = -0.3;
+//    private final double MAX_MOTOR_OUTPUT_VALUE = 0.3;
+//    private final double YAW_PID_P = 0.03;
+//    private final double YAW_PID_I = 0.0;
+//    private final double YAW_PID_D = 0.0;
+//    //navXPIDController.PIDResult yawPIDResult;
 
     byte[] colorBackCache;
     I2cDevice colorBack;
@@ -65,10 +65,6 @@ public class sensorAutoLinear2 extends LinearOpMode {
     int LUS;
     int LODS;
 
-    boolean tripped = false;
-
-    int teamColor = 0; //-1 is red, 1 is blue
-
     @Override
     public void runOpMode() throws InterruptedException {
         FL = hardwareMap.dcMotor.get("FL");
@@ -86,19 +82,21 @@ public class sensorAutoLinear2 extends LinearOpMode {
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
-        yawPIDController = new navXPIDController( navx, navXPIDController.navXTimestampedDataSource.YAW);
-        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
-        yawPIDController.setContinuous(true);
-        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
-        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-        yawPIDController.enable(true);
+//        yawPIDController = new navXPIDController( navx, navXPIDController.navXTimestampedDataSource.YAW);
+//        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+//        yawPIDController.setContinuous(true);
+//        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+//        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+//        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+//        yawPIDController.enable(true);
 
         while (navx.isCalibrating()) {
             telemetry.addData("Status", !navx.isCalibrating());
+            telemetry.update();
         }
 
         telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         colorBack = hardwareMap.i2cDevice.get("colorBack");
         colorBackReader = new I2cDeviceSynchImpl(colorBack, I2cAddr.create8bit(0x50), false);
@@ -125,8 +123,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
         rangeReader.engage();
 
         waitForStart();
-
-
+        runtime.reset();
         navx.zeroYaw();
         //yawPIDResult = new navXPIDController.PIDResult();
 
@@ -290,11 +287,11 @@ public class sensorAutoLinear2 extends LinearOpMode {
 //                swingArm.setPosition(.15);
 //            }
 //        }
-        if (colorLeftCache[0] == 10 && colorRightCache[0] == 3){
+        if (colorLeftCache[0] == 10) {// && colorRightCache[0] == 3){
             //left is red, right is blue
             swingArm.setPosition(.72);
         }
-        else if (colorLeftCache[0] == 3 && colorRightCache[0] == 10){
+        else if (colorLeftCache[0] == 3) {// && colorRightCache[0] == 10){
             swingArm.setPosition(.15);
         }
         addTelemetry();
@@ -308,6 +305,7 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         sleep(500);
 
+        addTelemetry();
         sensorUpdate();
         while (LUS < 20) {
             setDrive(0.1, 0.1, 0.1, 0.1);
@@ -320,12 +318,11 @@ public class sensorAutoLinear2 extends LinearOpMode {
         //drive back to drive to next beacon
 
         sensorUpdate();
-        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw()) > 3) {
-            if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(0.2, 0.2, 0.2, 0.2);
+        while (Math.abs(navx.getYaw()) > 2) {
+            if (Math.abs(navx.getYaw()) > 15) {
+                setDrive(0.2, -0.2, 0.2, -0.2);
             } else {
-                setDrive(0.1, 0.1, 0.1, 0.1);
+                setDrive(0.07, -0.07, 0.07, -0.07);
             }
 //            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
 //            if (Math.abs(power) > 0.35) {
@@ -336,6 +333,42 @@ public class sensorAutoLinear2 extends LinearOpMode {
             addTelemetry();
             //turns robot towards first beacon
         }
+
+        double start = runtime.milliseconds();
+        while (runtime.milliseconds() - start < 1000) {
+            setDrive(-0.07, -0.07, -0.07, -0.07);
+        }
+        //while (colorCenterReader.read(0x08, 1)[0] < 25) {
+        while (colorCenterReader.read(0x08, 1)[0] < 15) {
+//            if (!tripped) {
+//                if (FL.getCurrentPosition() > -3500) {
+//                    setDrive(-0.3, -0.3, -0.3, -0.3);
+//                } else {
+//                    setDrive(-0.2, -0.2, -0.2, -0.2);
+//                }
+//            } else {
+//                setDrive(-0.1, -0.1, -0.1, -0.1);
+//            }
+//            if (colorBackReader.read(0x08, 1)[0] > 14) {
+//                tripped = true;
+//            }
+            if (FL.getCurrentPosition() > -6400) {
+                setDrive(-0.3, -0.3, -0.3, -0.3);
+            } else {
+                setDrive(-0.06, -0.06, -0.06, -0.06);
+            }
+            //sensorUpdate();
+            //addTelemetry();
+//            addTelemetry();
+//            sensorUpdate();
+//            if (colorBackReader.read(0x08, 1)[0] > 25) {
+//                tripped = true;
+//            }
+        }
+        sensorUpdate();
+        addTelemetry();
+        setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
+        setDrive(0, 0, 0, 0);
 
         /*setMode(DcMotor.RunMode.RUN_TO_POSITION);
         setEnc(FL.getCurrentPosition() - 450,
@@ -352,14 +385,14 @@ public class sensorAutoLinear2 extends LinearOpMode {
 
         //setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        sensorUpdate();
-        while (colorBackCache[0] == 14) {
-            setDrive(-0.3, 0.3, 0.3, -0.3);
-            sensorUpdate();
-            addTelemetry();
-        }
-
-        sleep(100);
+//        sensorUpdate();
+//        while (colorBackCache[0] == 14) {
+//            setDrive(-0.3, 0.3, 0.3, -0.3);
+//            sensorUpdate();
+//            addTelemetry();
+//        }
+//
+//        sleep(100);
 
 //        while (colorBackCache[0] != 14) {
 //            setDrive(-0.3, 0.3, 0.3, -0.3);
@@ -407,7 +440,6 @@ public class sensorAutoLinear2 extends LinearOpMode {
         telemetry.addData("7 Range", rangeCache[0] + " " + rangeCache[1]);
         telemetry.addData("8 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("9 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
-        telemetry.addData("Trip", tripped);
         telemetry.update();
     }
 
