@@ -49,11 +49,7 @@ public class FeRMiTele extends OpMode {
         BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        beaconL = hardwareMap.servo.get("beaconL");
-        beaconR = hardwareMap.servo.get("beaconR");
-        beaconR.setDirection(Servo.Direction.REVERSE);
         harvester = hardwareMap.servo.get("h");
-        index = hardwareMap.crservo.get("indexer");
     }
 
     @Override
@@ -109,36 +105,14 @@ public class FeRMiTele extends OpMode {
         belt.setPower(0.7);
         harvester.setPosition(0);
         harvester.setDirection(Servo.Direction.FORWARD);
+        addTelemetry();
 
-        if (gamepad2.left_bumper) {
-            beaconL.setPosition(1);
-        } else {
-            beaconL.setPosition(0);
-        }
-        if (gamepad2.right_bumper) {
-            beaconR.setPosition(0);
-        } else {
-            beaconR.setPosition(1);
-        }
 
-        if (gamepad2.a) {
-            flyL.setPower(1.0);
-            flyR.setPower(1.0);
-        } else if (gamepad2.y) {
-            flyL.setPower(-1);
-            flyR.setPower(-1);
-        } else {
-            flyL.setPower(0);
-            flyR.setPower(0);
-        }
 
-        if (gamepad2.b) {
-            index.setPower(1.0);
-        } else if (gamepad2.x) {
-            index.setPower(-1);
-        } else {
-            index.setPower(0);
-        }
-
+    }
+    private void addTelemetry() {
+        telemetry.addData("1 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
+        telemetry.addData("2 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
+        telemetry.update();
     }
 }
