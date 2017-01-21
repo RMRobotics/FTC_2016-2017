@@ -161,7 +161,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         addTelemetry();
 
         // drive forward to hit beacon
-        while (rangeReader.read(0x04, 2)[1] < 12) {
+        while (rangeReader.read(0x04, 2)[1] < 15) {
             setDrive(-0.15, -0.15, -0.15, -0.15);
             addTelemetry();
         }
@@ -175,9 +175,9 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
 
         // turn towards second line
-        while (Math.abs(navx.getYaw()+10) > 4) {
+        while (Math.abs(navx.getYaw()) > 4) {
             if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(0, -0.2, 0, -0.2);
+                setDrive(.1, -0.1, .1, -0.1);
             } else {
                 setDrive(0, -0.07, 0, -0.07);
             }
@@ -192,8 +192,8 @@ public class sensorAutoLinear4 extends LinearOpMode {
         }
 
         // drive forward until center color sensor detects second line
-        while (colorCenterReader.read(0x08, 1)[0] < 15) {
-            if (FL.getCurrentPosition() > -6000) {
+        while (colorCenterReader.read(0x08, 1)[0] < 25) {
+            if (FL.getCurrentPosition() > -6500) {
                 setDrive(-0.3, -0.3, -0.3, -0.3); // test top speed
             } else {
                 setDrive(-0.06, -0.06, -0.06, -0.06);
@@ -235,7 +235,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         addTelemetry();
 
         // drive forward to hit beacon
-        while (rangeReader.read(0x04, 2)[1] < 19) { //Changed this  (1/18/17)
+        while (rangeReader.read(0x04, 2)[1] < 15) { //Changed this  (1/18/17)
             setDrive(-0.15, -0.15, -0.15, -0.15);
             addTelemetry();
         }
