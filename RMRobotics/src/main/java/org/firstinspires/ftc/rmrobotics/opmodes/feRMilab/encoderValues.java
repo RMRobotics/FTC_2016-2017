@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  */
 
 @Autonomous(name = "encoderValues")
+@Disabled
 public class encoderValues extends OpMode {
 
     private DcMotor FL;

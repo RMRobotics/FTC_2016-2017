@@ -26,11 +26,9 @@ public class FeRMiTele extends OpMode {
     private DcMotor flyR;
     private DcMotor belt;
 
-    private Servo beaconL;
-    private Servo beaconR;
-
     private Servo harvester;
-    private CRServo index;
+    private Servo index;
+    private Servo beaconArm;
 
     @Override
     public void init() {
@@ -50,6 +48,8 @@ public class FeRMiTele extends OpMode {
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         harvester = hardwareMap.servo.get("h");
+        beaconArm = hardwareMap.servo.get("swingArm");
+        index = hardwareMap.servo.get("indexer");
     }
 
     @Override
@@ -72,42 +72,63 @@ public class FeRMiTele extends OpMode {
         double res = 0.4;
         double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight, res, resTog);*/
 
-        FL.setPower((forward - strafe - rotate)/max);
-        FR.setPower((forward + strafe + rotate)/max);
-        BL.setPower((forward + strafe - rotate)/max);
-        BR.setPower((forward - strafe + rotate)/max);
+        FL.setPower((forward - strafe - rotate/1.5)/max);
+        FR.setPower((forward + strafe + rotate/1.5)/max);
+        BL.setPower((forward + strafe - rotate/1.5)/max);
+        BR.setPower((forward - strafe + rotate/1.5)/max);
 
-//        boolean harvest = gamepad1.right_bumper;
-//        boolean eject = gamepad1.left_bumper;
-//        if (harvest && eject) {
-//            harvester.setPosition(0.5);
-//        } else if (harvest) {
-//            harvester.setPosition(0);
-//            harvester.setDirection(Servo.Direction.FORWARD);
-//        } else if (eject) {
-//            harvester.setPosition(0);
-//            harvester.setDirection(Servo.Direction.REVERSE);
-//        } else {
-//            harvester.setPosition(0.5);
-//        }
-//
-//        boolean beltUp = gamepad1.dpad_up;
-//        boolean beltDown = gamepad1.dpad_down;
-//        if (beltUp && beltDown) {
-//            belt.setPower(0);
-//        } else if (beltUp) {
-//            belt.setPower(0.6);
-//        } else if (beltDown) {
-//            belt.setPower(-0.6);
-//        } else {
-//            belt.setPower(0);
-//        }
-        belt.setPower(0.7);
-        harvester.setPosition(0);
-        harvester.setDirection(Servo.Direction.FORWARD);
+        boolean harvest = gamepad1.right_bumper;
+        boolean eject = gamepad1.left_bumper;
+        if (harvest && eject) {
+            harvester.setPosition(0.5);
+        } else if (harvest) {
+            harvester.setPosition(0);
+            harvester.setDirection(Servo.Direction.FORWARD);
+        } else if (eject) {
+            harvester.setPosition(0);
+            harvester.setDirection(Servo.Direction.REVERSE);
+        } else {
+            harvester.setPosition(0.5);
+        }
+
+        boolean beltUp = gamepad1.dpad_up;
+        boolean beltDown = gamepad1.dpad_down;
+        if (beltUp && beltDown) {
+            belt.setPower(0);
+        } else if (beltUp) {
+            belt.setPower(0.6);
+        } else if (beltDown) {
+            belt.setPower(-0.6);
+        } else {
+            belt.setPower(0);
+        }
+        //belt.setPower(0.7);
+//        harvester.setPosition(0);
+//        harvester.setDirection(Servo.Direction.FORWARD);
         addTelemetry();
 
+        if (gamepad2.y) {
+            flyL.setPower(1);
+            flyR.setPower(1);
+        } else if (gamepad2.a) {
+            flyL.setPower(-1);
+            flyR.setPower(-1);
+        } else {
+            flyL.setPower(0);
+            flyR.setPower(0);
+        }
 
+        if(gamepad2.x){
+            beaconArm.setPosition(.68);
+        } else if (gamepad2.b){
+            beaconArm.setPosition(.20);
+        }
+
+        if (gamepad2.left_bumper == true){
+            index.setPosition(.5);
+        }else if (gamepad2.right_bumper==true){
+            index.setPosition(.1);
+        }
 
     }
     private void addTelemetry() {

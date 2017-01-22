@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,6 +15,7 @@ import java.util.List;
  */
 
 @TeleOp(name = "dPadTele")
+@Disabled
 public class DPadTele extends OpMode {
 
     private DcMotor FL;

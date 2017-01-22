@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
  */
 
 @Autonomous(name = "sensors")
+@Disabled
 public class sensorAutoTest extends OpMode {
     DcMotor FL;
     DcMotor FR;

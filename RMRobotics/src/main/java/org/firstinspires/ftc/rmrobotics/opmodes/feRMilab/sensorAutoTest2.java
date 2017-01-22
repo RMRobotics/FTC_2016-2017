@@ -3,6 +3,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -18,6 +19,7 @@ import java.text.DecimalFormat;
  */
 
 @Autonomous(name = "sensors2")
+@Disabled
 public class sensorAutoTest2 extends OpMode {
     //refer to comments in sensorAutoTest
     DcMotor FL;
