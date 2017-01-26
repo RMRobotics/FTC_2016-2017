@@ -38,7 +38,7 @@ public class Drive implements Runnable {
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1;
-    private final double YAW_PID_P = 0.03;
+    private final double YAW_PID_P = 0.02;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
     private int GYRO_DEVICE_TIMEOUT_MS = 500;
