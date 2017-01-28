@@ -28,9 +28,9 @@ interface Tracker {
 }
 
 // OpenCV calls methods from this class to detect buttons when new frame is available
-// It runs on a separate thread
+// runs on a separate thread
 // We control what to do with the frame by setting trackingState
-// RECOGNIZING - is initial state, OpenCV pass the frame to Mat Recognize(Mat img)
+// RECOGNIZING - initial state, OpenCV passes the frame to Mat Recognize(Mat img)
 // RECOGNIZED - Used to report that recognition is complete OpenCV does nothing in this state
 // TRACKING - Trying to track button. BeaconRecognizer stores button position parameters in static variables
 // and compares each new frame to previous
@@ -160,7 +160,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
 
 
 }
-
+//to make sure that the picture is the right size
 class RMCameraView extends JavaCameraView {
     public RMCameraView(Context context, int cameraId) {
         super(context, cameraId);
