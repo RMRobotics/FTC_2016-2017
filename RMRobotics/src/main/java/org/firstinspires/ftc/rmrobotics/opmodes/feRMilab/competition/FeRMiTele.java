@@ -42,14 +42,20 @@ public class FeRMiTele extends OpMode {
         flyR = hardwareMap.dcMotor.get("flyR");
         belt = hardwareMap.dcMotor.get("belt");
         belt.setDirection(DcMotorSimple.Direction.REVERSE);
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         harvester = hardwareMap.servo.get("h");
         beaconArm = hardwareMap.servo.get("swingArm");
         index = hardwareMap.servo.get("indexer");
+
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
     @Override
@@ -57,6 +63,10 @@ public class FeRMiTele extends OpMode {
         double forward = gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double rotate = gamepad1.right_stick_x;
+        telemetry.addData("FL: forward: ", forward + "+ strafe: " + strafe + "+ rotate: " + rotate);
+        telemetry.addData("FR: forward: ", forward + "- strafe: " + strafe + "- rotate: " + rotate);
+        telemetry.addData("BL: forward: ", forward + "- strafe: " + strafe + "+ rotate: " + rotate);
+        telemetry.addData("BR: forward: ", forward + "+ strafe: " + strafe + "- rotate: " + rotate);
         double max = 0.7;
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
@@ -124,9 +134,9 @@ public class FeRMiTele extends OpMode {
             beaconArm.setPosition(.20);
         }
 
-        if (gamepad2.left_bumper == true){
+        if (gamepad2.left_bumper){
             index.setPosition(.5);
-        }else if (gamepad2.right_bumper==true){
+        }else if (gamepad2.right_bumper){
             index.setPosition(.1);
         }
 

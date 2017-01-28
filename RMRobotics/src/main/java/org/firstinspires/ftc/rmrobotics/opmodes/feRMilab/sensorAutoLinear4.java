@@ -153,6 +153,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        //drives backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.07);
         }
@@ -160,7 +161,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
-        // turn until back color sensor also detects the line
+        // turn left until back color sensor also detects the line
         while (Math.abs(navx.getYaw() + 86) > 5 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 86 > 0) {
@@ -180,6 +181,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        //turn right to correct overturning
         while (navx.getYaw() > -85 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 85 > 0) {
@@ -247,6 +249,10 @@ public class sensorAutoLinear4 extends LinearOpMode {
         }
         swingArm.setPosition(0.5);
 
+
+        //FIRST BEACON DONE
+
+
 //        setDrive(0, 0, 0, 0);
 //        sleep(100);
 
@@ -294,6 +300,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //drive backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.04);
         }
@@ -302,6 +309,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //turn left towards beacon
         while (Math.abs(navx.getYaw() + 88) > 3 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 90 > 0) {
@@ -321,6 +329,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //turn right to correct for overturning
         while (Math.abs(navx.getYaw() + 88) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 88 > 0) {
@@ -394,6 +403,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        //turn towards center goal
         while (Math.abs(navx.getYaw() + 45) > 3 && opModeIsActive()){
             if (Math.abs(navx.getYaw()) > 45) {
                 setDrive(0.4, 0, 0.4, 0);

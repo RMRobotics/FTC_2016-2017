@@ -133,7 +133,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
 
         double initPos = FR.getCurrentPosition();
 
-        // drive forward until center color sensor detects line
+        // drive forward until center color sensor detects first line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
             if (FR.getCurrentPosition() - initPos < -3500) {
@@ -152,6 +152,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        //drive backwards to correct for overshooting line; speed is slow enough to stop on line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.07);
         }
@@ -159,7 +160,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
-        // turn until back color sensor also detects the line
+        // turn left until back color sensor also detects the line
         while (Math.abs(navx.getYaw() - 86) > 5 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() - 86 > 0) {
@@ -179,6 +180,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        // turn right to correct
         while (navx.getYaw() > 85 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() - 85 > 0) {
@@ -221,6 +223,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
             swingArm.setPosition(.65);
         }
         else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1 || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
+            //left is blue, right is red
             swingArm.setPosition(.4);
         }
         addTelemetry();
@@ -243,6 +246,8 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
 
 //        setDrive(0, 0, 0, 0);
 //        sleep(100);
+
+        //FIRST BEACON DONE
 
         // turn towards second line
         while (navx.getYaw() < 5 && opModeIsActive()) {
@@ -288,6 +293,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //drive backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.04);
         }
@@ -296,6 +302,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //turn left towards beacon
         while (Math.abs(navx.getYaw() - 88) > 3 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() - 90 > 0) {
@@ -315,6 +322,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0);
         sleep(100);
 
+        //turn right to correct for overturning
         while (Math.abs(navx.getYaw() - 88) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() - 88 > 0) {
@@ -384,6 +392,7 @@ public class BlueSensorAutoLinearNoMid extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
+        // turn towards center goal to push ball
         while (Math.abs(navx.getYaw() - 45) > 3 && opModeIsActive()){
             if (Math.abs(navx.getYaw()) > 45) {
                 setDrive(0, 0.4, 0, 0.4);
