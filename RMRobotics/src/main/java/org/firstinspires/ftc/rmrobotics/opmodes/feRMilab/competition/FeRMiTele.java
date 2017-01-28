@@ -60,14 +60,15 @@ public class FeRMiTele extends OpMode {
 
     @Override
     public void loop() {
-        double forward = gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-        double rotate = gamepad1.right_stick_x;
+        double max = 1.0;
+        double forward = gamepad1.left_stick_y*0.8;
+        double strafe = gamepad1.left_stick_x*0.8;
+        double rotate = gamepad1.right_stick_x*0.7;
         telemetry.addData("FL: forward: ", forward + "+ strafe: " + strafe + "+ rotate: " + rotate);
         telemetry.addData("FR: forward: ", forward + "- strafe: " + strafe + "- rotate: " + rotate);
         telemetry.addData("BL: forward: ", forward + "- strafe: " + strafe + "+ rotate: " + rotate);
         telemetry.addData("BR: forward: ", forward + "+ strafe: " + strafe + "- rotate: " + rotate);
-        double max = 0.7;
+
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
         l.add(Math.abs(forward - strafe - rotate));
@@ -82,10 +83,10 @@ public class FeRMiTele extends OpMode {
         double res = 0.4;
         double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight, res, resTog);*/
 
-        FL.setPower((forward - strafe - rotate/1.5)/max);
-        FR.setPower((forward + strafe + rotate/1.5)/max);
-        BL.setPower((forward + strafe - rotate/1.5)/max);
-        BR.setPower((forward - strafe + rotate/1.5)/max);
+        FL.setPower((forward - strafe - rotate)/max);
+        FR.setPower((forward + strafe + rotate)/max);
+        BL.setPower((forward + strafe - rotate)/max);
+        BR.setPower((forward - strafe + rotate)/max);
 
         boolean harvest = gamepad1.right_bumper;
         boolean eject = gamepad1.left_bumper;

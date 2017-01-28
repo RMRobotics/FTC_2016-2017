@@ -106,22 +106,22 @@ public class sensorAutoLinear4 extends LinearOpMode {
         harvester.setPosition(0.5);
 
         // manuever into shooting position
-        setEnc(-560, -560, -560, -560);
+        /*setEnc(-560, -560, -560, -560);
         setDrive(0.2, 0.2, 0.2, 0.2);
-        sleep(1000);
+        sleep(1000);*/
 
         // TODO: insert shooter code
 
         // turn towards first beacon TODO: change to rotation with all wheels
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw() + 42) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() + 37) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 42 > 0) {
+            if (navx.getYaw() + 37 > 0) {
                 scale = -1;
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw()) < 30) {
+            if (Math.abs(navx.getYaw()) < 25) {
                 setDrive(scale * 0.25, 0);
             } else {
                 setDrive(scale * 0.07, 0);
