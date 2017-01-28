@@ -1,26 +1,27 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
 
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.Vec2F;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.opencv.core.Mat;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Stack;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Created by Peter on 1/26/2017.
+ */
 
-public class Drive implements Runnable {
+public class Drive2 implements Runnable {
 
     //runtime calculations
     ElapsedTime runtime = new ElapsedTime();
@@ -38,9 +39,9 @@ public class Drive implements Runnable {
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1;
-    private final double YAW_PID_P = 0.025;
+    private final double YAW_PID_P = 0.01;
     private final double YAW_PID_I = 0.0;
-    private final double YAW_PID_D = 0.01;
+    private final double YAW_PID_D = 0.0;
     private int GYRO_DEVICE_TIMEOUT_MS = 500;
 
     private final int TN = 3; // Number of transition steps when changing direction
@@ -54,7 +55,7 @@ public class Drive implements Runnable {
     private DcMotor backLeft;
     private DcMotor backRight;
 
-    Drive(
+    Drive2(
             DcMotor fl,
             DcMotor fr,
             DcMotor bl,
@@ -118,60 +119,34 @@ public class Drive implements Runnable {
         yawPIDResult = new navXPIDController.PIDResult();
 
     }
-    private volatile VectorF currentVector = new VectorF(0,0);
-    private volatile VectorF goalVector = new VectorF(0,0);
-    private volatile Stack<VectorF> stackVector = new Stack<>();
+    private volatile VectorF reqV = new VectorF(0,0);
+    private volatile VectorF powVn = new VectorF(0,0);
+    private volatile VectorF powV = new VectorF(0,0);
+
+    private VectorF delV = new VectorF(0,0);
+
+    private volatile boolean newReq = false;
+
     private volatile double lastCommandTime = 0;
     private volatile double driveDuration = 0;
     private volatile double speed = 0;
-    private volatile double minPower = 0;
-    private volatile double maxPower = 0;
 
-    public void VecDrive(double x, double y, double sp, double minPow, double maxPow, int maxDuration)
+    public void VecDrive(double x, double y, double sp, double minPoww, double maxPoww, int maxDuration)
     {
-        if(Math.abs(x) < MINX && Math.abs(y) < MINY) {
-            x = 0;
-            y = 0;
-        }
-
-        double fraction = 1.0/TN;
-        synchronized (stackVector) {
-            //creates a goal vector based on the current direction to 0,0
-            goalVector = new VectorF((float)(x),(float)(y));
-            //subtracts current vector from goal vector, creating a vector that points somewhere
-            VectorF delVector = goalVector.subtracted(currentVector);
-            //num subdivisions is xd can be changed to fine tune
-
-            stackVector.clear();
-            for (int i = 0; i < TN; i++) {
-                VectorF m = delVector.multiplied((float)((TN - i) * fraction));
-                stackVector.push(currentVector.added(m));
+        synchronized (reqV) {
+            reqV.put(0,(float)x/2);
+            reqV.put(1,(float)y);
+            if(reqV.magnitude() < 0.05) {
+                reqV.put(0,(float)0);
+                reqV.put(1,(float)0);
+            } else {
+                reqV.multiply(((float) sp) / reqV.magnitude());
             }
-//            currentVector = stackVector.firstElement();
             lastCommandTime = runtime.milliseconds();
             driveDuration = maxDuration;
-            speed = sp;
-            minPower = minPow;
-            maxPower = maxPow;
+//            speed = sp;
+            newReq = true;
         }
-    }
-
-    //calculate angle
-    private double calcAngle(float x , float y){
-        return Math.atan2(y,x);
-    }
-
-    private double CalculateSpeed(float x, float y, double mP) {
-        double length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        double proportion = length / 800;
-        if (proportion >= 1) {
-            proportion = 1;
-        }
-        if (proportion * mP <= .4) {
-            return (.4);
-        }
-
-        return proportion * mP;
     }
 
     ////////////////////////////////////////////////////
@@ -179,62 +154,58 @@ public class Drive implements Runnable {
     ////////////////////////////////////////////////////
     public volatile boolean running = true;
     public void run() {
-        double prevStep = runtime.milliseconds();
+        float c0 = (float).5;
+        float c1 = (float)1;
+        float c2 = (float)0;
+//        double prevStep = runtime.milliseconds();
+
         try {
             while (running) {
-//                DarudeAutoNav.ADBLog("Running. Current Vec: " + currentVector.get(0) + ":" + currentVector.get(1));
-                // Check if running longer than requested duration without new commands
-                if(runtime.milliseconds() - lastCommandTime > driveDuration) {
+
+                if (newReq) {
+                    synchronized (reqV) {
+                        delV = reqV.subtracted(powV).multiplied((float) c2);
+                        newReq = false;
+                    }
+                } else {
+                    delV.multiply((float) c0);
+                }
+                powVn = reqV.added(delV);
+                VectorF d = powVn.subtracted(powV);
+                float dm = d.magnitude();
+
+                if (dm > c1) {
+                    powV.add(d.multiplied(c1 / dm));
+                } else {
+                    powV = powVn;
+                }
+
+                if (runtime.milliseconds() - lastCommandTime > driveDuration) {
                     // Stop
-                    VecDrive(0,0,0,0,0,10000); // Stop for 10 secs, than we will stop for another 10 and so on until new command arrives
+                    synchronized (reqV) {
+                        reqV.put(0, 0);
+                        reqV.put(1, 0);
+                        newReq = true;
+                    }
                     DarudeAutoNav.ADBLog("Running too long. Stop!");
                 }
+
+//                DarudeAutoNav.ADBLog("Running. Current pow: " + powV.get(0) + ":" + powV.get(1));
+//                DarudeAutoNav.ADBLog("Running. Current req: " + reqV.get(0) + ":" + reqV.get(1));
+//                DarudeAutoNav.ADBLog("Running. Current del: " + delV.get(0) + ":" + delV.get(1));
+                setMoveAngle(powV.get(0), powV.get(1), 1);
                 sleep(5);
-                if(runtime.milliseconds() - prevStep > TRAN_STEP_TIME) {
-                    /// pop from stack amd set it to current, if stack is empty get goal
-                    if (stackVector.empty()) {
-                        currentVector = goalVector;
-                    } else {
-                        currentVector = stackVector.pop();
-                        DarudeAutoNav.ADBLog("Updating direction. Current Vec: " + currentVector.get(0) + ":" + currentVector.get(1));
-                    }
-                    prevStep = runtime.milliseconds();
-                }
-
-//                double angle = calcAngle(currentVector.get(0), currentVector.get(1));
-//                double power = CalculateSpeed(currentVector.get(0), currentVector.get(1), .7);
-
-                double x = currentVector.get(0);
-                double y = currentVector.get(1);
-
-                double l = Math.sqrt(x*x+y*y);
-                if(l < 10) {
-                    x = 0;
-                    y = 0;
-                    l = 0;
-                }
-                else {
-                    x /= l;
-                    y /= l;
-                }
-
-                double pow = l/100.0 * speed;
-                if(pow > 0.01) {
-                    if(pow > maxPower) pow = maxPower;
-                    else if (pow< minPower) pow = minPower;
-                }
-
-                setMoveAngle(x, y, pow);
             }
-        } catch (InterruptedException e) {}
+        }  catch (InterruptedException e) {}
     }
 
     public void Stop() {
+        brake();
         running = false;
     }
 
     public void setMoveAngle(double x, double y, double power) {
-//        DarudeAutoNav.ADBLog("Drive vector: x:" + x + " y: " + y + " power: " + power);
+        DarudeAutoNav.ADBLog("Drive vector: x:" + x + " y: " + y + " power: " + power);
         // Rotate 90 degrees
         double Xr = 0.707 * x + 0.707 * y;
         double Yr = 0.707 * x - 0.707 * y;
@@ -274,24 +245,16 @@ public class Drive implements Runnable {
         }
     }
 
-
-    public void driveDirection(double angle, double power, int time)
-    {
-        if(time <= 100) { time = 101; }
-        moveAngle(-angle, power / 3, 25);
-        moveAngle(-angle, 2 * power / 3, 25);
-        moveAngle(-angle, power, time - 100);
-        moveAngle(-angle, 2 * power / 3, 25);
-        moveAngle(-angle, power / 3, 25);
-        brake();
-    }
-
     public void brake()
     {
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        synchronized (reqV) {
+            delV.put(0, 0);
+            delV.put(1, 0);
+            reqV.put(0, 0);
+            reqV.put(1, 0);
+            powV.put(0, 0);
+            powV.put(1, 0);
+        }
     }
 
     public void testFrontLeft (double p) {
@@ -305,11 +268,6 @@ public class Drive implements Runnable {
     }
     public void testBackRight (double p) {
         backRight.setPower(p);
-    }
-
-
-    private double limit(double a) {
-        return Math.min(Math.max(a, MIN_MOTOR_OUTPUT_VALUE), MAX_MOTOR_OUTPUT_VALUE);
     }
 
     public void ReverseDirection() {

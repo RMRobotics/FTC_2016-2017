@@ -187,7 +187,7 @@ public class DarudeAutoNav extends LinearOpMode {
                     false);
             rangeSensor.engage();
 
-            Drive drive = new Drive(
+            Drive2 drive = new Drive2(
                     frontLeft,
                     frontRight,
                     backLeft,
@@ -197,6 +197,7 @@ public class DarudeAutoNav extends LinearOpMode {
             );
             drive.ReverseDirection();
 
+            // To test drive train set TestDriveTrain to true
             boolean TestDriveTrain = false;
             if(TestDriveTrain) {
 
@@ -254,15 +255,29 @@ public class DarudeAutoNav extends LinearOpMode {
 /////////////////////////////////////////////////////////////////////////////////////
 // Start here
 
+//            drive.VecDrive(0, 100, 0.4, 0, 1, 5000);
+//            sleep(1000);
+//
 
+//            sleep(100);
+//            drive.VecDrive(0, 200, .6, 0, 1, 2000);
+//            sleep(2000);
+//
+//            if(true)
+//            {
+//                drive.Stop();
+//                navx_device.close();
+//                stop();
+//                return;
+//            }
 
 
             // Moving fast to position for beacon detection
-            drive.VecDrive(200, 100, .4, 0, 1, 1000);
-            sleep(600);
+            drive.VecDrive(200, 100, .3, 0, 1, 1000);
+            sleep(1000);
 
             // Continue slowly checking weather Vuforia locked yet
-            drive.VecDrive(200, 100, .16, 0, 1, 5000);
+            drive.VecDrive(200, 100, .13, 0, 1, 8000);
 
             boolean ec = true;
             while (ec && opModeIsActive()) {
@@ -270,6 +285,8 @@ public class DarudeAutoNav extends LinearOpMode {
                     if (pose != null) {
                         ec = false;
                         ADBLog("Vuforia locked!");
+                    } else {
+                        sleep(5);
                     }
 //                for (VuforiaTrackable trackable : allTrackables) {
 //                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRawPose();
@@ -286,40 +303,31 @@ public class DarudeAutoNav extends LinearOpMode {
                 return;
             }
             x = y = 0;
-
-            drive.VecDrive(0, 0, 0, 0, 0, 3000);
-
             // Vuforia aproach to a position to recognize beacon
             ADBLog("Begin Vuforia approach");
             while (opModeIsActive()) {
                 telemetry.clear();
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawUpdatedPose();
                 if (pose != null) {
                     float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
                     telemetry.addData("x", poseData[7]);
                     telemetry.addData("y", poseData[11]);
                     x = poseData[7];
                     y = poseData[11];
+
+                    ADBLog("Vuforia coords: x=" + x + ", y=" + y);
+
+//                    if(Math.abs(y-420) < 100) sp = 0.1;
+
+                    drive.VecDrive(-x/3, y - 430, 0.2, 0, 1, 100);
+
+                    if (x < 40 && x > -40 && y > 380 && y < 470) {
+                        drive.VecDrive(0, 0, 0, 0, 0, 1000);
+                        break;
+                    }
+                } else {
+                    sleep(1);
                 }
-//                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRawPose();
-//                    if (pose != null) {
-//                        float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
-//                        telemetry.addData("x", poseData[7]);
-//                        telemetry.addData("y", poseData[11]);
-//                        x = poseData[7];
-//                        y = poseData[11];
-//                    }
-//                }
-
-                ADBLog("Vuforia coords: x=" + x + ", y=" + y);
-
-                drive.VecDrive(-x, y - 420, 0.15, 0.1, 1, 100);
-
-                if (x < 40 && x > -40 && y > 370 && y < 460) {
-                    drive.VecDrive(0, 0, 0, 0, 0, 1000);
-                    break;
-                }
-                sleep(10);
             }
             if (!opModeIsActive()) {
                 drive.Stop();
@@ -341,9 +349,10 @@ public class DarudeAutoNav extends LinearOpMode {
                 bt = new BeaconTracker(
                         (CameraBridgeViewBase)((FtcRobotControllerActivity)hardwareMap.appContext).findViewById(R.id.camera_view),
                         this,
-                        teamIsRed);
+                        cfg.isRed);
                 ADBLog("Created OpenCV");
 
+                boolean start = true;
                 int verify = 0;
                 while (opModeIsActive()) {
                     if (bt.GetState() == Tracker.State.RECOGNIZING) {
@@ -352,12 +361,15 @@ public class DarudeAutoNav extends LinearOpMode {
                     } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
                         ADBLog("Recognized. Starting approach.");
                         bt.SetState(Tracker.State.TRACKING);
+                    } else if(bt.GetState() == Tracker.State.LOST) {
+                        // Lost button. Todo try to recover!!!!
+                        sleep(5);
+                        ADBLog("Lost button.");
+                        continue;
                     } else if (bt.GetState() == Tracker.State.TRACKING) {
                         RotatedRect btn = bt.getBtnPosition();
                         if (btn == null) {
-                            // Lost button. Todo try to recover!!!!
-
-                            ADBLog("Lost button.");
+                            sleep(5); // No updates yet, wait
                             continue;
                         }
 
@@ -367,25 +379,34 @@ public class DarudeAutoNav extends LinearOpMode {
                         double Xb = btn.center.y - 250;
                         ADBLog("Position OpenCV X: " + Double.toString(Xb) + ", Sensor: " + Double.toString(y));
 
-                        if (y > 250) {
-                            Xb /= 1.2;
-                            drive.VecDrive(-Xb, y - 120, 0.09, 0.04, 0.11, 1000);
-                        } else if (y > 200) {
-                            Xb /= 1.2;
-                            drive.VecDrive(-Xb, y - 120, 0.08, 0.04, 0.11, 1000);
+                        if (y > 260) {
+                            Xb /= 6;
+                            if(start) {
+                                start = false;
+                                drive.VecDrive(-Xb, y - 210, 0.3, 0, 1, 200);
+                                sleep(50);
+                            }
+                            drive.VecDrive(-Xb, y - 210, 0.17, 0, 1, 200);
+                        } else if (y > 240) {
+                            Xb /= 6;
+                            drive.VecDrive(-Xb, y - 210, 0.1, 0, 1, 200);
                         } else {
-                            Xb /= 2;
-                            if (Xb < 30 && Xb > -30 && y < 140 && y > 100) {
+                            Xb /= 8;
+                            if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
                                 drive.VecDrive(0, 0, 0, 0, 0, 2000);
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
-                                    press.setPosition(.405);
+                                    press.setPosition(.43);
                                     break;
                                 }
                             } else {
-                                drive.VecDrive(-Xb, y - 120, 0.6, 0.21, 0.22, 150);
-                                sleep(200);
+                                drive.VecDrive(0, 0, 0.0, 0, 1, 200);
+                                sleep(20);
+                                drive.VecDrive(-Xb, y - 210, 0.6, 0, 1, 200);
+                                sleep(50);
+                                drive.VecDrive(-Xb, y - 210, 0.3, 0, 1, 150);
+                                sleep(250);
                                 verify = 0;
                             }
                         }
@@ -407,8 +428,10 @@ public class DarudeAutoNav extends LinearOpMode {
 
             ADBLog("Press!");
             sleep(100);
-            drive.VecDrive(0, 150, 0.3, 0, 1, 400);
-            sleep(500);
+            drive.VecDrive(9, 20, 1, 0, 1, 500);
+            sleep(50);
+            drive.VecDrive(4, 20, 0.6, 0, 1, 700);
+            sleep(300);
 
             bt.Close();
             drive.Stop();

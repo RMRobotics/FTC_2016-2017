@@ -21,7 +21,7 @@ import pm.ButtonFinder;
  */
 
 interface Tracker {
-    public enum State {RECOGNIZING, RECOGNIZED, TRACKING};
+    public enum State {RECOGNIZING, RECOGNIZED, TRACKING, LOST};
     public Mat Recognize(Mat m);
     public Mat Track(Mat m);
     public State GetState();
@@ -64,11 +64,15 @@ public class BeaconTracker implements Tracker {
 
     synchronized public Mat Track(Mat img) {
         btnPosition = br.TrackButton(img);
+        if(btnPosition == null) trackingState = State.LOST;
+        else trackingState = State.TRACKING;
         return img;
     }
 
     synchronized  public RotatedRect getBtnPosition() {
-        return btnPosition;
+        RotatedRect ret = btnPosition;
+        btnPosition = null;
+        return ret;
     }
 
     synchronized public State GetState() {
@@ -139,6 +143,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
                     break;
                 case RECOGNIZED:
                     break;
+                case LOST:
                 case TRACKING:
                     img = eTracker.Track(img);
                     break;
