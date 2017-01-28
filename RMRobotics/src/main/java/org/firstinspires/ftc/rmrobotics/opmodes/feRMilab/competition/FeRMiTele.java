@@ -42,10 +42,10 @@ public class FeRMiTele extends OpMode {
         flyR = hardwareMap.dcMotor.get("flyR");
         belt = hardwareMap.dcMotor.get("belt");
         belt.setDirection(DcMotorSimple.Direction.REVERSE);
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         harvester = hardwareMap.servo.get("h");
         beaconArm = hardwareMap.servo.get("swingArm");
@@ -54,10 +54,10 @@ public class FeRMiTele extends OpMode {
 
     @Override
     public void loop() {
-        double forward = gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-        double rotate = gamepad1.right_stick_x;
-        double max = 0.7;
+        double max = 1.0;
+        double forward = gamepad1.left_stick_y*0.8;
+        double strafe = gamepad1.left_stick_x*0.8;
+        double rotate = gamepad1.right_stick_x*0.7;
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
         l.add(Math.abs(forward - strafe - rotate));
@@ -72,10 +72,10 @@ public class FeRMiTele extends OpMode {
         double res = 0.4;
         double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight, res, resTog);*/
 
-        FL.setPower((forward - strafe - rotate/1.5)/max);
-        FR.setPower((forward + strafe + rotate/1.5)/max);
-        BL.setPower((forward + strafe - rotate/1.5)/max);
-        BR.setPower((forward - strafe + rotate/1.5)/max);
+        FL.setPower((forward - strafe - rotate)/max);
+        FR.setPower((forward + strafe + rotate)/max);
+        BL.setPower((forward + strafe - rotate)/max);
+        BR.setPower((forward - strafe + rotate)/max);
 
         boolean harvest = gamepad1.right_bumper;
         boolean eject = gamepad1.left_bumper;
