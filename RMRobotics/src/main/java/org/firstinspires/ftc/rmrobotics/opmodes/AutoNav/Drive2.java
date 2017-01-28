@@ -101,6 +101,7 @@ public class Drive2 implements Runnable {
             calibration_complete = !navx_device.isCalibrating();
             if (!calibration_complete) {
                 telemetry.addData("navX-Micro", "Startup Calibration in Progress");
+                telemetry.update();
             }
         }
         navx_device.zeroYaw();
@@ -154,10 +155,12 @@ public class Drive2 implements Runnable {
     ////////////////////////////////////////////////////
     public volatile boolean running = true;
     public void run() {
+        //for boost, unused
         float c0 = (float).5;
         float c1 = (float)1;
         float c2 = (float)0;
 //        double prevStep = runtime.milliseconds();
+
 
         try {
             while (running) {
@@ -168,7 +171,7 @@ public class Drive2 implements Runnable {
                         newReq = false;
                     }
                 } else {
-                    delV.multiply((float) c0);
+                    delV.multiply(c0);
                 }
                 powVn = reqV.added(delV);
                 VectorF d = powVn.subtracted(powV);
@@ -234,6 +237,7 @@ public class Drive2 implements Runnable {
                     frontRight.setPower(frp - output);
                     backLeft.setPower(blp + output);
                     backRight.setPower(brp - output);
+//                    backRight.getCurrentPosition();
 //                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + Xr + " fr,bl: " + Yr + " power: " + power);
                 }
 
@@ -277,7 +281,7 @@ public class Drive2 implements Runnable {
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-
+//obsolete
     private void moveAngle(double angle, double power, int time)
     {
         angle = angle*Math.PI/180 + Math.PI/4;

@@ -153,6 +153,8 @@ public class DarudeAutoNav extends LinearOpMode {
             VuforiaTrackable firstTarget = null;
             VuforiaTrackable secondTarget = null;
 
+            //Sets two targets to be the ones that will be tracked based on config.
+            //currently only using one since only going to one beacon
             for(int it = 0; it < 4; it++) {
                 if(targets.get(it).getName().equals(cfg.firstBeacon)) firstTarget = targets.get(it);
                 if(targets.get(it).getName().equals(cfg.secondBeacon)) secondTarget = targets.get(it);
@@ -183,10 +185,10 @@ public class DarudeAutoNav extends LinearOpMode {
             // Create optical sensor
             I2cDeviceSynch rangeSensor = new I2cDeviceSynchImpl(
                     hardwareMap.i2cDevice.get("range"),
-                    I2cAddr.create8bit(0x62), // Sensor I2C address
+                    I2cAddr.create8bit(0x62), // Sensor I2C address.
                     false);
             rangeSensor.engage();
-
+            //drive class for big roboto
             Drive2 drive = new Drive2(
                     frontLeft,
                     frontRight,
@@ -243,7 +245,7 @@ public class DarudeAutoNav extends LinearOpMode {
             Mat img = null;
 
             sleep(500);
-            ADBLog("Initializtino complete");
+            ADBLog("Initialization complete");
             telemetry.clear();
             telemetry.addData("Finished", "the initialization");
             telemetry.update();
@@ -276,9 +278,9 @@ public class DarudeAutoNav extends LinearOpMode {
             drive.VecDrive(200, 100, .3, 1000);
             sleep(1000);
 
-            // Continue slowly checking weather Vuforia locked yet
+            // Continue slowly checking whether Vuforia locked yet
             drive.VecDrive(200, 100, .13, 8000);
-
+//TODO at competition: make movement that goes in short bursts to ensure the label is caught
             boolean ec = true;
             while (ec && opModeIsActive()) {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
@@ -303,7 +305,7 @@ public class DarudeAutoNav extends LinearOpMode {
                 return;
             }
             x = y = 0;
-            // Vuforia aproach to a position to recognize beacon
+            // Vuforia approach to a position to do opencv
             ADBLog("Begin Vuforia approach");
             while (opModeIsActive()) {
                 telemetry.clear();
@@ -356,13 +358,14 @@ public class DarudeAutoNav extends LinearOpMode {
                 int verify = 0;
                 while (opModeIsActive()) {
                     if (bt.GetState() == Tracker.State.RECOGNIZING) {
+                        //trying to find button
                         sleep(30);
                         ADBLog("Recognizing");
                     } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
                         ADBLog("Recognized. Starting approach.");
                         bt.SetState(Tracker.State.TRACKING);
                     } else if(bt.GetState() == Tracker.State.LOST) {
-                        // Lost button. Todo try to recover!!!!
+                        // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
                         sleep(5);
                         ADBLog("Lost button.");
                         continue;
@@ -374,11 +377,13 @@ public class DarudeAutoNav extends LinearOpMode {
                         }
 
                         byte[] array = rangeSensor.read(0x04, 2);
+                        //amplifies the y value to emphasize it in the vector (it is in centimeters so it needs to be increased)
                         y = array[0] * 10;
 
+                        //button position from center.
                         double Xb = btn.center.y - 250;
                         ADBLog("Position OpenCV X: " + Double.toString(Xb) + ", Sensor: " + Double.toString(y));
-
+                        //drives based on y and x towards the button of choice
                         if (y > 260) {
                             Xb /= 6;
                             if(start) {
