@@ -273,11 +273,11 @@ public class DarudeAutoNav extends LinearOpMode {
 
 
             // Moving fast to position for beacon detection
-            drive.VecDrive(200, 100, .3, 0, 1, 1000);
+            drive.VecDrive(200, 100, .3, 1000);
             sleep(1000);
 
             // Continue slowly checking weather Vuforia locked yet
-            drive.VecDrive(200, 100, .13, 0, 1, 8000);
+            drive.VecDrive(200, 100, .13, 8000);
 
             boolean ec = true;
             while (ec && opModeIsActive()) {
@@ -319,10 +319,10 @@ public class DarudeAutoNav extends LinearOpMode {
 
 //                    if(Math.abs(y-420) < 100) sp = 0.1;
 
-                    drive.VecDrive(-x/3, y - 430, 0.2, 0, 1, 100);
+                    drive.VecDrive(-x/3, y - 430, 0.2, 100);
 
                     if (x < 40 && x > -40 && y > 380 && y < 470) {
-                        drive.VecDrive(0, 0, 0, 0, 0, 1000);
+                        drive.VecDrive(0, 0, 0, 1000);
                         break;
                     }
                 } else {
@@ -383,17 +383,17 @@ public class DarudeAutoNav extends LinearOpMode {
                             Xb /= 6;
                             if(start) {
                                 start = false;
-                                drive.VecDrive(-Xb, y - 210, 0.3, 0, 1, 200);
+                                drive.VecDrive(-Xb, y - 210, 0.3, 200);
                                 sleep(50);
                             }
-                            drive.VecDrive(-Xb, y - 210, 0.17, 0, 1, 200);
+                            drive.VecDrive(-Xb, y - 210, 0.17, 200);
                         } else if (y > 240) {
                             Xb /= 6;
-                            drive.VecDrive(-Xb, y - 210, 0.1, 0, 1, 200);
+                            drive.VecDrive(-Xb, y - 210, 0.1, 200);
                         } else {
                             Xb /= 8;
                             if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
-                                drive.VecDrive(0, 0, 0, 0, 0, 2000);
+                                drive.VecDrive(0, 0, 0, 2000);
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
@@ -401,11 +401,11 @@ public class DarudeAutoNav extends LinearOpMode {
                                     break;
                                 }
                             } else {
-                                drive.VecDrive(0, 0, 0.0, 0, 1, 200);
+                                drive.VecDrive(0, 0, 0.0, 200);
                                 sleep(20);
-                                drive.VecDrive(-Xb, y - 210, 0.6, 0, 1, 200);
+                                drive.VecDrive(-Xb, y - 210, 0.6, 200);
                                 sleep(50);
-                                drive.VecDrive(-Xb, y - 210, 0.3, 0, 1, 150);
+                                drive.VecDrive(-Xb, y - 210, 0.3, 150);
                                 sleep(250);
                                 verify = 0;
                             }
@@ -428,9 +428,9 @@ public class DarudeAutoNav extends LinearOpMode {
 
             ADBLog("Press!");
             sleep(100);
-            drive.VecDrive(9, 20, 1, 0, 1, 500);
+            drive.VecDrive(9, 20, 1, 500);
             sleep(50);
-            drive.VecDrive(4, 20, 0.6, 0, 1, 700);
+            drive.VecDrive(4, 20, 0.6, 700);
             sleep(300);
 
             bt.Close();

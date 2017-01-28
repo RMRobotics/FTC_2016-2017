@@ -131,7 +131,7 @@ public class Drive2 implements Runnable {
     private volatile double driveDuration = 0;
     private volatile double speed = 0;
 
-    public void VecDrive(double x, double y, double sp, double minPoww, double maxPoww, int maxDuration)
+    public void VecDrive(double x, double y, double sp, int maxDuration)
     {
         synchronized (reqV) {
             reqV.put(0,(float)x/2);
