@@ -353,7 +353,7 @@ public class DarudeAutoNav extends LinearOpMode {
                         this,
                         cfg.isRed);
                 ADBLog("Created OpenCV");
-
+                //first runthru variable
                 boolean start = true;
                 int verify = 0;
                 while (opModeIsActive()) {
@@ -437,8 +437,124 @@ public class DarudeAutoNav extends LinearOpMode {
             sleep(50);
             drive.VecDrive(4, 20, 0.6, 700);
             sleep(300);
-
             bt.Close();
+            drive.VecDrive(0,0,0,500);
+            sleep(500);
+            //move away from beacon
+            drive.VecDrive(4, -20, .7, 2000);
+            sleep(1500);
+            //move forwards a little bit
+            drive.VecDrive(20,1,.7,1000);
+            //move forwards
+            while (opModeIsActive()) {
+                telemetry.clear();
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) secondTarget.getListener()).getRawUpdatedPose();
+                if (pose != null) {
+                    float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
+                    telemetry.addData("x", poseData[7]);
+                    telemetry.addData("y", poseData[11]);
+                    x = poseData[7];
+                    y = poseData[11];
+
+                    ADBLog("Vuforia coords: x=" + x + ", y=" + y);
+
+//                    if(Math.abs(y-420) < 100) sp = 0.1;
+
+                    drive.VecDrive(-x/3, y - 430, 0.2, 100);
+
+                    if (x < 40 && x > -40 && y > 380 && y < 470) {
+                        drive.VecDrive(0, 0, 0, 1000);
+                        break;
+                    }
+                } else {
+                    drive.VecDrive(20,-0.5,0.5,100);
+                    sleep(1);
+                }
+            }
+
+
+            bt = null;
+            // here goes code for poking the button via image recognition
+            try {
+                // Start OpenCV
+                // Starting video stream
+                bt = new BeaconTracker(
+                        (CameraBridgeViewBase)((FtcRobotControllerActivity)hardwareMap.appContext).findViewById(R.id.camera_view),
+                        this,
+                        cfg.isRed);
+                ADBLog("Created OpenCV");
+                //first runthru variable
+                boolean start = true;
+                int verify = 0;
+                while (opModeIsActive()) {
+                    if (bt.GetState() == Tracker.State.RECOGNIZING) {
+                        //trying to find button
+                        sleep(30);
+                        ADBLog("Recognizing");
+                    } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
+                        ADBLog("Recognized. Starting approach.");
+                        bt.SetState(Tracker.State.TRACKING);
+                    } else if(bt.GetState() == Tracker.State.LOST) {
+                        // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
+                        sleep(5);
+                        ADBLog("Lost button.");
+                        continue;
+                    } else if (bt.GetState() == Tracker.State.TRACKING) {
+                        RotatedRect btn = bt.getBtnPosition();
+                        if (btn == null) {
+                            sleep(5); // No updates yet, wait
+                            continue;
+                        }
+
+                        byte[] array = rangeSensor.read(0x04, 2);
+                        //amplifies the y value to emphasize it in the vector (it is in centimeters so it needs to be increased)
+                        y = array[0] * 10;
+
+                        //button position from center.
+                        double Xb = btn.center.y - 250;
+                        ADBLog("Position OpenCV X: " + Double.toString(Xb) + ", Sensor: " + Double.toString(y));
+                        //drives based on y and x towards the button of choice
+                        if (y > 260) {
+                            Xb /= 6;
+                            if(start) {
+                                start = false;
+                                drive.VecDrive(-Xb, y - 210, 0.3, 200);
+                                sleep(50);
+                            }
+                            drive.VecDrive(-Xb, y - 210, 0.17, 200);
+                        } else if (y > 240) {
+                            Xb /= 6;
+                            drive.VecDrive(-Xb, y - 210, 0.1, 200);
+                        } else {
+                            Xb /= 8;
+                            if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
+                                drive.VecDrive(0, 0, 0, 2000);
+                                verify++;
+                                if (verify > 3) {
+                                    bt.Close();
+                                    press.setPosition(.43);
+                                    break;
+                                }
+                            } else {
+                                drive.VecDrive(0, 0, 0.0, 200);
+                                sleep(20);
+                                drive.VecDrive(-Xb, y - 210, 0.6, 200);
+                                sleep(50);
+                                drive.VecDrive(-Xb, y - 210, 0.3, 150);
+                                sleep(250);
+                                verify = 0;
+                            }
+                        }
+                    }
+                }
+                bt.Close();
+            } catch(Exception ex) {
+                ADBLog("Exception!: " + ex.getMessage());
+                if(bt != null) bt.Close();
+            }
+
+
+
             drive.Stop();
             navx_device.close();
             sleep(500);
