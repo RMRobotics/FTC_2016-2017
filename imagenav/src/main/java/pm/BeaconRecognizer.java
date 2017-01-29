@@ -238,12 +238,16 @@ public class BeaconRecognizer {
     }
 
     public boolean RedOnTheLeft(Mat mRgba){
-        Rect leftArea = new Rect(new Point(100,110), new Point(180,190));
+        Rect leftArea = new Rect(new Point(270,110), new Point(350,190));
         Scalar leftAreaColor = ButtonFinder.getColor(mRgba, leftArea);
-        Rect rightArea = new Rect(new Point(100,290), new Point(180,370));
+        Rect rightArea = new Rect(new Point(270,290), new Point(350,370));
         Scalar rightAreaColor = ButtonFinder.getColor(mRgba, rightArea);
         Scalar leftDispColor;
         Scalar rightDispColor;
+
+        Imgproc.rectangle(mRgba, leftArea.br(), leftArea.tl(), new Scalar(255, 255, 255), -1);
+        Imgproc.rectangle(mRgba, rightArea.br(), rightArea.tl(), new Scalar(255, 255, 255), -1);
+
         if(leftAreaColor.val[0] < rightAreaColor.val[0])
         {
             return true;
@@ -255,9 +259,6 @@ public class BeaconRecognizer {
 //            leftDispColor = new Scalar(0, 0, 255);
 //            rightDispColor = new Scalar(255, 0, 0);
         }
-//        Imgproc.rectangle(mRgba, leftArea.br(), leftArea.tl(), new Scalar(255, 255, 255));
-//        Imgproc.rectangle(mRgba, rightArea.br(), rightArea.tl(), new Scalar(255, 255, 255));
-
 
 //        Mat colorLabelRight = mRgba.submat(0, 49, 0, 49);
 //        colorLabelRight.setTo(rightDispColor);

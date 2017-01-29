@@ -237,7 +237,7 @@ public class DarudeAutoNav extends LinearOpMode {
 //            mImageView = (ImageView) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(com.qualcomm.ftcrobotcontroller.R.id.imageViewId);
 
 
-            press.setPosition(0.8);
+            press.setPosition(0.2);
 
             targets.activate();
             float x = 0;
@@ -275,22 +275,26 @@ public class DarudeAutoNav extends LinearOpMode {
 
 
             // Moving fast to position for beacon detection
-            //drive.VecDrive(200, 100, .3, 1000);
-            //sleep(1000);
+            drive.VecDrive(200, 100, .3, 1000);
+            sleep(1000);
 
+<<<<<<< HEAD
+            // Continue slowly checking weather Vuforia locked yet
+            drive.VecDrive(200, 100, .13, 8000);
+
+=======
             // Continue slowly checking whether Vuforia locked yet
-            drive.VecDrive(200, 80, 1, 8000);
+            drive.VecDrive(200, 100, .13, 0, 1, 8000);
 //TODO at competition: make movement that goes in short bursts to ensure the label is caught
+>>>>>>> refs/remotes/origin/8121Autonomous
             boolean ec = true;
             while (ec && opModeIsActive()) {
-               // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
-                    if (drive.getDistance() > 690) {
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
+                    if (pose != null) {
                         ec = false;
-                        ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
-                        drive.VecDrive(0,0,0,100);
+                        ADBLog("Vuforia locked!");
                     } else {
-                        ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
-                        sleep(20);
+                        sleep(5);
                     }
 //                for (VuforiaTrackable trackable : allTrackables) {
 //                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRawPose();
@@ -306,10 +310,8 @@ public class DarudeAutoNav extends LinearOpMode {
                 stop();
                 return;
             }
-
             x = y = 0;
             // Vuforia approach to a position to do opencv
-            boolean start = true;
             ADBLog("Begin Vuforia approach");
             while (opModeIsActive()) {
                 telemetry.clear();
@@ -323,17 +325,11 @@ public class DarudeAutoNav extends LinearOpMode {
 
                     ADBLog("Vuforia coords: x=" + x + ", y=" + y);
 
-                    if(start) {
-                        start = false;
-                        drive.VecDrive(-x, y - 430, 1, 100);
-                        sleep(70);
-                    }
+//                    if(Math.abs(y-420) < 100) sp = 0.1;
 
-                    double sp = 0.3;
-                    if(Math.abs(y-420) < 100) sp = 0.2;
-                    drive.VecDriveBalanced(-x, y - 430, sp, 100);
+                    drive.VecDrive(-x/3, y - 430, 0.2, 100);
 
-                    if (x < 10 && x > -10 && y > 380 && y < 470) {
+                    if (x < 40 && x > -40 && y > 380 && y < 470) {
                         drive.VecDrive(0, 0, 0, 1000);
                         break;
                     }
@@ -363,158 +359,8 @@ public class DarudeAutoNav extends LinearOpMode {
                         this,
                         cfg.isRed);
                 ADBLog("Created OpenCV");
-                //first runthru variable
-                start = true;
-                int verify = 0;
-                while (opModeIsActive()) {
-                    if (bt.GetState() == Tracker.State.RECOGNIZING) {
-                        //trying to find button
-                        sleep(30);
-                        ADBLog("Recognizing");
-                    } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
 
-
-                        drive.Stop();
-                        navx_device.close();
-                        sleep(5000);
-                        stop();
-                        boolean debug = true;
-                        if (debug) return;
-
-                        ADBLog("Recognized. Starting approach.");
-                        bt.SetState(Tracker.State.TRACKING);
-                    } else if(bt.GetState() == Tracker.State.LOST) {
-                        // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
-                        sleep(5);
-                        ADBLog("Lost button.");
-                        continue;
-                    } else if (bt.GetState() == Tracker.State.TRACKING) {
-                        RotatedRect btn = bt.getBtnPosition();
-                        if (btn == null) {
-                            sleep(5); // No updates yet, wait
-                            continue;
-                        }
-
-                        byte[] array = rangeSensor.read(0x04, 2);
-                        //amplifies the y value to emphasize it in the vector (it is in centimeters so it needs to be increased)
-                        y = array[0] * 10;
-
-                        //button position from center.
-                        double Xb = btn.center.y - 250;
-                        ADBLog("Position OpenCV X: " + Double.toString(Xb) + ", Sensor: " + Double.toString(y));
-                        //drives based on y and x towards the button of choice
-                        if (y > 260) {
-                            Xb /= 6;
-                            if(start) {
-                                start = false;
-                                drive.VecDrive(-Xb, y - 210, 0.3, 200);
-                                sleep(50);
-                            }
-                            drive.VecDrive(-Xb, y - 210, 0.17, 200);
-                        } else if (y > 240) {
-                            Xb /= 6;
-                            drive.VecDrive(-Xb, y - 210, 0.1, 200);
-                        } else {
-                            Xb /= 8;
-                            if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
-                                drive.VecDrive(0, 0, 0, 2000);
-                                verify++;
-                                if (verify > 3) {
-                                    bt.Close();
-                                    press.setPosition(.55);
-                                    break;
-                                }
-                            } else {
-                                drive.VecDrive(0, 0, 0.0, 200);
-                                sleep(20);
-                                drive.VecDrive(-Xb, y - 210, 0.6, 200);
-                                sleep(50);
-                                drive.VecDrive(-Xb, y - 210, 0.3, 150);
-                                sleep(250);
-                                verify = 0;
-                            }
-                        }
-                    }
-                }
-                bt.Close();
-            } catch(Exception ex) {
-                ADBLog("Exception!: " + ex.getMessage());
-                if(bt != null) bt.Close();
-            }
-
-            if (!opModeIsActive()) {
-                drive.Stop();
-                navx_device.close();
-                sleep(500);
-                stop();
-                return;
-            }
-
-            ADBLog("Press!");
-            sleep(100);
-            drive.VecDrive(9, 20, 1, 500);
-            sleep(50);
-            drive.VecDrive(4, 20, 0.6, 700);
-            sleep(300);
-            bt.Close();
-
-            if(true) {
-                drive.Stop();
-                navx_device.close();
-                sleep(500);
-                stop();
-                return;
-            }
-
-
-            // Go to the second beacon
-            drive.VecDrive(0,0,0,500);
-            sleep(500);
-            //move away from beacon
-            drive.VecDrive(4, -20, .7, 2000);
-            sleep(1500);
-            //move forwards a little bit
-            drive.VecDrive(20,1,.7,1000);
-            //move forwards
-            while (opModeIsActive()) {
-                telemetry.clear();
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) secondTarget.getListener()).getRawUpdatedPose();
-                if (pose != null) {
-                    float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
-                    telemetry.addData("x", poseData[7]);
-                    telemetry.addData("y", poseData[11]);
-                    x = poseData[7];
-                    y = poseData[11];
-
-                    ADBLog("Vuforia coords: x=" + x + ", y=" + y);
-
-//                    if(Math.abs(y-420) < 100) sp = 0.1;
-
-                    drive.VecDrive(-x/3, y - 430, 0.2, 100);
-
-                    if (x < 40 && x > -40 && y > 380 && y < 470) {
-                        drive.VecDrive(0, 0, 0, 1000);
-                        break;
-                    }
-                } else {
-                    drive.VecDrive(20,-0.5,0.5,100);
-                    sleep(1);
-                }
-            }
-
-
-            bt = null;
-            // here goes code for poking the button via image recognition
-            try {
-                // Start OpenCV
-                // Starting video stream
-                bt = new BeaconTracker(
-                        (CameraBridgeViewBase)((FtcRobotControllerActivity)hardwareMap.appContext).findViewById(R.id.camera_view),
-                        this,
-                        cfg.isRed);
-                ADBLog("Created OpenCV");
-                //first runthru variable
-                start = true;
+                boolean start = true;
                 int verify = 0;
                 while (opModeIsActive()) {
                     if (bt.GetState() == Tracker.State.RECOGNIZING) {
@@ -583,8 +429,22 @@ public class DarudeAutoNav extends LinearOpMode {
                 if(bt != null) bt.Close();
             }
 
+            if (!opModeIsActive()) {
+                drive.Stop();
+                navx_device.close();
+                sleep(500);
+                stop();
+                return;
+            }
 
+            ADBLog("Press!");
+            sleep(100);
+            drive.VecDrive(9, 20, 1, 500);
+            sleep(50);
+            drive.VecDrive(4, 20, 0.6, 700);
+            sleep(300);
 
+            bt.Close();
             drive.Stop();
             navx_device.close();
             sleep(500);

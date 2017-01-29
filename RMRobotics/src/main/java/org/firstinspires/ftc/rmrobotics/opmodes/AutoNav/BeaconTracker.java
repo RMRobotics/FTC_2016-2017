@@ -58,7 +58,7 @@ public class BeaconTracker implements Tracker {
     synchronized public Mat Recognize(Mat img) {
         boolean RedIsLeft = br.RedOnTheLeft(img);
         ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, RedIsLeft, teamIsRed);
-        if (btn0 != null) trackingState = State.RECOGNIZED;
+//        if (btn0 != null) trackingState = State.RECOGNIZED;
         return img;
     }
 

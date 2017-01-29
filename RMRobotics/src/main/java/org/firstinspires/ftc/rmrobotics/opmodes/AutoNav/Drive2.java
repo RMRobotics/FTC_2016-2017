@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
 
 import android.util.Log;
-import android.webkit.WebView;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
@@ -11,9 +10,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.opencv.core.Mat;
 
 import java.text.DecimalFormat;
-import java.util.Stack;
 
 import static java.lang.Thread.sleep;
 
@@ -32,14 +31,14 @@ public class Drive2 implements Runnable {
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
     Telemetry telemetry;
 
-    //PID Variables
+    //Navx PID Variables
     private navXPIDController yawPIDController;
     private navXPIDController.PIDResult yawPIDResult;
     private final double TARGET_ANGLE_DEGREES = 0.0;
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1;
-    private final double YAW_PID_P = 0.01;
+    private final double YAW_PID_P = 0.017;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
     private int GYRO_DEVICE_TIMEOUT_MS = 500;
@@ -54,6 +53,11 @@ public class Drive2 implements Runnable {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+
+    private int prevFLEnc;
+    private int prevFREnc;
+    private int prevBLEnc;
+    private int prevBREnc;
 
     Drive2(
             DcMotor fl,
@@ -90,6 +94,11 @@ public class Drive2 implements Runnable {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        prevFLEnc = frontLeft.getCurrentPosition();
+        prevBLEnc = backLeft.getCurrentPosition();
+        prevBREnc = backRight.getCurrentPosition();
+        prevFREnc = frontRight.getCurrentPosition();
 
         boolean calibration_complete = false;
         while ( !calibration_complete ) {
@@ -142,6 +151,25 @@ public class Drive2 implements Runnable {
                 reqV.put(1,(float)0);
             } else {
                 reqV.multiply(((float) sp) / reqV.magnitude());
+            }
+            lastCommandTime = runtime.milliseconds();
+            driveDuration = maxDuration;
+//            speed = sp;
+            newReq = true;
+        }
+    }
+
+    public void VecDriveBalanced(double x, double y, double sp, int maxDuration)
+    {
+        synchronized (reqV) {
+            reqV.put(0,(float)x);
+            reqV.put(1,(float)y);
+            if(reqV.magnitude() < 0.05) {
+                reqV.put(0,(float)0);
+                reqV.put(1,(float)0);
+            } else {
+                reqV.multiply(((float) sp) / reqV.magnitude());
+                reqV.getData()[0] /= 4; // Adjust X power
             }
             lastCommandTime = runtime.milliseconds();
             driveDuration = maxDuration;
@@ -237,7 +265,7 @@ public class Drive2 implements Runnable {
                     frontRight.setPower(frp - output);
                     backLeft.setPower(blp + output);
                     backRight.setPower(brp - output);
-//                    backRight.getCurrentPosition();
+                    backRight.getCurrentPosition();
 //                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + Xr + " fr,bl: " + Yr + " power: " + power);
                 }
 
@@ -259,6 +287,29 @@ public class Drive2 implements Runnable {
             powV.put(0, 0);
             powV.put(1, 0);
         }
+    }
+
+    public int getDistance() {
+        int c = frontLeft.getCurrentPosition();
+        int r = Math.abs(c - prevFLEnc);
+        c = backLeft.getCurrentPosition();
+        r += Math.abs(c - prevBLEnc);
+        c = frontRight.getCurrentPosition();
+        r += Math.abs(c - prevFREnc);
+        c = backRight.getCurrentPosition();
+        r += Math.abs(c - prevBREnc);
+        return r/10;
+    }
+
+    public void resetDistance() {
+        int c = frontLeft.getCurrentPosition();
+        prevFLEnc = c;
+        c = backLeft.getCurrentPosition();
+        prevBLEnc = c;
+        c = frontRight.getCurrentPosition();
+        prevFREnc = c;
+        c = backRight.getCurrentPosition();
+        prevBREnc = c;
     }
 
     public void testFrontLeft (double p) {
@@ -348,4 +399,42 @@ public class Drive2 implements Runnable {
     }
 }
 
+class PControl {
+    // Motor P controller
+    // P
+    private final float ContrP = (float)0.1;
+    // Max power speed in ticks
+    private final int MAX_SPEED = 100;
+
+
+    private DcMotor motor = null;
+    ElapsedTime timer = null;
+    int prevEnc;
+    float prevPow;
+    double prevTime;
+    float p;
+
+    PControl(DcMotor m, float Pcoeff, ElapsedTime et) {
+        p = Pcoeff;
+        motor = m;
+        timer = et;
+        prevEnc = motor.getCurrentPosition();
+        prevPow = 0;
+        prevTime = timer.milliseconds();
+    }
+
+    public void setPower(float p) {
+        double currTime = timer.milliseconds();
+        int expEnc = (int)(MAX_SPEED * (currTime - prevTime) / 100 * prevPow);
+        int currEnc = motor.getCurrentPosition();
+        int d = (int)(expEnc - Math.copySign(currEnc - prevEnc, prevPow));
+        p = ContrP + ((float)d/(float)expEnc) * ContrP * p;
+        motor.setPower(p);
+        prevTime = currTime;
+        prevPow = p;
+        prevEnc = currEnc;
+    }
+
+
+}
 
