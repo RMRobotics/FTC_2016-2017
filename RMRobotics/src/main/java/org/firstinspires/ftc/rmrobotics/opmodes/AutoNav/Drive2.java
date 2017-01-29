@@ -170,17 +170,18 @@ public class Drive2 implements Runnable {
         double volt = voltSensor.getVoltage();
         if (volt <= 9)
         {
-            coef = 1.82;
+            coef = 1.3;
         }
         else if (volt <= 10)
         {
-            coef = 1.4;
+            coef = 1.1;
         }
         else if (volt <= 11)
         {
-            coef = 1.1;
+            coef = 1.0;
         }
 
+        DarudeAutoNav.ADBLog("Voltage: " + volt + ", coeff: " + coef);
         return coef;
     }
 
@@ -195,7 +196,7 @@ public class Drive2 implements Runnable {
                 reqV.put(1,(float)0);
             } else {
                 reqV.multiply(((float) sp) / reqV.magnitude());
-                reqV.getData()[0] /= 4; // Adjust X power
+                reqV.getData()[0] /= 3; // Adjust X power
             }
             lastCommandTime = runtime.milliseconds();
             driveDuration = maxDuration;
@@ -262,7 +263,7 @@ public class Drive2 implements Runnable {
     }
 
     public void setMoveAngle(double x, double y, double power) {
-        DarudeAutoNav.ADBLog("Drive vector: x:" + x + " y: " + y + " power: " + power);
+        //DarudeAutoNav.ADBLog("Drive vector: x:" + x + " y: " + y + " power: " + power);
         // Rotate 90 degrees
         double Xr = 0.707 * x + 0.707 * y;
         double Yr = 0.707 * x - 0.707 * y;

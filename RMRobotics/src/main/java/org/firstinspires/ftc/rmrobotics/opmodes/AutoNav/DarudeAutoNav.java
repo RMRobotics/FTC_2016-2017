@@ -105,7 +105,7 @@ public class DarudeAutoNav extends LinearOpMode {
 
     RMVuforia vuforia;
 
-    
+
     //motors
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -329,13 +329,12 @@ public class DarudeAutoNav extends LinearOpMode {
 
                     if(start) {
                         start = false;
-                        drive.VecDrive(-x, y - 430, 1, 100);
+                        drive.VecDriveBalanced(-x, y - 430, 1, 100);
                         sleep(70);
                     }
 
-                    double sp = 0.3;
-                    if(Math.abs(y-420) < 100) sp = 0.2;
-
+                    double sp = 0.15;
+                    if(Math.abs(y-420) < 100) sp = 0.1;
 
                     drive.VecDriveBalanced(-x, y - 430, sp, 100);
 
