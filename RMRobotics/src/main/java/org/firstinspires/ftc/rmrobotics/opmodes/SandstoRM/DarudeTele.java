@@ -22,7 +22,7 @@
 
     @TeleOp(name="DarudeTele", group="SandstoRM")
     public class DarudeTele extends OpMode {
-
+        private double servoHeight;
         private DcMotor wheelFL;
         private DcMotor wheelFR;
         private DcMotor wheelBL;
@@ -51,11 +51,12 @@
 
             beaconL = hardwareMap.servo.get("beaconL");
             index = hardwareMap.servo.get("index");
-            beaconL.setPosition(0);
-            index.setPosition(0);
-            grabberL.setPosition(0);
-            grabberR.setPosition(0);
-            grabberR.setDirection(Servo.Direction.REVERSE);
+            servoHeight = .5;
+            beaconL.setPosition(servoHeight);
+            index.setPosition(.5);
+//            grabberL.setPosition(0);
+//            grabberR.setPosition(0);
+//            grabberR.setDirection(Servo.Direction.REVERSE);
         }
 
         public void loop() {
@@ -103,32 +104,39 @@
             } else {
                 lift.setPower(0.0);
             }
-
-            if (gamepad1.y) {
-                beaconL.setPosition(1);
-            } else {
-                beaconL.setPosition(0);
+            if (gamepad1.dpad_down)
+            {
+                if (servoHeight <= 1)
+                {
+                    servoHeight += .003;
+                }
             }
+            if (gamepad1.dpad_up)
+            {
+                if (servoHeight >= .35)
+                {
+                    servoHeight -= .003;
+                }
+            }
+            beaconL.setPosition(servoHeight);
 
             if (gamepad2.y) {
-                if (index.getPosition() != 0)
-                    index.setPosition(0);
-                else
-                    index.setPosition(0.55);
-            }
+                    index.setPosition(1.1);
+            }else{index.setPosition(.5);}
 
-            if (gamepad1.x) {
-                grabberL.setPosition(0);
-                grabberR.setPosition(0);
-            }
-            if (gamepad1.a) {
-                grabberL.setPosition(0.55);
-                grabberR.setPosition(0.55);
-            }
-            if (gamepad1.b) {
-                grabberL.setPosition(1);
-                grabberR.setPosition(1);
-            }
+
+//            if (gamepad1.x) {
+//                grabberL.setPosition(0);
+//                grabberR.setPosition(0);
+//            }
+//            if (gamepad1.a) {
+//                grabberL.setPosition(0.55);
+//                grabberR.setPosition(0.55);
+//            }
+//            if (gamepad1.b) {
+//                grabberL.setPosition(1);
+//                grabberR.setPosition(1);
+//            }
 
         }
     }
