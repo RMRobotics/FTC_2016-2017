@@ -28,7 +28,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
@@ -105,7 +105,7 @@ public class DarudeAutoNav extends LinearOpMode {
 
     RMVuforia vuforia;
 
-    //voltage sensor
+    
     //motors
     private DcMotor frontLeft;
     private DcMotor frontRight;
