@@ -122,9 +122,7 @@ public class DarudeAutoNav extends LinearOpMode {
 
     private ImageView mImageView;
 
-    private static volatile boolean teamIsRed = true;
-    private static volatile boolean redIsLeft;
-
+    private double dir = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -132,6 +130,8 @@ public class DarudeAutoNav extends LinearOpMode {
             // Read config file
             AutoNavConfig cfg = new AutoNavConfig();
             cfg.ReadConfig(((FtcRobotControllerActivity) hardwareMap.appContext));
+            if(cfg.isRight) dir = 1;
+            else dir = -1;
 
             //init vuforia
             VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(/*com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId*/);
@@ -283,7 +283,7 @@ public class DarudeAutoNav extends LinearOpMode {
             //sleep(1000);
 
             // Continue slowly checking whether Vuforia locked yet
-            drive.VecDrive(200, 80, 1, 8000);
+            drive.VecDrive(dir*200, 50, 1, 8000);
 //TODO at competition: make movement that goes in short bursts to ensure the label is caught
             boolean ec = true;
             while (ec && opModeIsActive()) {
@@ -397,7 +397,7 @@ public class DarudeAutoNav extends LinearOpMode {
                         ADBLog("Distance: " + dist);
                         double mult = 1;
                         if(!start && dist < 5) {
-                            mult = 3;
+                            mult = 4;
                         }
                         if(!start && dist < 15) {
                             mult = 1.3;
@@ -429,7 +429,7 @@ public class DarudeAutoNav extends LinearOpMode {
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
-                                    press.setPosition(.45);
+                                    press.setPosition(.50);
                                     break;
                                 }
                             } else {
@@ -466,27 +466,65 @@ public class DarudeAutoNav extends LinearOpMode {
             sleep(400);
             bt.Close();
 
-            if(true) {
+
+
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+
+            vuforia.RMResume();
+            drive.VecDrive(0, -50, 1, 8000);
+            sleep(400);
+            drive.VecDrive(0, -50, 0, 8000);
+            sleep(1000);
+
+            drive.resetDistance();
+
+            drive.VecDrive(200, 0, 1, 8000);
+//TODO at competition: make movement that goes in short bursts to ensure the label is caught
+            ec = true;
+            while (ec && opModeIsActive()) {
+                // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
+                if (drive.getDistance() > 100) {
+                    ec = false;
+                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    drive.VecDrive(0,0,0,100);
+                    sleep(500);
+                } else {
+                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    sleep(20);
+                }
+            }
+
+            drive.resetDistance();
+            drive.VecDrive(-200, 0, 1, 8000);
+            while (ec && opModeIsActive()) {
+                // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
+                if (drive.getDistance() > 100) {
+                    ec = false;
+                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    drive.VecDrive(0,0,0,100);
+                    sleep(500);
+                } else {
+                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    sleep(20);
+                }
+            }
+
+            if (!opModeIsActive()) {
                 drive.Stop();
                 navx_device.close();
-                sleep(500);
                 stop();
                 return;
             }
 
-
-            // Go to the second beacon
-            drive.VecDrive(0,0,0,500);
-            sleep(500);
-            //move away from beacon
-            drive.VecDrive(4, -20, .7, 2000);
-            sleep(1500);
-            //move forwards a little bit
-            drive.VecDrive(20,1,.7,1000);
-            //move forwards
+            x = y = 0;
+            // Vuforia approach to a position to do opencv
+            start = true;
+            ADBLog("Begin Vuforia approach");
             while (opModeIsActive()) {
                 telemetry.clear();
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) secondTarget.getListener()).getRawUpdatedPose();
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawUpdatedPose();
                 if (pose != null) {
                     float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
                     telemetry.addData("x", poseData[7]);
@@ -496,21 +534,37 @@ public class DarudeAutoNav extends LinearOpMode {
 
                     ADBLog("Vuforia coords: x=" + x + ", y=" + y);
 
-//                    if(Math.abs(y-420) < 100) sp = 0.1;
+                    if(start) {
+                        start = false;
+                        drive.VecDriveBalanced(-x, y - 430, 1, 100);
+                        sleep(70);
+                    }
 
-                    drive.VecDrive(-x/3, y - 430, 0.2, 100);
+                    double sp = 0.15;
+                    if(Math.abs(y-420) < 100) sp = 0.1;
 
-                    if (x < 40 && x > -40 && y > 380 && y < 470) {
+                    drive.VecDriveBalanced(-x, y - 430, sp, 100);
+
+                    if (x < 10 && x > -10 && y > 380 && y < 470) {
                         drive.VecDrive(0, 0, 0, 1000);
                         break;
                     }
                 } else {
-                    drive.VecDrive(20,-0.5,0.5,100);
                     sleep(1);
                 }
             }
+            if (!opModeIsActive()) {
+                drive.Stop();
+                navx_device.close();
+                stop();
+                return;
+            }
 
+            // Stop Vuforia
+            ADBLog("Pausing Vuforia");
+            vuforia.RMPause();
 
+            // OpenCV beacon tracking class
             bt = null;
             // here goes code for poking the button via image recognition
             try {
@@ -532,6 +586,7 @@ public class DarudeAutoNav extends LinearOpMode {
                     } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
                         ADBLog("Recognized. Starting approach.");
                         bt.SetState(Tracker.State.TRACKING);
+                        drive.resetDistance();
                     } else if(bt.GetState() == Tracker.State.LOST) {
                         // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
                         sleep(5);
@@ -542,6 +597,17 @@ public class DarudeAutoNav extends LinearOpMode {
                         if (btn == null) {
                             sleep(5); // No updates yet, wait
                             continue;
+                        }
+
+                        int dist = drive.getDistance();
+                        drive.resetDistance();
+                        ADBLog("Distance: " + dist);
+                        double mult = 1;
+                        if(!start && dist < 5) {
+                            mult = 4;
+                        }
+                        if(!start && dist < 15) {
+                            mult = 1.3;
                         }
 
                         byte[] array = rangeSensor.read(0x04, 2);
@@ -556,13 +622,13 @@ public class DarudeAutoNav extends LinearOpMode {
                             Xb /= 6;
                             if(start) {
                                 start = false;
-                                drive.VecDrive(-Xb, y - 210, 0.3, 200);
+                                drive.VecDriveBalanced(-Xb, y - 210, 0.5, 200);
                                 sleep(50);
                             }
-                            drive.VecDrive(-Xb, y - 210, 0.17, 200);
+                            drive.VecDriveBalanced(-Xb, y - 210, 0.1*mult, 200);
                         } else if (y > 240) {
                             Xb /= 6;
-                            drive.VecDrive(-Xb, y - 210, 0.1, 200);
+                            drive.VecDriveBalanced(-Xb, y - 210, 0.9*mult, 200);
                         } else {
                             Xb /= 8;
                             if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
@@ -570,15 +636,15 @@ public class DarudeAutoNav extends LinearOpMode {
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
-                                    press.setPosition(.43);
+                                    press.setPosition(.50);
                                     break;
                                 }
                             } else {
                                 drive.VecDrive(0, 0, 0.0, 200);
                                 sleep(20);
-                                drive.VecDrive(-Xb, y - 210, 0.6, 200);
+                                drive.VecDriveBalanced(-Xb, y - 210, 1, 200);
                                 sleep(50);
-                                drive.VecDrive(-Xb, y - 210, 0.3, 150);
+                                drive.VecDriveBalanced(-Xb, y - 210, 0.3*mult, 150);
                                 sleep(250);
                                 verify = 0;
                             }
@@ -591,85 +657,19 @@ public class DarudeAutoNav extends LinearOpMode {
                 if(bt != null) bt.Close();
             }
 
-
-
-            drive.Stop();
-            navx_device.close();
-            sleep(500);
-            stop();
-            boolean debug = true;
-            if (debug) return;
-
-/*
-                img = GetCameraImage();
-//            boolean redOnLeft = br.RedOnTheLeft(img);
-                boolean redOnLeft = false;
-
-                // Mat img, boolean redIsLeft, boolean getRed)
-//            ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, redOnLeft, true);
-//            DisplayImage(img);
-
-                boolean found = false;
-                while (!found) {
-                    img = GetCameraImage();
-                    ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, redOnLeft, true);
-                    DisplayImage(img);
-                    if (btn0 != null) found = true;
-                    img = GetCameraImage();
-                }
-
-                //0 forward 90 right
-                while (opModeIsActive()) {
-                    for (VuforiaTrackable trackable : allTrackables) {
-                        OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRawPose();
-                        if (pose != null) {
-                            float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 12);
-                            telemetry.addData("x", poseData[7]);
-                            telemetry.addData("y", poseData[11]);
-                            x = poseData[7];
-                            y = poseData[11];
-                        }
-                    }
-
-                    if (x < 0.1) x = 120;
-
-                    RotatedRect btn = null;
-                    sleep(300);
-                    while (btn == null) {
-                        img = GetCameraImage();
-                        btn = br.TrackButton(img);
-                        DisplayImage(img);
-                        if (btn != null) break;
-                    }
-
-                    double Xb = btn.center.y - 250;
-                    double angle = CalculateAngle((float) Xb, y - 180);
-                    double speed = CalculateSpeed((float) Xb, y - 180, .6);
-                    telemetry.addData("Xb", Xb);
-                    telemetry.addData("angle", angle);
-                    telemetry.addData("speed", speed);
-                    Log.d("Position", Double.toString(Xb) + " X-Image " + Float.toString(x) + " X-Vuforia " + Float.toString(y) + " Y-Vuforia ");
-                    telemetry.update();
-
-                    if (y < 300) speed /= 2;
-                    else speed /= 1.3;
-
-                    drive.driveDirection(angle, speed, 200);
-                    if (Xb < 20 && Xb > -20 && y < 200 && y > 160) {
-                        drive.brake();
-                        break;
-                    }
-                }
-
-                if (!opModeIsActive()) stop();
+            if (!opModeIsActive()) {
+                drive.Stop();
+                navx_device.close();
+                sleep(500);
+                stop();
+                return;
             }
 
-            press.setPosition(.405);
-            sleep(500);
-            drive.driveDirection(90, .4, 450);
 
-            sleep(1000); */
-//            drive.brake();
+
+
+
+
         }
     }
 
