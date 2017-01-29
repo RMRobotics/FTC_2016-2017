@@ -6,6 +6,7 @@ import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -34,6 +35,7 @@ public class Drive2 implements Runnable {
     //Navx PID Variables
     private navXPIDController yawPIDController;
     private navXPIDController.PIDResult yawPIDResult;
+    private final double REQUIRED_VOLTAGE = 13.0;
     private final double TARGET_ANGLE_DEGREES = 0.0;
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1;
@@ -53,6 +55,7 @@ public class Drive2 implements Runnable {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+    private VoltageSensor voltSensor;
 
     private int prevFLEnc;
     private int prevFREnc;
@@ -94,6 +97,8 @@ public class Drive2 implements Runnable {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        voltSensor = (VoltageSensor) frontLeft.getController();
 
         prevFLEnc = frontLeft.getCurrentPosition();
         prevBLEnc = backLeft.getCurrentPosition();
@@ -159,9 +164,30 @@ public class Drive2 implements Runnable {
         }
     }
 
+    public double getVoltCoef()
+    {
+        double coef = 1;
+        double volt = voltSensor.getVoltage();
+        if (volt <= 9)
+        {
+            coef = 1.82;
+        }
+        else if (volt <= 10)
+        {
+            coef = 1.4;
+        }
+        else if (volt <= 11)
+        {
+            coef = 1.1;
+        }
+
+        return coef;
+    }
+
     public void VecDriveBalanced(double x, double y, double sp, int maxDuration)
     {
         synchronized (reqV) {
+            sp *= getVoltCoef();
             reqV.put(0,(float)x);
             reqV.put(1,(float)y);
             if(reqV.magnitude() < 0.05) {

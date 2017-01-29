@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
@@ -103,6 +105,7 @@ public class DarudeAutoNav extends LinearOpMode {
 
     RMVuforia vuforia;
 
+    //voltage sensor
     //motors
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -173,6 +176,7 @@ public class DarudeAutoNav extends LinearOpMode {
             frontRight = hardwareMap.dcMotor.get("wheelFR");
             backLeft = hardwareMap.dcMotor.get("wheelBL");
             backRight = hardwareMap.dcMotor.get("wheelBR");
+
             //and servo
             press = hardwareMap.servo.get("press");
 
@@ -331,6 +335,8 @@ public class DarudeAutoNav extends LinearOpMode {
 
                     double sp = 0.3;
                     if(Math.abs(y-420) < 100) sp = 0.2;
+
+
                     drive.VecDriveBalanced(-x, y - 430, sp, 100);
 
                     if (x < 10 && x > -10 && y > 380 && y < 470) {
