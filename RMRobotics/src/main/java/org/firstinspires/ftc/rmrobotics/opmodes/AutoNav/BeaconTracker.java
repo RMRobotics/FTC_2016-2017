@@ -56,9 +56,8 @@ public class BeaconTracker implements Tracker {
     }
 
     synchronized public Mat Recognize(Mat img) {
-        boolean RedIsLeft = br.RedOnTheLeft(img);
-        ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, RedIsLeft, teamIsRed);
-//        if (btn0 != null) trackingState = State.RECOGNIZED;
+        ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, teamIsRed);
+        if (btn0 != null) trackingState = State.RECOGNIZED;
         return img;
     }
 
@@ -136,7 +135,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
         Mat img = inputFrame.rgba();
         Core.flip(img, img, 1);
 
-        if (mFrameNum > 3) {
+        if (mFrameNum > 10) {
             switch (eTracker.GetState()) {
                 case RECOGNIZING:
                     img = eTracker.Recognize(img);

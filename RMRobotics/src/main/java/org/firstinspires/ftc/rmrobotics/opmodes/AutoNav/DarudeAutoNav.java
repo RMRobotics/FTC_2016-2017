@@ -377,17 +377,9 @@ public class DarudeAutoNav extends LinearOpMode {
                         sleep(30);
                         ADBLog("Recognizing");
                     } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
-
-
-                        drive.Stop();
-                        navx_device.close();
-                        sleep(5000);
-                        stop();
-                        boolean debug = true;
-                        if (debug) return;
-
                         ADBLog("Recognized. Starting approach.");
                         bt.SetState(Tracker.State.TRACKING);
+                        drive.resetDistance();
                     } else if(bt.GetState() == Tracker.State.LOST) {
                         // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
                         sleep(5);
@@ -398,6 +390,17 @@ public class DarudeAutoNav extends LinearOpMode {
                         if (btn == null) {
                             sleep(5); // No updates yet, wait
                             continue;
+                        }
+
+                        int dist = drive.getDistance();
+                        drive.resetDistance();
+                        ADBLog("Distance: " + dist);
+                        double mult = 1;
+                        if(!start && dist < 5) {
+                            mult = 3;
+                        }
+                        if(!start && dist < 15) {
+                            mult = 1.3;
                         }
 
                         byte[] array = rangeSensor.read(0x04, 2);
@@ -412,13 +415,13 @@ public class DarudeAutoNav extends LinearOpMode {
                             Xb /= 6;
                             if(start) {
                                 start = false;
-                                drive.VecDrive(-Xb, y - 210, 0.3, 200);
+                                drive.VecDriveBalanced(-Xb, y - 210, 0.5, 200);
                                 sleep(50);
                             }
-                            drive.VecDrive(-Xb, y - 210, 0.17, 200);
+                            drive.VecDriveBalanced(-Xb, y - 210, 0.1*mult, 200);
                         } else if (y > 240) {
                             Xb /= 6;
-                            drive.VecDrive(-Xb, y - 210, 0.1, 200);
+                            drive.VecDriveBalanced(-Xb, y - 210, 0.9*mult, 200);
                         } else {
                             Xb /= 8;
                             if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
@@ -426,15 +429,15 @@ public class DarudeAutoNav extends LinearOpMode {
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
-                                    press.setPosition(.55);
+                                    press.setPosition(.45);
                                     break;
                                 }
                             } else {
                                 drive.VecDrive(0, 0, 0.0, 200);
                                 sleep(20);
-                                drive.VecDrive(-Xb, y - 210, 0.6, 200);
+                                drive.VecDriveBalanced(-Xb, y - 210, 1, 200);
                                 sleep(50);
-                                drive.VecDrive(-Xb, y - 210, 0.3, 150);
+                                drive.VecDriveBalanced(-Xb, y - 210, 0.3*mult, 150);
                                 sleep(250);
                                 verify = 0;
                             }
@@ -457,10 +460,10 @@ public class DarudeAutoNav extends LinearOpMode {
 
             ADBLog("Press!");
             sleep(100);
-            drive.VecDrive(9, 20, 1, 500);
+            drive.VecDriveBalanced(9, 9, 1, 500);
             sleep(50);
-            drive.VecDrive(4, 20, 0.6, 700);
-            sleep(300);
+            drive.VecDriveBalanced(15, 20, 0.7, 700);
+            sleep(400);
             bt.Close();
 
             if(true) {
@@ -741,6 +744,7 @@ class AutoNavConfig {
     public boolean isRed = false;
     public String firstBeacon = "";
     public String secondBeacon = "";
+    public boolean isRight = true;
 
     public void ReadConfig(FtcRobotControllerActivity act) {
         try {
@@ -753,6 +757,8 @@ class AutoNavConfig {
             firstBeacon = reader.nextString();
             reader.nextName();
             secondBeacon = reader.nextString();
+            reader.nextName();
+            isRight = reader.nextBoolean();
             reader.endObject();
             reader.close();
         } catch (FileNotFoundException ex) {
@@ -775,6 +781,7 @@ class AutoNavConfig {
             writer.name("red").value(isRed);
             writer.name("firstBeacon").value(firstBeacon);
             writer.name("secondBeacon").value(secondBeacon);
+            writer.name("isRight").value(isRight);
             writer.endObject();
             writer.close();
         } catch (FileNotFoundException ex) {

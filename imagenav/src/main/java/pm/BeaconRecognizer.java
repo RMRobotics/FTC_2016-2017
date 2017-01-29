@@ -42,7 +42,7 @@ public class BeaconRecognizer {
         mRgbaT = new Mat();
     }
 
-    public ButtonFinder.EllipseLocationResult detectButtons(Mat img, boolean redIsLeft, boolean getRed) {
+    public ButtonFinder.EllipseLocationResult detectButtons(Mat img, boolean getRed) {
         Rect trackArea = new Rect (
                 img.cols() * searchArea.x / 640,
                 img.rows() * searchArea.y / 480,
@@ -51,18 +51,19 @@ public class BeaconRecognizer {
         // Set display to original
         mDisp = img;
 
-        for(int retr = 0; retr < 1; retr++) {
-            ButtonFinder.EllipseLocationResult left = null;
-            ButtonFinder.EllipseLocationResult right = null;
+        ButtonFinder.EllipseLocationResult left = null;
+        ButtonFinder.EllipseLocationResult right = null;
 
-            // Target area
-            Mat trackMat = img.submat(trackArea);
+        // Target area
+        Mat trackMat = img.submat(trackArea);
+        // Preserve original
+        Mat origMat = trackMat.clone();
 
-            // Convert it to gray
-            Imgproc.cvtColor(trackMat, mGray, Imgproc.COLOR_BGR2GRAY);
-            mGray0 = mGray.clone();
+        // Convert it to gray
+        Imgproc.cvtColor(trackMat, mGray, Imgproc.COLOR_BGR2GRAY);
+        mGray0 = mGray.clone();
 
-            mGray.convertTo(mGray, -1, contrast, brightness);
+        mGray.convertTo(mGray, -1, contrast, brightness);
 /*
             switch(retr) {
                 case 1: mGray.convertTo(mGray, -1, 1, 30); break;
@@ -71,63 +72,65 @@ public class BeaconRecognizer {
                 case 4: mGray.convertTo(mGray, -1, 1, -60); break;
             }*/
 
-            // Select correct ellipses
-            double bD = trackArea.width * expBtnDiam / searchArea.width;
-            double bX = trackArea.height * expBtnOffset / searchArea.height;
-            ArrayList<ButtonFinder.EllipseLocationResult> res = ButtonFinder.locateEllipses(mDisp, mGray, mGray0, bX, bD, 0.0, trackArea);
-            // Result is sorted arbitrary
+        // Select correct ellipses
+        double bD = trackArea.width * expBtnDiam / searchArea.width;
+        double bX = trackArea.height * expBtnOffset / searchArea.height;
+        ArrayList<ButtonFinder.EllipseLocationResult> res = ButtonFinder.locateEllipses(mDisp, mGray, mGray0, bX, bD, 0.0, trackArea);
+        // Result is sorted arbitrary
 
-            ArrayList<ButtonFinder.EllipseLocationResult[]> pairs = new ArrayList<ButtonFinder.EllipseLocationResult[]>();
-            for (int i = 0; i < res.size(); i++) {
-                if (res.get(i).ellipse.center.y > mGray.rows() / 2) {
-                    // For all circles from the left side, match best circle from the right side
-                    ButtonFinder.EllipseLocationResult[] p = new ButtonFinder.EllipseLocationResult[2];
-                    p[0] = res.get(i);
-                    p[1] = null;
-                    double error = 1000;
-                    for (int j = 0; j < res.size(); j++) {
-                        if (res.get(j).ellipse.center.y < mGray.rows() / 2) {
-                            double e = Math.abs((res.get(i).Xdiff - res.get(j).Xdiff) / bD * 1.2);
-                            e += Math.abs((res.get(i).Ddiff - res.get(j).Ddiff) / bD);
-                            if (e < error) {
-                                p[1] = res.get(j);
-                                error = e;
-                            }
+        ArrayList<ButtonFinder.EllipseLocationResult[]> pairs = new ArrayList<ButtonFinder.EllipseLocationResult[]>();
+        for (int i = 0; i < res.size(); i++) {
+            if (res.get(i).ellipse.center.y > mGray.rows() / 2) {
+                // For all circles from the left side, match best circle from the right side
+                ButtonFinder.EllipseLocationResult[] p = new ButtonFinder.EllipseLocationResult[2];
+                p[0] = res.get(i);
+                p[1] = null;
+                double error = 1000;
+                for (int j = 0; j < res.size(); j++) {
+                    if (res.get(j).ellipse.center.y < mGray.rows() / 2) {
+                        double e = Math.abs((res.get(i).Xdiff - res.get(j).Xdiff) / bD * 1.2);
+                        e += Math.abs((res.get(i).Ddiff - res.get(j).Ddiff) / bD);
+                        if (e < error) {
+                            p[1] = res.get(j);
+                            error = e;
                         }
                     }
-                    if (p[1] != null) pairs.add(p);
+                }
+                if (p[1] != null) pairs.add(p);
+            }
+        }
+
+        // Draw expected button centers
+        Imgproc.line(trackMat, new Point(bX, 0), new Point(bX, trackMat.rows() - 1), new Scalar(20, 255, 20), 2);
+
+        Imgproc.rectangle(trackMat, new Point(0,0), new Point(trackMat.width(), trackMat.height()), new Scalar(20, 255, 20), 2);
+        if (pairs.size() == 0) {
+            return null;
+        } else {
+            double error = 1000;
+            for (ButtonFinder.EllipseLocationResult[] p : pairs) {
+                double e = Math.abs((p[0].Xdiff - p[1].Xdiff) / bD * 1.2);
+                e += Math.abs((p[0].Ddiff - p[1].Ddiff) / bD);
+                if (e < error) {
+                    left = p[0];
+                    right = p[1];
+                    error = e;
                 }
             }
+        }
 
-            // Draw expected button centers
-            Imgproc.line(trackMat, new Point(bX, 0), new Point(bX, trackMat.rows() - 1), new Scalar(20, 255, 20), 2);
+        boolean redIsLeft = RedOnTheLeft(origMat, left, right);
 
-            Imgproc.rectangle(trackMat, new Point(0,0), new Point(trackMat.width(), trackMat.height()), new Scalar(20, 255, 20), 2);
-            if (pairs.size() == 0) {
-                continue; // Try different brightness
-            } else {
-                double error = 1000;
-                for (ButtonFinder.EllipseLocationResult[] p : pairs) {
-                    double e = Math.abs((p[0].Xdiff - p[1].Xdiff) / bD * 1.2);
-                    e += Math.abs((p[0].Ddiff - p[1].Ddiff) / bD);
-                    if (e < error) {
-                        left = p[0];
-                        right = p[1];
-                        error = e;
-                    }
-                }
-            }
+        // Draw buttons for debugging
+        if (redIsLeft) {
+            Imgproc.ellipse(trackMat, left.ellipse, new Scalar(255, 20, 20), -1);
+            Imgproc.ellipse(trackMat, right.ellipse, new Scalar(20, 20, 255), -1);
+        } else {
+            Imgproc.ellipse(trackMat, right.ellipse, new Scalar(255, 20, 20), -1);
+            Imgproc.ellipse(trackMat, left.ellipse, new Scalar(20, 20, 255), -1);
+        }
 
-            // Draw buttons for debugging
-            if (redIsLeft) {
-                Imgproc.ellipse(trackMat, left.ellipse, new Scalar(255, 20, 20), -1);
-                Imgproc.ellipse(trackMat, right.ellipse, new Scalar(20, 20, 255), -1);
-            } else {
-                Imgproc.ellipse(trackMat, right.ellipse, new Scalar(255, 20, 20), -1);
-                Imgproc.ellipse(trackMat, left.ellipse, new Scalar(20, 20, 255), -1);
-            }
-
-            ButtonFinder.EllipseLocationResult btn = (getRed ^ redIsLeft) ? right : left;
+        ButtonFinder.EllipseLocationResult btn = (getRed ^ redIsLeft) ? right : left;
 
 /*            // Calculate brightness and contrast adjustments
             // Get button mask
@@ -162,23 +165,21 @@ public class BeaconRecognizer {
 
 
 
-            brightness = -(200*btn.bInten - 20*btn.sInten)/(btn.sInten - btn.bInten);
-            contrast = (20 - brightness)/btn.bInten;
+        brightness = -(200*btn.bInten - 20*btn.sInten)/(btn.sInten - btn.bInten);
+        contrast = (20 - brightness)/btn.bInten;
 
-            // Adjust btn coordinates
-            btn.ellipse.center.x += trackArea.x;
-            btn.ellipse.center.y += trackArea.y;
+        // Adjust btn coordinates
+        btn.ellipse.center.x += trackArea.x;
+        btn.ellipse.center.y += trackArea.y;
 
 //          prevBtnH = origBtn.background.val[0];
-            prevBtnX = btn.ellipse.center.x;
-            prevBtnY = btn.ellipse.center.y;
-            prevBtnD = (btn.ellipse.size.height + btn.ellipse.size.width) / 2;
+        prevBtnX = btn.ellipse.center.x;
+        prevBtnY = btn.ellipse.center.y;
+        prevBtnD = (btn.ellipse.size.height + btn.ellipse.size.width) / 2;
 
-            return btn;
-        }
+        return btn;
 
         // Nothing found, do something !!!! Change Canny parameters, move, etc.
-        return null;
     }
 
 
@@ -237,35 +238,23 @@ public class BeaconRecognizer {
         return null;
     }
 
-    public boolean RedOnTheLeft(Mat mRgba){
-        Rect leftArea = new Rect(new Point(270,110), new Point(350,190));
+    public boolean RedOnTheLeft(Mat mRgba, ButtonFinder.EllipseLocationResult left, ButtonFinder.EllipseLocationResult right){
+        Rect leftArea = left.ellipse.boundingRect();
         Scalar leftAreaColor = ButtonFinder.getColor(mRgba, leftArea);
-        Rect rightArea = new Rect(new Point(270,290), new Point(350,370));
+        Rect rightArea = right.ellipse.boundingRect();
         Scalar rightAreaColor = ButtonFinder.getColor(mRgba, rightArea);
         Scalar leftDispColor;
         Scalar rightDispColor;
 
-        Imgproc.rectangle(mRgba, leftArea.br(), leftArea.tl(), new Scalar(255, 255, 255), -1);
-        Imgproc.rectangle(mRgba, rightArea.br(), rightArea.tl(), new Scalar(255, 255, 255), -1);
+//        Imgproc.rectangle(mRgba, leftArea.br(), leftArea.tl(), new Scalar(255, 255, 255), -1);
+//        Imgproc.rectangle(mRgba, rightArea.br(), rightArea.tl(), new Scalar(255, 255, 255), -1);
 
-        if(leftAreaColor.val[0] < rightAreaColor.val[0])
+        if(leftAreaColor.val[0] > rightAreaColor.val[0])
         {
             return true;
-//            leftDispColor = new Scalar(255, 0, 0);
-//            rightDispColor = new Scalar(0, 0, 255);
         } else
         {
             return false;
-//            leftDispColor = new Scalar(0, 0, 255);
-//            rightDispColor = new Scalar(255, 0, 0);
         }
-
-//        Mat colorLabelRight = mRgba.submat(0, 49, 0, 49);
-//        colorLabelRight.setTo(rightDispColor);
-
-//        Mat colorLabelLeft = mRgba.submat(429, 479, 0, 49);
-//        colorLabelLeft.setTo(leftDispColor);
     }
-
-
 }

@@ -34,6 +34,7 @@ public class AutonomousConfig extends LinearOpMode {
     volatile boolean isRed = false;
     volatile String firstBeacon = "";
     volatile String secondBeacon = "";
+    volatile boolean isRight = false;
 
 
     @Override
@@ -61,6 +62,7 @@ public class AutonomousConfig extends LinearOpMode {
                 sp.setLayoutParams(height);
                 layout.addView(sp);//you add the whole RadioGroup to the layout
 
+                // Color
                 final RadioButton[] colorBtn = new RadioButton[2];
                 final RadioGroup rg = new RadioGroup(layout.getContext()); //create the RadioGroup
                 rg.setOrientation(RadioGroup.HORIZONTAL);//or RadioGroup.VERTICAL
@@ -122,6 +124,21 @@ public class AutonomousConfig extends LinearOpMode {
                     case "Gears": sbBtn[3].setChecked(true); break;
                 }
 
+                // Direction
+                final RadioButton[] dirBtn = new RadioButton[2];
+                final RadioGroup dirrg = new RadioGroup(layout.getContext()); //create the RadioGroup
+                dirrg.setOrientation(RadioGroup.HORIZONTAL);//or RadioGroup.VERTICAL
+                dirBtn[0] = new RadioButton(layout.getContext());
+                dirBtn[0].setText("Right");
+                dirBtn[1] = new RadioButton(layout.getContext());
+                dirBtn[1].setText("Left");
+                dirrg.addView(dirBtn[0]);
+                dirrg.addView(dirBtn[1]);
+                layout.addView(dirrg);//you add the whole RadioGroup to the layout
+                if(cfg.isRight) dirBtn[0].setChecked(true);
+                else dirBtn[1].setChecked(true);
+
+
                 //set the properties for button
                 final Button btnSave = new Button(layout.getContext());
                 btnSave.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -130,7 +147,7 @@ public class AutonomousConfig extends LinearOpMode {
 
                     public void onClick(View v) {
                         if(colorBtn[0].isChecked()) isRed = true;
-                        save = true;
+                        else isRed = false;
 
                         if(fbBtn[0].isChecked()) firstBeacon = "Wheels";
                         else if(fbBtn[1].isChecked()) firstBeacon = "Tools";
@@ -142,11 +159,18 @@ public class AutonomousConfig extends LinearOpMode {
                         else if(sbBtn[2].isChecked()) secondBeacon = "Legos";
                         else if(sbBtn[3].isChecked()) secondBeacon = "Gears";
 
+                        if(dirBtn[0].isChecked()) isRight = true;
+                        else isRight = false;
+
+                        layout.removeView(dirrg);
                         layout.removeView(sp);
                         layout.removeView(sbrg);
                         layout.removeView(fbrg);
                         layout.removeView(rg);
                         layout.removeView(btnSave);
+
+                        save = true;
+
                     }
                 });
                 layout.addView(btnSave);
@@ -160,6 +184,7 @@ public class AutonomousConfig extends LinearOpMode {
             cfg.isRed = isRed;
             cfg.firstBeacon = firstBeacon;
             cfg.secondBeacon = secondBeacon;
+            cfg.isRight = isRight;
             cfg.WriteConfig(act);
             telemetry.clear();
             telemetry.addData("Update", " saved");
