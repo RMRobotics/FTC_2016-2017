@@ -283,7 +283,7 @@ public class DarudeAutoNav extends LinearOpMode {
             //sleep(1000);
 
             // Continue slowly checking whether Vuforia locked yet
-            drive.VecDrive(dir*200, 50, 1, 8000);
+            drive.VecDrive(dir*200, 50, 0.7, 8000);
 //TODO at competition: make movement that goes in short bursts to ensure the label is caught
             boolean ec = true;
             while (ec && opModeIsActive()) {
@@ -412,16 +412,16 @@ public class DarudeAutoNav extends LinearOpMode {
                         ADBLog("Position OpenCV X: " + Double.toString(Xb) + ", Sensor: " + Double.toString(y));
                         //drives based on y and x towards the button of choice
                         if (y > 260) {
-                            Xb /= 6;
+                            Xb /= 4;
                             if(start) {
                                 start = false;
-                                drive.VecDriveBalanced(-Xb, y - 210, 0.5, 200);
+                                drive.VecDriveBalanced(-Xb, y - 220, 0.5, 200);
                                 sleep(50);
                             }
-                            drive.VecDriveBalanced(-Xb, y - 210, 0.1*mult, 200);
+                            drive.VecDriveBalanced(-Xb, y - 220, 0.1*mult, 200);
                         } else if (y > 240) {
                             Xb /= 6;
-                            drive.VecDriveBalanced(-Xb, y - 210, 0.9*mult, 200);
+                            drive.VecDriveBalanced(-Xb, y - 220, 0.9*mult, 200);
                         } else {
                             Xb /= 8;
                             if (Xb < 15 && Xb > -8 && y < 250 && y > 190) {
@@ -435,9 +435,9 @@ public class DarudeAutoNav extends LinearOpMode {
                             } else {
                                 drive.VecDrive(0, 0, 0.0, 200);
                                 sleep(20);
-                                drive.VecDriveBalanced(-Xb, y - 210, 1, 200);
+                                drive.VecDriveBalanced(-Xb, y - 220, 1, 200);
                                 sleep(50);
-                                drive.VecDriveBalanced(-Xb, y - 210, 0.3*mult, 150);
+                                drive.VecDriveBalanced(-Xb, y - 220, 0.3*mult, 150);
                                 sleep(250);
                                 verify = 0;
                             }
@@ -473,8 +473,8 @@ public class DarudeAutoNav extends LinearOpMode {
 ///////////////////////////////////////////////////
 
             vuforia.RMResume();
-            drive.VecDrive(0, -50, 1, 8000);
-            sleep(400);
+            drive.VecDrive(0, -50, 0.7, 8000);
+            sleep(1000);
             drive.VecDrive(0, -50, 0, 8000);
             sleep(1000);
 
@@ -496,6 +496,7 @@ public class DarudeAutoNav extends LinearOpMode {
                 }
             }
 
+            ec = true;
             drive.resetDistance();
             drive.VecDrive(-200, 0, 1, 8000);
             while (ec && opModeIsActive()) {
