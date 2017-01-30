@@ -227,7 +227,7 @@ public class DarudeAutoNav extends LinearOpMode {
                 drive.testBackRight(0.0);
                 sleep(1000);
 
-                press.setPosition(0.5);
+
                 stop();
                 if(true) return;
 
@@ -241,7 +241,7 @@ public class DarudeAutoNav extends LinearOpMode {
 //            mImageView = (ImageView) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(com.qualcomm.ftcrobotcontroller.R.id.imageViewId);
 
 
-            press.setPosition(0.8);
+
 
             targets.activate();
             float x = 0;
@@ -288,7 +288,7 @@ public class DarudeAutoNav extends LinearOpMode {
             boolean ec = true;
             while (ec && opModeIsActive()) {
                // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
-                    if (drive.getDistance() > 690) {
+                    if (drive.getDistance() > 760) {
                         ec = false;
                         ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
                         drive.VecDrive(0,0,0,100);
@@ -429,7 +429,7 @@ public class DarudeAutoNav extends LinearOpMode {
                                 verify++;
                                 if (verify > 3) {
                                     bt.Close();
-                                    press.setPosition(.50);
+                                    press.setPosition(.45);
                                     break;
                                 }
                             } else {
@@ -462,9 +462,11 @@ public class DarudeAutoNav extends LinearOpMode {
             sleep(100);
             drive.VecDriveBalanced(9, 9, 1, 500);
             sleep(50);
+
             drive.VecDriveBalanced(15, 20, 0.7, 700);
             sleep(400);
             bt.Close();
+
 
 
 
@@ -480,28 +482,14 @@ public class DarudeAutoNav extends LinearOpMode {
 
             drive.resetDistance();
 
-            drive.VecDrive(200, 0, 1, 8000);
-//TODO at competition: make movement that goes in short bursts to ensure the label is caught
-            ec = true;
-            while (ec && opModeIsActive()) {
-                // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
-                if (drive.getDistance() > 100) {
-                    ec = false;
-                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
-                    drive.VecDrive(0,0,0,100);
-                    sleep(500);
-                } else {
-                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
-                    sleep(20);
-                }
-            }
+
 
             ec = true;
             drive.resetDistance();
             drive.VecDrive(-200, 0, 1, 8000);
             while (ec && opModeIsActive()) {
                 // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
-                if (drive.getDistance() > 100) {
+                if (drive.getDistance() > 300) {
                     ec = false;
                     ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
                     drive.VecDrive(0,0,0,100);

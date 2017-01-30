@@ -51,8 +51,9 @@
 
             beaconL = hardwareMap.servo.get("beaconL");
             index = hardwareMap.servo.get("index");
-            servoHeight = .5;
-            beaconL.setPosition(servoHeight);
+            servoHeight = 2.3;
+            beaconL.setPosition(100);
+
             index.setPosition(.5);
 //            grabberL.setPosition(0);
 //            grabberR.setPosition(0);
