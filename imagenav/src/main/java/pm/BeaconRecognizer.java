@@ -132,39 +132,6 @@ public class BeaconRecognizer {
 
         ButtonFinder.EllipseLocationResult btn = (getRed ^ redIsLeft) ? right : left;
 
-/*            // Calculate brightness and contrast adjustments
-            // Get button mask
-            if(buttonMask == null) {
-                buttonMask = Mat.zeros((int)bD, (int)bD, CvType.CV_8UC1);
-                Imgproc.circle(buttonMask, new Point((int)bD/2, (int)bD/2), (int)bD/2-5, new Scalar(255), -1);
-            }
-            // First button intensity
-            Rect btnBB = new Rect(
-                    (int)(btn.ellipse.center.x - bD/2),
-                    (int)(btn.ellipse.center.y - bD/2),
-                    (int)(bD),
-                    (int)(bD));
-            Rect m = new Rect(0,0,buttonMask.width(), buttonMask.height());
-            Rect a = IRUtils.intersectAndAdjust(new Rect(0,0,mGray0.width(),mGray0.height()), btnBB, m);
-            Scalar bIntens = Core.mean(mGray0.submat(a), buttonMask.submat(m));
-            // Get surroundings mask
-            if(surrMask == null) {
-                surrMask = Mat.ones(btnSurround, CvType.CV_8UC1);
-                Imgproc.circle(surrMask, new Point((int)btnSurround.width/2, (int)btnSurround.height/2), (int)bD/2+5, new Scalar(0), -1);
-            }
-            // Now surroundings
-            btnBB = new Rect(
-                    (int)(btn.ellipse.center.x - btnSurround.width/2),
-                    (int)(btn.ellipse.center.y - btnSurround.height/2),
-                    (int)btnSurround.width,
-                    (int)btnSurround.height);
-
-            m = new Rect(0,0,surrMask.width(), surrMask.height());
-            a = IRUtils.intersectAndAdjust(new Rect(0,0,mGray0.width(),mGray0.height()), btnBB, m);
-            Scalar sIntens = Core.mean(mGray0.submat(a), surrMask.submat(m));*/
-
-
-
         brightness = -(200*btn.bInten - 20*btn.sInten)/(btn.sInten - btn.bInten);
         contrast = (20 - brightness)/btn.bInten;
 
@@ -239,9 +206,14 @@ public class BeaconRecognizer {
     }
 
     public boolean RedOnTheLeft(Mat mRgba, ButtonFinder.EllipseLocationResult left, ButtonFinder.EllipseLocationResult right){
+        Rect trackArea = new Rect(0,0,mRgba.width(),mRgba.height());
+
         Rect leftArea = left.ellipse.boundingRect();
+        leftArea = IRUtils.intersect(trackArea, leftArea);
         Scalar leftAreaColor = ButtonFinder.getColor(mRgba, leftArea);
+
         Rect rightArea = right.ellipse.boundingRect();
+        rightArea = IRUtils.intersect(trackArea, rightArea);
         Scalar rightAreaColor = ButtonFinder.getColor(mRgba, rightArea);
         Scalar leftDispColor;
         Scalar rightDispColor;
@@ -249,11 +221,9 @@ public class BeaconRecognizer {
 //        Imgproc.rectangle(mRgba, leftArea.br(), leftArea.tl(), new Scalar(255, 255, 255), -1);
 //        Imgproc.rectangle(mRgba, rightArea.br(), rightArea.tl(), new Scalar(255, 255, 255), -1);
 
-        if(leftAreaColor.val[0] > rightAreaColor.val[0])
-        {
+        if(leftAreaColor.val[0] > rightAreaColor.val[0]) {
             return true;
-        } else
-        {
+        } else {
             return false;
         }
     }

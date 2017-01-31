@@ -263,13 +263,13 @@ public class Drive2 implements Runnable {
     }
 
     public void setMoveAngle(double x, double y, double power) {
-        //DarudeAutoNav.ADBLog("Drive vector: x:" + x + " y: " + y + " power: " + power);
+        DarudeAutoNav.ADBLog("Power: " + x + ", " + y);
         // Rotate 90 degrees
         double Xr = 0.707 * x + 0.707 * y;
         double Yr = 0.707 * x - 0.707 * y;
 
 //        angle = angle + Math.PI / 4;
-        DecimalFormat df = new DecimalFormat("#.##");
+        getDistance();
         try {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, GYRO_DEVICE_TIMEOUT_MS)) {
                 if (yawPIDResult.isOnTarget()) {
@@ -292,7 +292,6 @@ public class Drive2 implements Runnable {
                     frontRight.setPower(frp - output);
                     backLeft.setPower(blp + output);
                     backRight.setPower(brp - output);
-                    backRight.getCurrentPosition();
 //                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + Xr + " fr,bl: " + Yr + " power: " + power);
                 }
 
@@ -325,6 +324,10 @@ public class Drive2 implements Runnable {
         r += Math.abs(c - prevFREnc);
         c = backRight.getCurrentPosition();
         r += Math.abs(c - prevBREnc);
+
+        DarudeAutoNav.ADBLog("Distance: " + frontLeft.getCurrentPosition() + ", " + frontRight.getCurrentPosition() + ", " +
+                backLeft.getCurrentPosition() + ", " + backRight.getCurrentPosition());
+
         return r/10;
     }
 

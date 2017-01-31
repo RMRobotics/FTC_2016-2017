@@ -287,22 +287,15 @@ public class DarudeAutoNav extends LinearOpMode {
 //TODO at competition: make movement that goes in short bursts to ensure the label is caught
             boolean ec = true;
             while (ec && opModeIsActive()) {
-               // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
-                    if (drive.getDistance() > 760) {
+                int dist = drive.getDistance();
+                    if (dist > 690) {
                         ec = false;
-                        ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                        ADBLog("DISTANCE TRAVELED! Distance: " + dist);
                         drive.VecDrive(0,0,0,100);
                     } else {
-                        ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                        ADBLog("DISTANCE TRAVELED! Distance: " + dist);
                         sleep(20);
                     }
-//                for (VuforiaTrackable trackable : allTrackables) {
-//                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getRawPose();
-//                    if (pose != null) {
-//                        ec = false;
-//                        ADBLog("Vuforia locked!");
-//                    }
-//                }
             }
             if (!opModeIsActive()) {
                 drive.Stop();
@@ -325,8 +318,8 @@ public class DarudeAutoNav extends LinearOpMode {
                     x = poseData[7];
                     y = poseData[11];
 
-                    ADBLog("Vuforia coords: x=" + x + ", y=" + y);
-
+                    ADBLog("Vuforia coords: " + x + ", " + y);
+                    ADBLog("Sensor: " + (rangeSensor.read(0x04, 2)[0]));
                     if(start) {
                         start = false;
                         drive.VecDriveBalanced(-x, y - 430, 1, 100);
@@ -468,7 +461,12 @@ public class DarudeAutoNav extends LinearOpMode {
             bt.Close();
 
 
-
+            if (true) {
+                drive.Stop();
+                navx_device.close();
+                stop();
+                return;
+            }
 
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
@@ -491,11 +489,11 @@ public class DarudeAutoNav extends LinearOpMode {
                 // OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) firstTarget.getListener()).getRawPose();
                 if (drive.getDistance() > 300) {
                     ec = false;
-                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    ADBLog("Encoder Distance: " + drive.getDistance());
                     drive.VecDrive(0,0,0,100);
                     sleep(500);
                 } else {
-                    ADBLog("DISTANCE TRAVELED! Distance: " + drive.getDistance());
+                    ADBLog("Encoder Distance: " + drive.getDistance());
                     sleep(20);
                 }
             }
