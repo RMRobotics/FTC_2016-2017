@@ -4,6 +4,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.competition;
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,6 +19,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @Autonomous(name = "feRMi - AUTONOMOUS", group = "feRMi")
+@Disabled
 public class FeRMiAuto extends LinearOpMode{
 
     private DcMotor FL;

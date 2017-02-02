@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name = "colorValues")
+@Disabled
 public class colorline extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();

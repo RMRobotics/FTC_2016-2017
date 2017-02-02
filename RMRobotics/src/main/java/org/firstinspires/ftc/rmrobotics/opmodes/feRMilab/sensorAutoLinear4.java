@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 // RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
 
 
-@Autonomous(name = "Redsensors8")
+@Autonomous(name = "Red")
 public class sensorAutoLinear4 extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -121,8 +121,8 @@ public class sensorAutoLinear4 extends LinearOpMode {
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw()) < 25) {
-                setDrive(scale * 0.25, 0);
+            if (Math.abs(navx.getYaw()) < 20) {
+                setDrive(scale * 0.4, 0);
             } else {
                 setDrive(scale * 0.07, 0);
             }
@@ -142,8 +142,8 @@ public class sensorAutoLinear4 extends LinearOpMode {
             } else if (FL.getCurrentPosition() - initPos > -2400) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() - initPos > -2300) {
-                setDrive(scale * 0.3);
+            if (FL.getCurrentPosition() - initPos > -2400) {
+                setDrive(scale * 0.5);
             } else {
                 setDrive(scale * 0.07);
             }
@@ -197,7 +197,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         sleep(100);
 
         // drive forward until close enough to beacon
-        while (rangeReader.read(0x04, 2)[0] > 20 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
             setDrive(-0.1);
             addTelemetry();
         }

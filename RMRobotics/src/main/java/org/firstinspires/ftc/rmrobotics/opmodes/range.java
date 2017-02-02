@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name = "range values")
+@Disabled
 public class range extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
