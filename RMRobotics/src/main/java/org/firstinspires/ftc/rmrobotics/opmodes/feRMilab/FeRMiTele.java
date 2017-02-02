@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.competition;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

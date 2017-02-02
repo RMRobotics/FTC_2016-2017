@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.history;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -18,8 +19,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 // RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
 
 
-@Autonomous(name = "Red")
-public class sensorAutoLinear4 extends LinearOpMode {
+@Autonomous(name = "Bluesensors8")
+@Disabled
+public class BlueSensorAutoLinearNoMid extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private DcMotor FL;
@@ -96,7 +98,6 @@ public class sensorAutoLinear4 extends LinearOpMode {
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x60), false);
         rangeReader.engage();
 
-        dim.setLED(0, false);
         dim.setLED(1, true);
 
         waitForStart();
@@ -106,25 +107,25 @@ public class sensorAutoLinear4 extends LinearOpMode {
         harvester.setPosition(0.5);
 
         // manuever into shooting position
-        /*setEnc(-560, -560, -560, -560);
+        setEnc(-560, -560, -560, -560);
         setDrive(0.2, 0.2, 0.2, 0.2);
-        sleep(1000);*/
+        sleep(1000);
 
         // TODO: insert shooter code
 
         // turn towards first beacon TODO: change to rotation with all wheels
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw() + 37) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 42) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 37 > 0) {
-                scale = -1;
-            } else {
+            if (navx.getYaw() - 42 > 0) {
                 scale = 1;
-            }
-            if (Math.abs(navx.getYaw()) < 20) {
-                setDrive(scale * 0.4, 0);
             } else {
-                setDrive(scale * 0.07, 0);
+                scale = -1;
+            }
+            if (Math.abs(navx.getYaw()) < 30) {
+                setDrive(0, scale * 0.25);
+            } else {
+                setDrive(0, scale * 0.07);
             }
         }
         addTelemetry();
@@ -132,18 +133,18 @@ public class sensorAutoLinear4 extends LinearOpMode {
 //        setDrive(0);
 //        sleep(100);
 
-        double initPos = FL.getCurrentPosition();
+        double initPos = FR.getCurrentPosition();
 
-        // drive forward until center color sensor detects line
+        // drive forward until center color sensor detects first line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FL.getCurrentPosition() - initPos < -3500) {
+            if (FR.getCurrentPosition() - initPos < -3500) {
                 scale = 1;
-            } else if (FL.getCurrentPosition() - initPos > -2400) {
+            } else if (FR.getCurrentPosition() - initPos > -2400) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() - initPos > -2400) {
-                setDrive(scale * 0.5);
+            if (FR.getCurrentPosition() - initPos > -2000) {
+                setDrive(scale * 0.3);
             } else {
                 setDrive(scale * 0.07);
             }
@@ -153,7 +154,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
-        //drives backwards to correct for overshooting
+        //drive backwards to correct for overshooting line; speed is slow enough to stop on line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.07);
         }
@@ -162,14 +163,14 @@ public class sensorAutoLinear4 extends LinearOpMode {
         sleep(100);
 
         // turn left until back color sensor also detects the line
-        while (Math.abs(navx.getYaw() + 86) > 5 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 86) > 5 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 86 > 0) {
+            if (navx.getYaw() - 86 > 0) {
                 scale = -1;
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw() + 86) > 15) {
+            if (Math.abs(navx.getYaw() - 86) > 15) {
                 setDrive(scale * 0.15, -scale * 0.15);
             } else {
                 setDrive(scale * 0.07, -scale * 0.07);
@@ -181,10 +182,10 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
-        //turn right to correct overturning
-        while (navx.getYaw() > -85 && opModeIsActive()) {
+        // turn right to correct
+        while (navx.getYaw() > 85 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 85 > 0) {
+            if (navx.getYaw() - 85 > 0) {
                 scale = -1;
             } else {
                 scale = 1;
@@ -197,7 +198,7 @@ public class sensorAutoLinear4 extends LinearOpMode {
         sleep(100);
 
         // drive forward until close enough to beacon
-        while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] > 20 && opModeIsActive()) {
             setDrive(-0.1);
             addTelemetry();
         }
@@ -219,22 +220,18 @@ public class sensorAutoLinear4 extends LinearOpMode {
 //        sleep(100);
 
         // move beacon pusher arm to appropriate location
-        if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
+        if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1 || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
             //left is red, right is blue
             swingArm.setPosition(.65);
         }
-        else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
+        else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1 || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
+            //left is blue, right is red
             swingArm.setPosition(.4);
         }
         addTelemetry();
 
-
-        double initTime = runtime.milliseconds();
         // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 13 && opModeIsActive()) {
-        while (runtime.milliseconds() - initTime < 1000 && opModeIsActive()) {
-        // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
             setDrive(-0.15, -0.15, -0.15, -0.15);
             addTelemetry();
         }
@@ -249,19 +246,17 @@ public class sensorAutoLinear4 extends LinearOpMode {
         }
         swingArm.setPosition(0.5);
 
-
-        //FIRST BEACON DONE
-
-
 //        setDrive(0, 0, 0, 0);
 //        sleep(100);
 
+        //FIRST BEACON DONE
+
         // turn towards second line
-        while (navx.getYaw() < -10 && opModeIsActive()) {
+        while (navx.getYaw() < 5 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(.1, -0.1, .1, -0.1);
+                setDrive(-0.1, 0.1, -0.1, 0.1);
             } else {
-                setDrive(0, -0.07, 0, -0.07);
+                setDrive(-0.7, 0, -0.07, 0);
             }
             addTelemetry();
         }
@@ -269,23 +264,23 @@ public class sensorAutoLinear4 extends LinearOpMode {
 //        setDrive(0, 0, 0, 0);
 //        sleep(100);
 
-        int curEnc = FL.getCurrentPosition();
+        int curEnc = FR.getCurrentPosition();
 
         // drive forward slightly to move center color sensor off the first line
         double start = runtime.milliseconds();
         while (runtime.milliseconds() - start < 1000 && opModeIsActive()) {
-            setDrive(-0.6);
+            setDrive(-0.4);
             addTelemetry();
         }
 
         // drive forward until center color sensor detects second line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            int relDis = FL.getCurrentPosition() - curEnc;
-            if (relDis > -1500) {
-                setDrive(-0.35);
+            int relDis = FR.getCurrentPosition() - curEnc;
+            if (relDis > -1900) {
+                setDrive(-0.4);
             } else {
-                if (relDis > -1000) {
+                if (relDis > -1800) {
                     scale = -1;
                 } else if(relDis < -3000) {
                     scale = 1;
@@ -310,14 +305,14 @@ public class sensorAutoLinear4 extends LinearOpMode {
         sleep(100);
 
         //turn left towards beacon
-        while (Math.abs(navx.getYaw() + 88) > 3 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 88) > 3 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
+            if (navx.getYaw() - 90 > 0) {
                 scale = 1;
+            } else {
+                scale = -1;
             }
-            if (Math.abs(navx.getYaw() + 88) > 15) {
+            if (Math.abs(navx.getYaw() - 88) > 15) {
                 setDrive(scale * 0.2, -scale * 0.2);
             } else {
                 setDrive(scale * 0.07, -scale * 0.07);
@@ -330,12 +325,12 @@ public class sensorAutoLinear4 extends LinearOpMode {
         sleep(100);
 
         //turn right to correct for overturning
-        while (Math.abs(navx.getYaw() + 88) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 88) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 88 > 0) {
-                scale = -1;
-            } else {
+            if (navx.getYaw() - 88 > 0) {
                 scale = 1;
+            } else {
+                scale = -1;
             }
             setDrive(0, -scale * 0.07);
         }
@@ -374,19 +369,15 @@ public class sensorAutoLinear4 extends LinearOpMode {
         // move beacon pusher arm to appropriate location
         if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 3){
             //left is red, right is blue
-            swingArm.setPosition(.68);
+            swingArm.setPosition(.65);
         }
         else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 10){
-            swingArm.setPosition(.20);
+            swingArm.setPosition(.4);
         }
         addTelemetry();
 
-        initTime = runtime.milliseconds();
         // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 13 && opModeIsActive()) {
-        while (runtime.milliseconds() - initTime < 1000 && opModeIsActive()) {
-        // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
             setDrive(-0.15, -0.15, -0.15, -0.15);
             addTelemetry();
         }
@@ -403,12 +394,12 @@ public class sensorAutoLinear4 extends LinearOpMode {
         setDrive(0, 0, 0, 0);
         sleep(100);
 
-        //turn towards center goal
-        while (Math.abs(navx.getYaw() + 45) > 3 && opModeIsActive()){
+        // turn towards center goal to push ball
+        while (Math.abs(navx.getYaw() - 45) > 3 && opModeIsActive()){
             if (Math.abs(navx.getYaw()) > 45) {
-                setDrive(0.4, 0, 0.4, 0);
+                setDrive(0, 0.4, 0, 0.4);
             } else {
-                setDrive(0.1, 0, 0.1, 0);
+                setDrive(0, 0.1, 0, 0.1);
             }
             addTelemetry();
         }

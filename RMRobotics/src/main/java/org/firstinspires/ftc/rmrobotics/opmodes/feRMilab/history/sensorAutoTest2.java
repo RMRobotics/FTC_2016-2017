@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.history;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
@@ -18,9 +18,9 @@ import java.text.DecimalFormat;
  * Created by Peter on 11/29/16.
  */
 
-@Autonomous(name = "sensors3")
+@Autonomous(name = "sensors2")
 @Disabled
-public class sensorAutoTest3 extends OpMode {
+public class sensorAutoTest2 extends OpMode {
     //refer to comments in sensorAutoTest
     DcMotor FL;
     DcMotor FR;
@@ -41,12 +41,8 @@ public class sensorAutoTest3 extends OpMode {
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
 
-    private double yaw;
-
     private boolean calibration_complete = false;
     private boolean lineSeen = false;
-    private boolean turn1 = false;//turn towards beacon
-    private boolean turn2 = false;//turn towards wall
 
     navXPIDController.PIDResult yawPIDResult;
     DecimalFormat df;
@@ -111,35 +107,16 @@ public class sensorAutoTest3 extends OpMode {
         colorLinecache = colorLinereader.read(0x04, 1);
         telemetry.addData("1 #L", colorLinecache[0] & 0xFF);
         telemetry.addData("2 A", colorLinereader.getI2cAddress().get8Bit());
-        telemetry.addData("3 YAW", navx.getYaw());
-        telemetry.addData("enc", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
 
-        if (!turn1) {
-        //robot isn't turned towards beacon
-            if (Math.abs(35 + navx.getYaw()) < 2) {//if robot has turned 35 degrees
-                turn1 = true;//change turn1 to true
-            } else if (35 + navx.getYaw() > 0) {//if robot has turned left less than 35 degrees
-                setDrive(-0.3, 0, -0.3, 0);//turn the robot left
-            } else {
-                setDrive(0.3, 0, 0.3, 0);//turn the robot right
-            }
-        } else if (!lineSeen) {
+        if (!lineSeen) {
         //if line isn't seen
-            setDrive(-0.3, -0.3, -0.3, -0.3);//drive towards beacon
-            if (colorLinecache[0] == 14) {//if white color is detected, turn lineSeen to true
-                lineSeen = true;
-            }
-        } else if (!turn2) {
-        //if robot isn't aligned with the wall
-            if (Math.abs(80 + navx.getYaw()) < 2) {//if robot has turned 80 degrees, set turn2 to true
-                turn2 = true;
-            } else if (80 + navx.getYaw() > 0) {//if robot has turned left less than 80 degrees
-                setDrive(-0.3, 0, -0.3, 0);//turn the robot left
+            if (colorLinecache[0] != 14) {//if white color is not seen
+                setDrive(-0.5, 0, 0, -0.5); //drive diagonally without yaw correction
             } else {
-                setDrive(0.3, 0, 0.3, 0);//turn the robot right
+                lineSeen = true; //if white color is seen, set lineSeen to true
             }
         } else {
-        //stop robot when done
+        //if line is seen, stop robot
             setDrive(0, 0, 0, 0);
         }
     }

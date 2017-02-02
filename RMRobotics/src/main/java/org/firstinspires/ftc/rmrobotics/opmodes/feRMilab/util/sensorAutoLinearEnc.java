@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -19,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Autonomous(name = "RedEncTest")
+@Disabled
 public class sensorAutoLinearEnc extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 

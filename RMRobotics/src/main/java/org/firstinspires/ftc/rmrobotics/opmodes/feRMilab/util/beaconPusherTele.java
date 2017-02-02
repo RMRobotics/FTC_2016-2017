@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name = "beaconPusherCalibration")
-//@Disabled
+@Disabled
 public class beaconPusherTele extends OpMode {
 
     private Servo beaconPusher;

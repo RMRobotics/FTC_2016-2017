@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.competition;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.history;
 
 
 import com.kauailabs.navx.ftc.AHRS;
