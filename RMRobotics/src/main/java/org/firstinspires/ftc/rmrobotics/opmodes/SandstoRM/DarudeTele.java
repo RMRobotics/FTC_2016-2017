@@ -99,22 +99,26 @@
                 timer.reset();
                 while (timer.seconds() < 2)
                     beaconL.setPower(100);
+                beaconL.setPower(0);
             }
             else if (gamepad1.dpad_left && beaconToggle[0]) {
                 timer.reset();
                 while (timer.seconds() < 2)
                     beaconL.setPower(-100);
+                beaconL.setPower(0);
             }
 
             if (gamepad1.dpad_right && !beaconToggle[1]) {
                 timer.reset();
                 while (timer.seconds() < 2)
                     beaconR.setPower(100);
+                beaconR.setPower(0);
             }
             else if (gamepad1.dpad_right && beaconToggle[1]) {
                 timer.reset();
                 while (timer.seconds() < 2)
                     beaconR.setPower(-100);
+                beaconR.setPower(0);
             }
 
             if (gamepad1.right_bumper) {
