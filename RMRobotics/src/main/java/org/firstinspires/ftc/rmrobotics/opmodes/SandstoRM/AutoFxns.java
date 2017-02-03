@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
@@ -20,8 +21,8 @@ public class AutoFxns {
     private DcMotor shootR;
 
     private Servo index;
-    private Servo beaconL;
-    private Servo beaconR;
+    private CRServo beaconL;
+    private CRServo beaconR;
 
     byte[] colorLcache;
     byte[] colorRcache;
@@ -36,7 +37,7 @@ public class AutoFxns {
     private ElapsedTime time = new ElapsedTime();
 
 
-    public AutoFxns(DcMotor a, DcMotor b, DcMotor c, DcMotor d, DcMotor e, DcMotor f, Servo aa, Servo bb, Servo cc, I2cDevice aaa, I2cDevice bbb, I2cDevice ccc, I2cDevice ddd, I2cDeviceSynch aaaa, I2cDeviceSynch bbbb, I2cDeviceSynch cccc, I2cDeviceSynch dddd)
+    public AutoFxns(DcMotor a, DcMotor b, DcMotor c, DcMotor d, DcMotor e, DcMotor f, Servo aa, CRServo bb, CRServo cc, I2cDevice aaa, I2cDevice bbb, I2cDevice ccc, I2cDevice ddd, I2cDeviceSynch aaaa, I2cDeviceSynch bbbb, I2cDeviceSynch cccc, I2cDeviceSynch dddd)
     {
         wheelFL = a;
         wheelFR = b;
@@ -103,15 +104,20 @@ public class AutoFxns {
     }
 
     public void beaconEngage(boolean set, String side) {
-        if (side.charAt(0) == 'L' && set == true)
-            beaconL.setPosition(1);
-        else if (side.charAt(0) == 'R' && set == true)
-            beaconR.setPosition(1);
-        else if (side.charAt(0) == 'L' && set == false)
-            beaconL.setPosition(0);
-        else if (side.charAt(0) == 'R' && set == false)
-            beaconL.setPosition(0);
-
+        if (!side.equals("Undetermined")) {
+            if (beaconL != null) {
+                if (side.charAt(0) == 'L' && set == true)
+                    beaconL.setPower(100);
+                else if (side.charAt(0) == 'L' && set == false)
+                    beaconL.setPower(0);
+            }
+            if (beaconR != null) {
+                if (side.charAt(0) == 'R' && set == true)
+                    beaconR.setPower(100);
+                else if (side.charAt(0) == 'R' && set == false)
+                    beaconR.setPower(0);
+            }
+        }
     }
 
     public void lineCheck(double num, String side) {

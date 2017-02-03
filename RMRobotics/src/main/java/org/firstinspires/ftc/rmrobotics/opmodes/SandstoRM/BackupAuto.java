@@ -3,6 +3,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -25,7 +26,8 @@ public class BackupAuto extends LinearOpMode {
     private DcMotor shootL;
     private DcMotor shootR;
     private Servo index;
-    private Servo beaconL;
+    private CRServo beaconL;
+    private CRServo beaconR;
     I2cDevice colorL;
     I2cDevice colorR;
     I2cDevice lineL;
@@ -56,7 +58,8 @@ public class BackupAuto extends LinearOpMode {
         shootL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shootR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        beaconL = hardwareMap.servo.get("beaconL");
+        beaconL = hardwareMap.crservo.get("beaconL");
+        beaconR = hardwareMap.crservo.get("beaconR");
         index = hardwareMap.servo.get("index");
 
         colorL = hardwareMap.i2cDevice.get("cL");
@@ -79,6 +82,8 @@ public class BackupAuto extends LinearOpMode {
         //beaconR does not exist on SandstoRM
         AutoFxns auto = new AutoFxns(wheelFL, wheelFR, wheelBL, wheelBR, shootL, shootR, index, beaconL, null, colorL, colorR, lineL, lineR, colorLreader, colorRreader, lineLreader, lineRreader);
         waitForStart();
+        //Strategy: move forward, shoot, move forward more to hit beacon, hopefully stop on center platform
+
         //duration, power, strafe, rotate
         auto.move(3.5,100,0,0);
         //time to rev flywheel, time for ball to exit flywheel

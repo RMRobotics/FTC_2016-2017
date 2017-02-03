@@ -4,6 +4,7 @@
 
     import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+    import com.qualcomm.robotcore.hardware.CRServo;
     import com.qualcomm.robotcore.hardware.DcMotor;
     import com.qualcomm.robotcore.hardware.DcMotorSimple;
     import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -11,6 +12,7 @@
     import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
     import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
     import com.qualcomm.robotcore.hardware.Servo;
+    import com.qualcomm.robotcore.util.ElapsedTime;
 
     import java.util.ArrayList;
     import java.util.Collections;
@@ -22,7 +24,7 @@
 
     @TeleOp(name="DarudeTele", group="SandstoRM")
     public class DarudeTele extends OpMode {
-        private double servoHeight;
+//      private double servoHeight;
         private DcMotor wheelFL;
         private DcMotor wheelFR;
         private DcMotor wheelBL;
@@ -31,7 +33,8 @@
         private DcMotor shootR;
         private DcMotor harvest;
         private DcMotor lift;
-        private Servo beaconL;
+        private CRServo beaconL;
+        private CRServo beaconR;
         private Servo index;
         private Servo grabberL;
         private Servo grabberR;
@@ -49,10 +52,10 @@
             wheelFR.setDirection(DcMotorSimple.Direction.REVERSE);
             wheelBR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-            beaconL = hardwareMap.servo.get("beaconL");
+            beaconL = hardwareMap.crservo.get("beaconL");
+            beaconR = hardwareMap.crservo.get("beaconR");
             index = hardwareMap.servo.get("index");
-            servoHeight = 2.3;
-            beaconL.setPosition(100);
+//          servoHeight = 2.3;
 
             index.setPosition(.5);
 //            grabberL.setPosition(0);
@@ -62,6 +65,7 @@
 
         public void loop() {
 
+            ElapsedTime timer = new ElapsedTime();
             double forward = gamepad1.right_stick_y;
             double strafe = gamepad1.right_stick_x;
             double rotate = gamepad1.left_stick_x;
@@ -90,6 +94,29 @@
                 shootR.setPower(0.0);
             }
 
+            boolean[] beaconToggle = {false, false};
+            if (gamepad1.dpad_left && !beaconToggle[0]) {
+                timer.reset();
+                while (timer.seconds() < 2)
+                    beaconL.setPower(100);
+            }
+            else if (gamepad1.dpad_left && beaconToggle[0]) {
+                timer.reset();
+                while (timer.seconds() < 2)
+                    beaconL.setPower(-100);
+            }
+
+            if (gamepad1.dpad_right && !beaconToggle[1]) {
+                timer.reset();
+                while (timer.seconds() < 2)
+                    beaconR.setPower(100);
+            }
+            else if (gamepad1.dpad_right && beaconToggle[1]) {
+                timer.reset();
+                while (timer.seconds() < 2)
+                    beaconR.setPower(-100);
+            }
+
             if (gamepad1.right_bumper) {
                 harvest.setPower(-1.0);
             } else if (gamepad1.left_bumper) {
@@ -105,21 +132,6 @@
             } else {
                 lift.setPower(0.0);
             }
-            if (gamepad1.dpad_down)
-            {
-                if (servoHeight <= 1)
-                {
-                    servoHeight += .003;
-                }
-            }
-            if (gamepad1.dpad_up)
-            {
-                if (servoHeight >= .35)
-                {
-                    servoHeight -= .003;
-                }
-            }
-            beaconL.setPosition(servoHeight);
 
             if (gamepad2.y) {
                     index.setPosition(1.1);
