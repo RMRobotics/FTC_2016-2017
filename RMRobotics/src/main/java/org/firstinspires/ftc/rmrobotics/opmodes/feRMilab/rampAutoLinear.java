@@ -56,16 +56,13 @@ public class rampAutoLinear extends LinearOpMode {
         runtime.reset(); // reset runtime counter
 
         //turn at an angle
-        turnRobot(45);
-//        addTelemetry();
+        turnRobotCorner(45);
 
         //drive forward
         driveRobot(1000, -.4);
-//        addTelemetry();
 
         //turn at an angle
-        turnRobot(135);
-//        addTelemetry();
+        turnRobot(130);
 
         //drive forward
         driveRobot(1000, -.4);
@@ -75,6 +72,24 @@ public class rampAutoLinear extends LinearOpMode {
         startPos = FL.getCurrentPosition();
         while (FL.getCurrentPosition() - startPos > (-1*distance) && opModeIsActive()){
             setDrive(power);
+        }
+        setDrive(0, 0, 0, 0);
+        sleep(100);
+    }
+
+    private void turnRobotCorner(int a){
+        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+            int scale;
+            if (navx.getYaw() + a > 0) {
+                scale = -1;
+            } else {
+                scale = 1;
+            }
+            if (Math.abs(navx.getYaw()) < (a - 10)){
+                setDrive(scale * 0.25, 0);
+            } else {
+                setDrive(scale * 0.07, 0);
+            }
         }
         setDrive(0, 0, 0, 0);
         sleep(100);
