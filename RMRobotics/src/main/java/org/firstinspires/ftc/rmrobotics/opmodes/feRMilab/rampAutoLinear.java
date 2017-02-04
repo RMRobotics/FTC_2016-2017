@@ -77,7 +77,7 @@ public class rampAutoLinear extends LinearOpMode {
         while (FL.getCurrentPosition() - startPos > (-1*distance) && opModeIsActive()){
             setDrive(power);
         }
-        setDrive(0, 0, 0, 0);
+        setDrive(0);
         sleep(100);
     }
 
@@ -95,7 +95,7 @@ public class rampAutoLinear extends LinearOpMode {
                 setDrive(scale * 0.07, 0);
             }
         }
-        setDrive(0, 0, 0, 0);
+        setDrive(0);
         sleep(100);
     }
 
@@ -107,13 +107,13 @@ public class rampAutoLinear extends LinearOpMode {
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw() + a) > 20) {
+            if (Math.abs(navx.getYaw()) < (a - 10)) {
                 setDrive(scale * 0.25, scale*-0.25);
             } else {
                 setDrive(scale * 0.07, scale*-0.07);
             }
         }
-        setDrive(0, 0, 0, 0);
+        setDrive(0);
         sleep(100);
     }
 
@@ -157,20 +157,4 @@ public class rampAutoLinear extends LinearOpMode {
         BL.setPower(p1);
         BR.setPower(p2);
     }
-
-    private void setDrive(double p1, double p2, double p3, double p4) {
-        FL.setPower(p1);
-        FR.setPower(p2);
-        BL.setPower(p3);
-        BR.setPower(p4);
-    }
-
-    private void setEnc(int p1, int p2, int p3, int p4) {
-        FL.setTargetPosition(FL.getCurrentPosition() + p1);
-        FR.setTargetPosition(FR.getCurrentPosition() + p2);
-        BL.setTargetPosition(BL.getCurrentPosition() + p3);
-        BR.setTargetPosition(BR.getCurrentPosition() + p4);
-    }
-
-
 }
