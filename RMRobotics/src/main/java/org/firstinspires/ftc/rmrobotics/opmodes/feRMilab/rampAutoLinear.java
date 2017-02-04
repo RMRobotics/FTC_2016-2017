@@ -23,7 +23,7 @@ public class rampAutoLinear extends LinearOpMode {
     private AHRS navx;
 
     private DeviceInterfaceModule dim;
-
+    double startPos;
     @Override
     public void runOpMode() throws InterruptedException {
         FL = hardwareMap.dcMotor.get("FL");
@@ -60,48 +60,27 @@ public class rampAutoLinear extends LinearOpMode {
 //        addTelemetry();
 
         //drive forward
-        double startPos = FL.getCurrentPosition();
-        while (FL.getCurrentPosition() - startPos > -1000 && opModeIsActive()){
-            setDrive(-.4);
-        }
+        driveRobot(1000, -.4);
 //        addTelemetry();
-
-        setDrive(0, 0, 0, 0);
-        sleep(100);
 
         //turn at an angle
-//        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw()) < 140 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 140 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 140) > 20) {
-                setDrive(scale * 0.25, scale*-0.25);
-            } else {
-                setDrive(scale * 0.07, scale*-0.07);
-            }
-        }
+        turnRobot(135);
 //        addTelemetry();
-
-        setDrive(0);
-        sleep(100);
 
         //drive forward
-        startPos = FL.getCurrentPosition();
-        while (FL.getCurrentPosition() - startPos > -500 && opModeIsActive()){
-            setDrive(-.4);
-        }
-//        addTelemetry();
+        driveRobot(1000, -.4);
+    }
 
+    private void driveRobot(int distance, double power){
+        startPos = FL.getCurrentPosition();
+        while (FL.getCurrentPosition() - startPos > (-1*distance) && opModeIsActive()){
+            setDrive(power);
+        }
         setDrive(0, 0, 0, 0);
         sleep(100);
     }
 
     private void turnRobot(int a){
-        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + a > 0) {
@@ -109,10 +88,10 @@ public class rampAutoLinear extends LinearOpMode {
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw()) < (a - 10)){
-                setDrive(scale * 0.25, 0);
+            if (Math.abs(navx.getYaw() + a) > 20) {
+                setDrive(scale * 0.25, scale*-0.25);
             } else {
-                setDrive(scale * 0.07, 0);
+                setDrive(scale * 0.07, scale*-0.07);
             }
         }
         setDrive(0, 0, 0, 0);
