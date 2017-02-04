@@ -307,15 +307,15 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 
             drive.resetDistance();
             drive.DriveByEncoders(0, 0.2, 150);
-            drive.TurnToAngle(30);
+            drive.TurnToAngle(30*dir);
             sleep(1000);
             drive.resetDistance();
-            drive.DriveByEncoders(25,0.4,310);
+            drive.DriveByEncoders(25*dir,0.4,310);
             drive.resetDistance();
-            drive.DriveByEncoders(22,0.2,500);
+            drive.DriveByEncoders(22*dir,0.2,500);
             drive.resetDistance();
-            drive.DriveByEncoders(20,0.1,310);
-            drive.TurnToAngle(90);
+            drive.DriveByEncoders(20*dir,0.1,310);
+            drive.TurnToAngle(90*dir);
             drive.brake();
             sleep(3000);
 
@@ -392,7 +392,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             }
 
             drive.resetDistance();
-            drive.DriveByEncoders(90,0.1,330);
+            drive.DriveByEncoders(90*dir,0.1,330);
             sleep(4000);
 
             if (!opModeIsActive()) {
@@ -411,7 +411,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             sleep(1000);
             drive.resetDistance();
             drive.DriveByEncoders(0,0.2,1100);
-            drive.TurnToAngle(90);
+            drive.TurnToAngle(90*dir);
             drive.brake();
             sleep(2000);
 
@@ -487,7 +487,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             }
 
             drive.resetDistance();
-            drive.DriveByEncoders(90,0.1,330);
+            drive.DriveByEncoders(90*dir,0.1,330);
             sleep(4000);
 
 
@@ -528,7 +528,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         int angle = 0;
         int prevAngle = 0;
         double d = 1000;
-        double head = 90;
+        double head = 90*dir;
 
         // First intercept perpendicular line
         while (opModeIsActive())
