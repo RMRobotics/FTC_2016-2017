@@ -59,13 +59,17 @@ public class rampAutoLinear extends LinearOpMode {
         turnRobotCorner(45);
 
         //drive forward
-        driveRobot(1000, -.4);
+        driveRobot(1200, -.4);
 
-        //turn at an angle
+        //face ramp
         turnRobot(130);
 
-        //drive forward
-        driveRobot(1000, -.4);
+        //drive onto ramp
+        driveRobot(1500, -.3);
+
+        while (opModeIsActive()){
+            addTelemetry();
+        }
     }
 
     private void driveRobot(int distance, double power){
