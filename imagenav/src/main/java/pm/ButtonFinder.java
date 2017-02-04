@@ -313,6 +313,8 @@ public class ButtonFinder {
         public double Hdiff = 0;
         public double bInten = 0;
         public double sInten = 0;
+        public boolean isRight = false;
+        public double beaconCenter = 0;
 
         EllipseLocationResult(RotatedRect ellipse, double bi, double si) {
             this.ellipse = ellipse;

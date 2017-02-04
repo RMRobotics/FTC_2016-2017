@@ -27,8 +27,8 @@ public class BeaconRecognizer {
     double contrast = 1;
     double brightness = 0;
     int expBtnDiam = 40;
-    Rect searchArea = new Rect(250, 0, 200, 480);
-    int expBtnOffset = 100; // Offset from the top of search rectangle
+    Rect searchArea = new Rect(0, 0, 160, 640);
+    int expBtnOffset = 80; // Offset from the top of search rectangle
     Size btnSurround = new Size(100, 110); // Box to check color around button
     Mat buttonMask = null;
     Mat surrMask = null;
@@ -44,10 +44,10 @@ public class BeaconRecognizer {
 
     public ButtonFinder.EllipseLocationResult detectButtons(Mat img, boolean getRed) {
         Rect trackArea = new Rect (
-                img.cols() * searchArea.x / 640,
-                img.rows() * searchArea.y / 480,
-                img.cols() * searchArea.width / 640,
-                img.rows() * searchArea.height / 480);
+                searchArea.x,
+                searchArea.y,
+                searchArea.width,
+                searchArea.height);
         // Set display to original
         mDisp = img;
 
@@ -131,6 +131,8 @@ public class BeaconRecognizer {
         }
 
         ButtonFinder.EllipseLocationResult btn = (getRed ^ redIsLeft) ? right : left;
+        btn.isRight = (getRed ^ redIsLeft);
+        btn.beaconCenter = (left.ellipse.center.y + right.ellipse.center.y)/2 + trackArea.y;
 
         brightness = -(200*btn.bInten - 20*btn.sInten)/(btn.sInten - btn.bInten);
         contrast = (20 - brightness)/btn.bInten;

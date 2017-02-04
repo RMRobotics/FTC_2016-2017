@@ -3,6 +3,9 @@ package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -43,8 +46,9 @@ public class BeaconTracker implements Tracker {
 
     private OpenCVVideo ocv = null;
     private boolean teamIsRed;
+    private ButtonFinder.EllipseLocationResult btn = null;
 
-    BeaconTracker(CameraBridgeViewBase view, DarudeAutoNav om, boolean isRed) {
+    BeaconTracker(CameraBridgeViewBase view, LinearOpMode om, boolean isRed) {
         teamIsRed = isRed;
         br = new BeaconRecognizer();
         trackingState = State.RECOGNIZING;
@@ -57,7 +61,11 @@ public class BeaconTracker implements Tracker {
 
     synchronized public Mat Recognize(Mat img) {
         ButtonFinder.EllipseLocationResult btn0 = br.detectButtons(img, teamIsRed);
-        if (btn0 != null) trackingState = State.RECOGNIZED;
+        if (btn0 != null) {
+            trackingState = State.RECOGNIZED;
+            btn = btn0;
+        }
+
         return img;
     }
 
@@ -72,6 +80,10 @@ public class BeaconTracker implements Tracker {
         RotatedRect ret = btnPosition;
         btnPosition = null;
         return ret;
+    }
+
+    synchronized  public ButtonFinder.EllipseLocationResult button() {
+        return btn;
     }
 
     synchronized public State GetState() {
@@ -92,9 +104,9 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private long mFrameNum = 0;
     private Tracker eTracker = null;
-    private DarudeAutoNav opmode;
+    private LinearOpMode opmode;
 
-    OpenCVVideo(CameraBridgeViewBase cv, Tracker trc, DarudeAutoNav om) {
+    OpenCVVideo(CameraBridgeViewBase cv, Tracker trc, LinearOpMode om) {
         obj = this;
         openCvCameraView = cv;
         opmode = om;
@@ -130,10 +142,11 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mFrameNum++;
 
-        opmode.ADBLog("Got frame");
+//        opmode.ADBLog("Got frame");
 
         Mat img = inputFrame.rgba();
         Core.flip(img, img, 1);
+        img = img.t();
 
         if (mFrameNum > 10) {
             switch (eTracker.GetState()) {
@@ -149,6 +162,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
             }
         }
 
+        img = img.t();
         return img;
     }
 

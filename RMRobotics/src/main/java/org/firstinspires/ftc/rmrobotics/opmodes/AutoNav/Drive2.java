@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -26,6 +27,9 @@ public class Drive2 implements Runnable {
     //runtime calculations
     ElapsedTime runtime = new ElapsedTime();
 
+    // Opmode
+    private LinearOpMode opmode = null;
+
     //navx
     private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navx_device;
@@ -33,14 +37,14 @@ public class Drive2 implements Runnable {
     Telemetry telemetry;
 
     //Navx PID Variables
-    private navXPIDController yawPIDController;
-    private navXPIDController.PIDResult yawPIDResult;
+    private ZPIDController yawPIDController;
+    private ZPIDController.PIDResult yawPIDResult;
     private final double REQUIRED_VOLTAGE = 13.0;
     private final double TARGET_ANGLE_DEGREES = 0.0;
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1;
-    private final double YAW_PID_P = 0.017;
+    private final double YAW_PID_P = 0.013;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
     private int GYRO_DEVICE_TIMEOUT_MS = 500;
@@ -68,7 +72,8 @@ public class Drive2 implements Runnable {
             DcMotor bl,
             DcMotor br,
             AHRS nx,
-            Telemetry tl) {
+            Telemetry tl,
+            LinearOpMode om) {
         //init motors
         frontLeft = fl;
         frontRight = fr;
@@ -76,6 +81,7 @@ public class Drive2 implements Runnable {
         backRight = br;
         navx_device = nx;
         telemetry = tl;
+        opmode = om;
 
         //set zero behavior and reverse motors so all are in the same direction.
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -121,7 +127,7 @@ public class Drive2 implements Runnable {
         navx_device.zeroYaw();
 
         //initalize a PID controller
-        yawPIDController = new navXPIDController( navx_device,
+        yawPIDController = new ZPIDController( navx_device,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
         /* Configure the PID controller */
@@ -129,9 +135,9 @@ public class Drive2 implements Runnable {
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE/2, MAX_MOTOR_OUTPUT_VALUE/2);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
-        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+        yawPIDController.setP(YAW_PID_P);
         yawPIDController.enable(true);
-        yawPIDResult = new navXPIDController.PIDResult();
+        yawPIDResult = new ZPIDController.PIDResult();
 
     }
     private volatile VectorF reqV = new VectorF(0,0);
@@ -145,6 +151,33 @@ public class Drive2 implements Runnable {
     private volatile double lastCommandTime = 0;
     private volatile double driveDuration = 0;
     private volatile double speed = 0;
+
+    public void DriveByEncoders(double heading, double power, int distance) {
+        VecDrive(10, 0, power, 20000);
+        yawPIDController.setSetpoint(heading);
+        while (opmode.opModeIsActive()) {
+            if (getDistance() > distance) break;
+            opmode.sleep(5);
+        }
+    }
+
+    public void DriveByEncodersStr(double heading, double x, double y, double power, int distance) {
+        VecDrive(x, y, power, 20000);
+        yawPIDController.setSetpoint(heading);
+        while (opmode.opModeIsActive()) {
+            if (getDistance() > distance) break;
+            opmode.sleep(5);
+        }
+    }
+
+    public void TurnToAngle(double heading) {
+        yawPIDController.setSetpoint(heading);
+    }
+
+    public void SetYawPID_P(double p) {
+        yawPIDController.setP(p);
+    }
+
 
     public void VecDrive(double x, double y, double sp, int maxDuration)
     {
@@ -218,7 +251,7 @@ public class Drive2 implements Runnable {
 
 
         try {
-            while (running) {
+            while (running && opmode.opModeIsActive()) {
 
                 if (newReq) {
                     synchronized (reqV) {
@@ -245,7 +278,7 @@ public class Drive2 implements Runnable {
                         reqV.put(1, 0);
                         newReq = true;
                     }
-                    DarudeAutoNav.ADBLog("Running too long. Stop!");
+//                    DarudeAutoNav.ADBLog("Running too long. Stop!");
                 }
 
 //                DarudeAutoNav.ADBLog("Running. Current pow: " + powV.get(0) + ":" + powV.get(1));
@@ -254,22 +287,28 @@ public class Drive2 implements Runnable {
                 setMoveAngle(powV.get(0), powV.get(1), 1);
                 sleep(5);
             }
-        }  catch (InterruptedException e) {}
+        }  catch (InterruptedException e) {
+            brake();
+            emergencyBrake();
+        }
+        brake();
+        emergencyBrake();
     }
 
     public void Stop() {
         brake();
         running = false;
+        emergencyBrake();
     }
 
     public void setMoveAngle(double x, double y, double power) {
-        DarudeAutoNav.ADBLog("Power: " + x + ", " + y);
+//        DarudeAutoNav.ADBLog("Power: " + x + ", " + y);
         // Rotate 90 degrees
         double Xr = 0.707 * x + 0.707 * y;
         double Yr = 0.707 * x - 0.707 * y;
 
 //        angle = angle + Math.PI / 4;
-        getDistance();
+//        getDistance();
         try {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, GYRO_DEVICE_TIMEOUT_MS)) {
                 if (yawPIDResult.isOnTarget()) {
@@ -281,18 +320,23 @@ public class Drive2 implements Runnable {
                     frontRight.setPower(frp);
                     backLeft.setPower(blp);
                     backRight.setPower(brp);
-//                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + Xr + " fr,bl: " + Yr + " power: " + power);
+                    DarudeAutoNav.ADBLog("On target motor speed: fl,br:" + flp + ", fr,bl: " + frp + ", av= " + yawPIDController.angular_velocity);
                 } else {
                     double output = yawPIDResult.getOutput();
                     double flp = power * Xr;
                     double frp = power * Yr;
                     double blp = frp;
                     double brp = flp;
+
+                    if(Math.abs(flp) + Math.abs(frp) < 0.05) {
+                        output = yawPIDResult.getStationaryOutput(0.1);
+                    }
+
                     frontLeft.setPower(flp + output);
                     frontRight.setPower(frp - output);
                     backLeft.setPower(blp + output);
                     backRight.setPower(brp - output);
-//                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + Xr + " fr,bl: " + Yr + " power: " + power);
+                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + flp + ", fr,bl: " + frp + ", out:" + output + ", av= " + yawPIDController.angular_velocity);
                 }
 
             } else {
@@ -312,8 +356,18 @@ public class Drive2 implements Runnable {
             reqV.put(1, 0);
             powV.put(0, 0);
             powV.put(1, 0);
+            lastCommandTime = runtime.milliseconds();
+            driveDuration = 30000;
         }
     }
+
+    public void emergencyBrake() {
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
+    }
+
 
     public int getDistance() {
         int c = frontLeft.getCurrentPosition();
@@ -325,10 +379,10 @@ public class Drive2 implements Runnable {
         c = backRight.getCurrentPosition();
         r += Math.abs(c - prevBREnc);
 
-        DarudeAutoNav.ADBLog("Distance: " + frontLeft.getCurrentPosition() + ", " + frontRight.getCurrentPosition() + ", " +
-                backLeft.getCurrentPosition() + ", " + backRight.getCurrentPosition());
+//        DarudeAutoNav.ADBLog("Distance: " + frontLeft.getCurrentPosition() + ", " + frontRight.getCurrentPosition() + ", " +
+//                backLeft.getCurrentPosition() + ", " + backRight.getCurrentPosition());
 
-        return r/10;
+        return r * 16 / 100;
     }
 
     public void resetDistance() {

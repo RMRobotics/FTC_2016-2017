@@ -199,7 +199,8 @@ public class DarudeAutoNav extends LinearOpMode {
                     backLeft,
                     backRight,
                     navx_device,
-                    telemetry
+                    telemetry,
+                    this
             );
             drive.ReverseDirection();
 
