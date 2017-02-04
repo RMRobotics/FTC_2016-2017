@@ -56,24 +56,8 @@ public class rampAutoLinear extends LinearOpMode {
         runtime.reset(); // reset runtime counter
 
         //turn at an angle
-        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw() + 42) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 42 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw()) < 30) {
-                setDrive(scale * 0.25, 0);
-            } else {
-                setDrive(scale * 0.07, 0);
-            }
-        }
+        turnRobot(45);
 //        addTelemetry();
-
-        setDrive(0);
-        sleep(100);
 
         //drive forward
         double startPos = FL.getCurrentPosition();
@@ -86,7 +70,7 @@ public class rampAutoLinear extends LinearOpMode {
         sleep(100);
 
         //turn at an angle
-        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (Math.abs(navx.getYaw()) < 140 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 140 > 0) {
@@ -112,6 +96,25 @@ public class rampAutoLinear extends LinearOpMode {
         }
 //        addTelemetry();
 
+        setDrive(0, 0, 0, 0);
+        sleep(100);
+    }
+
+    private void turnRobot(int a){
+        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+            int scale;
+            if (navx.getYaw() + a > 0) {
+                scale = -1;
+            } else {
+                scale = 1;
+            }
+            if (Math.abs(navx.getYaw()) < (a - 10)){
+                setDrive(scale * 0.25, 0);
+            } else {
+                setDrive(scale * 0.07, 0);
+            }
+        }
         setDrive(0, 0, 0, 0);
         sleep(100);
     }
