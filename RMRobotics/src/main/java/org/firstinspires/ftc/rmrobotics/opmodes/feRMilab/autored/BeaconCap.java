@@ -114,7 +114,8 @@ public class BeaconCap extends LinearOpMode {
 
         // turn towards first beacon
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(navx.getYaw() + 37) > 2 && opModeIsActive()) {
+        turnRobotCorner(37);
+        /*while (Math.abs(navx.getYaw() + 37) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 37 > 0) {
                 scale = -1;
@@ -127,7 +128,7 @@ public class BeaconCap extends LinearOpMode {
                 setDrive(scale * 0.07, 0);
             }
         }
-        addTelemetry();
+        addTelemetry();*/
 //        setDrive(0, 0, 0, 0);
 //        sleep(100);
 
@@ -147,7 +148,7 @@ public class BeaconCap extends LinearOpMode {
             }
         }
         addTelemetry();
-        setDrive(0, 0, 0, 0);
+        setDrive(0);
         sleep(100);
 
         // drives backwards to correct for overshooting
@@ -475,4 +476,28 @@ public class BeaconCap extends LinearOpMode {
         BR.setTargetPosition(BR.getCurrentPosition() + p4);
     }
 
+    private void turnRobotCorner(int a){
+        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+            int scale;
+            if (navx.getYaw() + a > 0) {
+                //if robot has turned less than a degrees in left direction
+                scale = -1;
+            } else {
+                //if robot has turned more than a degrees in left direction
+                scale = 1;
+            }
+            if (Math.abs(navx.getYaw() + a) > 15){
+                //if robot has turned less than (a-15) degrees in either direction
+                //then turns robot at a faster speed
+                setDrive(scale * 0.4, 0);
+            } else {
+                //if robot has turned more than (a-15) degrees in either direction
+                //turns robot at a slower speed
+                setDrive(scale * 0.07, 0);
+            }
+        }
+        addTelemetry();
+//        setDrive(0);
+//        sleep(100);
+    }
 }

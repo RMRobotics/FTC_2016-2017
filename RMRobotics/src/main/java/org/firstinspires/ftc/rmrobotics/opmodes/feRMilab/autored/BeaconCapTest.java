@@ -12,7 +12,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 // RED TEAM
 
 
-@Autonomous(name = "BeaconCap")
+@Autonomous(name = "BeaconCapTest")
 public class BeaconCapTest extends FeRMiLinear {
 
     @Override
