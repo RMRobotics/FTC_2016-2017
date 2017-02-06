@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.histoy.theRMite;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.rmrobotics.control.Axis;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.rmrobotics.util.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
 
 @TeleOp(name="tMecanum", group="TheRMite")
+@Disabled
 public class TMecanum extends RTeleOp {
 
     private TheRMite config;

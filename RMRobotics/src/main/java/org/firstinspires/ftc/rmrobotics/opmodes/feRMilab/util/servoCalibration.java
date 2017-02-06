@@ -9,17 +9,16 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by RM Robotics on 1/11/2017.
  */
 
-@TeleOp(name = "beaconPusherCalibration")
-@Disabled
-public class beaconPusherTele extends OpMode {
+@TeleOp(name = "servoCalibration")
+public class servoCalibration extends OpMode {
 
-    private Servo beaconPusher;
+    private Servo servo;
     private Servo h;
     private double servoValue = 0.5;
 
     @Override
     public void init() {
-        beaconPusher = hardwareMap.servo.get("swingArm");
+        servo = hardwareMap.servo.get("liftHold");
         h = hardwareMap.servo.get("h");
         h.setPosition(0.5);
     }
@@ -29,11 +28,11 @@ public class beaconPusherTele extends OpMode {
         //turns beacon pusher servo;+
         if (gamepad1.x) {
             servoValue+=.01;
-            beaconPusher.setPosition(servoValue);
+            servo.setPosition(servoValue);
         } else if (gamepad1.b) {
             servoValue -= .01;
-            beaconPusher.setPosition(servoValue);
+            servo.setPosition(servoValue);
         }
-        telemetry.addData("pos", beaconPusher.getPosition());
+        telemetry.addData("pos", servo.getPosition());
     }
 }

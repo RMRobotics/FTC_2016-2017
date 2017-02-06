@@ -25,10 +25,12 @@ public class FeRMiTele extends OpMode {
     private DcMotor flyL;
     private DcMotor flyR;
     private DcMotor belt;
+    private DcMotor lift;
 
     private Servo harvester;
-    private Servo index;
     private Servo beaconArm;
+    private Servo index;
+    private Servo liftHold;
 
     @Override
     public void init() {
@@ -39,17 +41,25 @@ public class FeRMiTele extends OpMode {
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
         BR = hardwareMap.dcMotor.get("BR");
         flyL = hardwareMap.dcMotor.get("flyL");
+        flyL.setDirection(DcMotorSimple.Direction.REVERSE);
         flyR = hardwareMap.dcMotor.get("flyR");
+        flyR.setDirection(DcMotorSimple.Direction.REVERSE);
         belt = hardwareMap.dcMotor.get("belt");
         belt.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift = hardwareMap.dcMotor.get("lift");
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         harvester = hardwareMap.servo.get("h");
+        harvester.setPosition(0.5);
         beaconArm = hardwareMap.servo.get("swingArm");
+        beaconArm.setPosition(0.5);
         index = hardwareMap.servo.get("indexer");
+        index.setPosition(0.1);
+        liftHold = hardwareMap.servo.get("liftHold");
 
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -93,11 +103,11 @@ public class FeRMiTele extends OpMode {
         if (harvest && eject) {
             harvester.setPosition(0.5);
         } else if (harvest) {
-            harvester.setPosition(0);
             harvester.setDirection(Servo.Direction.FORWARD);
-        } else if (eject) {
             harvester.setPosition(0);
+        } else if (eject) {
             harvester.setDirection(Servo.Direction.REVERSE);
+            harvester.setPosition(0);
         } else {
             harvester.setPosition(0.5);
         }
@@ -113,10 +123,7 @@ public class FeRMiTele extends OpMode {
         } else {
             belt.setPower(0);
         }
-        //belt.setPower(0.7);
-//        harvester.setPosition(0);
-//        harvester.setDirection(Servo.Direction.FORWARD);
-        addTelemetry();
+        //addTelemetry();
 
         if (gamepad2.y) {
             flyL.setPower(1);
@@ -137,9 +144,25 @@ public class FeRMiTele extends OpMode {
 
         if (gamepad2.left_bumper){
             index.setPosition(.5);
-        }else if (gamepad2.right_bumper){
+        } else {
             index.setPosition(.1);
         }
+
+        if (gamepad2.left_trigger > 0.3) {
+            lift.setPower(-gamepad2.left_trigger/2);
+        } else if (gamepad2.right_trigger > 0.3) {
+            lift.setPower(gamepad2.right_trigger);
+        } else {
+            lift.setPower(0);
+        }
+
+        if (gamepad2.dpad_down) {
+            liftHold.setPosition(1);
+        } else {
+            liftHold.setPosition(0.29);
+        }
+
+        addTelemetry();
 
     }
     private void addTelemetry() {

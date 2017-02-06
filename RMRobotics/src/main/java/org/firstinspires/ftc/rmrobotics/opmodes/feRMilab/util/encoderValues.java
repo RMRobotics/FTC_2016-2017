@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  */
 
 @Autonomous(name = "encoderValues")
-@Disabled
 public class encoderValues extends OpMode {
 
     private DcMotor FL;
