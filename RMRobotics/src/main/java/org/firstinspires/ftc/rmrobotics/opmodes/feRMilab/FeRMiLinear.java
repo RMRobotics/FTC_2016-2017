@@ -50,7 +50,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected I2cDevice range;
     protected I2cDeviceSynch rangeReader;
 
-    public void initialize(Color c) {
+    public void initialize(Color c, DcMotor.RunMode r) {
         // motor initialization
         FL = hardwareMap.dcMotor.get("FL");
         FR = hardwareMap.dcMotor.get("FR");
@@ -60,7 +60,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         BR.setDirection(DcMotor.Direction.REVERSE);
         setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(r);
         flyL = hardwareMap.dcMotor.get("flyL");
         flyR = hardwareMap.dcMotor.get("flyR");
         flyL.setDirection(DcMotorSimple.Direction.REVERSE);

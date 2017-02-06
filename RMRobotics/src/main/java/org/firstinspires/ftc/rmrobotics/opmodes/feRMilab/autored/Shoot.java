@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
@@ -16,7 +17,7 @@ public class Shoot extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
-        super.initialize(Color.RED);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_TO_POSITION);
 
         setEnc(1500);
         setDrive(0.4);

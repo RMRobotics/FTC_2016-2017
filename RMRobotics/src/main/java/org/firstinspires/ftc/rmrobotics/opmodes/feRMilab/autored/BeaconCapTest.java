@@ -12,13 +12,13 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 // RED TEAM
 
 
-@Autonomous(name = "BeaconCap")
+@Autonomous(name = "BeaconCapTest")
 public class BeaconCapTest extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
         // initialize
-        super.initialize(Color.RED);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_TO_POSITION);
 
         // turn towards first beacon
         setMode(DcMotor.RunMode.RUN_USING_ENCODER);

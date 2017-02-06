@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.AHRS;
-import com.qualcomm.robotcore.util.Range;
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Josh on 1/31/16.
@@ -63,7 +62,8 @@ public class PIDtest1 extends LinearOpMode {
 //
 //        dim = hardwareMap.deviceInterfaceModule.get("dim");
 //
-//        navx = AHRS.getInstance(dim, 0, AHRS.DeviceDataType.kProcessedData, (byte) 50);
+        navx = AHRS.getInstance(dim, 0, AHRS.DeviceDataType.kProcessedData, (byte) 50);
+        navXPIDController yawPIDController = new navXPIDController(navx, navXPIDController.navXTimestampedDataSource.YAW);
 //
 //        while (navx.isCalibrating()) {
 //            telemetry.addData("Status", !navx.isCalibrating());
@@ -167,10 +167,10 @@ public class PIDtest1 extends LinearOpMode {
         BR.setTargetPosition(4000);
 
         while (opModeIsActive()) {
-            FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,.07,1));
-            FR.setPower(Range.clip((-FR.getCurrentPosition()+FR.getTargetPosition())/distance,.07,1));
-            BL.setPower(Range.clip((-BL.getCurrentPosition()+BL.getTargetPosition())/distance,.07,1));
-            BR.setPower(Range.clip((-BR.getCurrentPosition()+BR.getTargetPosition())/distance,.07,1));
+            FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,.07,.5));
+            FR.setPower(Range.clip((-FR.getCurrentPosition()+FR.getTargetPosition())/distance,.07,.5));
+            BL.setPower(Range.clip((-BL.getCurrentPosition()+BL.getTargetPosition())/distance,.07,.5));
+            BR.setPower(Range.clip((-BR.getCurrentPosition()+BR.getTargetPosition())/distance,.07,.5));
             //note that it is negative since proportional error is positive and the correction must be negative.
             addTelemetry();
         }

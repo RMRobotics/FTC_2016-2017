@@ -2,7 +2,6 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -93,37 +92,38 @@ public class FeRMiTele extends OpMode {
         double res = 0.4;
         double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight, res, resTog);*/
 
-        FL.setPower((forward - strafe - rotate)/max);
-        FR.setPower((forward + strafe + rotate)/max);
-        BL.setPower((forward + strafe - rotate)/max);
-        BR.setPower((forward - strafe + rotate)/max);
+        if (gamepad1.dpad_up) {
+            setDrive(1, 1, 1, 1);
+        } else if (gamepad1.dpad_down) {
+            setDrive(-1, -1, -1, -1);
+        } else if (gamepad1.dpad_left) {
+            setDrive(-1, 1, 1, -1);
+        } else if (gamepad1.dpad_right) {
+            setDrive(1, -1, -1, 1);
+        } else {
+            FL.setPower((forward - strafe - rotate) / max);
+            FR.setPower((forward + strafe + rotate) / max);
+            BL.setPower((forward + strafe - rotate) / max);
+            BR.setPower((forward - strafe + rotate) / max);
+        }
 
         boolean harvest = gamepad1.right_bumper;
         boolean eject = gamepad1.left_bumper;
         if (harvest && eject) {
             harvester.setPosition(0.5);
+            belt.setPower(0);
         } else if (harvest) {
             harvester.setDirection(Servo.Direction.FORWARD);
             harvester.setPosition(0);
+            belt.setPower(1.0);
         } else if (eject) {
             harvester.setDirection(Servo.Direction.REVERSE);
             harvester.setPosition(0);
+            belt.setPower(-1.0);
         } else {
             harvester.setPosition(0.5);
-        }
-
-        boolean beltUp = gamepad1.dpad_up;
-        boolean beltDown = gamepad1.dpad_down;
-        if (beltUp && beltDown) {
-            belt.setPower(0);
-        } else if (beltUp) {
-            belt.setPower(0.6);
-        } else if (beltDown) {
-            belt.setPower(-0.6);
-        } else {
             belt.setPower(0);
         }
-        //addTelemetry();
 
         if (gamepad2.y) {
             flyL.setPower(1);
@@ -169,5 +169,12 @@ public class FeRMiTele extends OpMode {
         telemetry.addData("1 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("2 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());
         telemetry.update();
+    }
+
+    protected void setDrive(double p1, double p2, double p3, double p4) {
+        FL.setPower(p1);
+        FR.setPower(p2);
+        BL.setPower(p3);
+        BR.setPower(p4);
     }
 }
