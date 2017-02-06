@@ -57,7 +57,7 @@ public class CapAutoLinear extends LinearOpMode {
         turnRobotCorner(45);
 
         //drive forward
-        driveRobot(2500, -.3);
+        driveRobot(3200, -.3);
 
         //wait
         sleep(3000);
