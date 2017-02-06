@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 /**
  * Created by RM Robotics on 2/6/2017.
  */
+@Autonomous(name = "colorValues")
 public class colorValues extends OpMode {
 
     private I2cDevice colorBack;

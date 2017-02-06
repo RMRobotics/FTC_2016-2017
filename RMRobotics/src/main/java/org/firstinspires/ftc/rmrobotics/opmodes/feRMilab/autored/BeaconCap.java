@@ -136,12 +136,12 @@ public class BeaconCap extends LinearOpMode {
         double initPos = Math.abs(FL.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FL.getCurrentPosition() - initPos < -3500) {
+            if (FL.getCurrentPosition() + initPos < -3500) {
                 scale = 1;
-            } else if (FL.getCurrentPosition() - initPos > -2400) {
+            } else if (FL.getCurrentPosition() + initPos > -2400) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() - initPos > -2400) {
+            if (FL.getCurrentPosition() + initPos > -2400) {
                 setDrive(scale * 0.5);
             } else {
                 setDrive(scale * 0.1);
