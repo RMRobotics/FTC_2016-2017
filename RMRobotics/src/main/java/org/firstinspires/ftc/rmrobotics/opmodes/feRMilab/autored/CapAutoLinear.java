@@ -57,13 +57,16 @@ public class CapAutoLinear extends LinearOpMode {
         turnRobotCorner(45);
 
         //drive forward
-        driveRobot(2500, -.3);
+        driveRobot(3000, -.3);
 
         //wait
         sleep(3000);
 
+        //drive forward
+        driveRobot(500, -.2);
+
         //knock-off capball
-        turnRobot(500);
+        //turnRobot(500);
 
         while (opModeIsActive()){
             addTelemetry();
