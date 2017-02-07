@@ -159,12 +159,13 @@ public class PIDtest1 extends LinearOpMode {
 //            }
 //        }
 //        addTelemetry();
-        double distance;
+        int distance;
         distance = 4000;
-        FL.setTargetPosition(4000);
-        FR.setTargetPosition(4000);
-        BL.setTargetPosition(4000);
-        BR.setTargetPosition(4000);
+        FL.setTargetPosition(FL.getCurrentPosition()+distance);
+        FR.setTargetPosition(FR.getCurrentPosition()+distance);
+        BR.setTargetPosition(BR.getCurrentPosition()+distance);
+        BL.setTargetPosition(BL.getCurrentPosition()+distance);
+
 
         while (opModeIsActive()) {
             FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,.07,.5));
