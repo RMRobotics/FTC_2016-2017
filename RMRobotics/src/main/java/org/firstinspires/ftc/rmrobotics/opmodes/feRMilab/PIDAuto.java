@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 @Autonomous(name = "PIDAuto")
 public class PIDAuto extends FeRMiLinear {
 
-    private final double TARGET_ANGLE_DEGREES = 45.0;
+    private double TARGET_ANGLE_DEGREES = -55.0;
     private final double TOLERANCE_DEGREES = 2.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
@@ -51,9 +51,19 @@ public class PIDAuto extends FeRMiLinear {
 
         DecimalFormat df = new DecimalFormat("#.##");
 
+        double distance = -1000;
+        int distanceInt = -1000;
+        setEnc(distanceInt);
+        while (FL.getCurrentPosition() > distance){
+            FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,-7,-.07));
+            FR.setPower(Range.clip((-FR.getCurrentPosition()+FR.getTargetPosition())/distance,-.7,-.07));
+            BL.setPower(Range.clip((-BL.getCurrentPosition()+BL.getTargetPosition())/distance,-.7,-.07));
+            BR.setPower(Range.clip((-BR.getCurrentPosition()+BR.getTargetPosition())/distance,-.7,-.07));
+        }
+
         while (!IS_DONE) {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
-                if (yawPIDResult.isOnTarget()) {
+                if (yawPIDResult.isOnTarget()||navx.getYaw()<TARGET_ANGLE_DEGREES) {
                     setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
                     setDrive(0);
                     IS_DONE = true;
@@ -79,13 +89,46 @@ public class PIDAuto extends FeRMiLinear {
         }
         IS_DONE = false;
 
-        double distance = 5000;
+        distance = -4000;
+
+        distanceInt = -4000;
+        setEnc(distanceInt);
 
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-            FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,.07,.5));
-            FR.setPower(Range.clip((-FR.getCurrentPosition()+FR.getTargetPosition())/distance,.07,.5));
-            BL.setPower(Range.clip((-BL.getCurrentPosition()+BL.getTargetPosition())/distance,.07,.5));
-            BR.setPower(Range.clip((-BR.getCurrentPosition()+BR.getTargetPosition())/distance,.07,.5));
+            FL.setPower(Range.clip((-FL.getCurrentPosition()+FL.getTargetPosition())/distance,-.5,-.07));
+            FR.setPower(Range.clip((-FR.getCurrentPosition()+FR.getTargetPosition())/distance,-.5,-.07));
+            BL.setPower(Range.clip((-BL.getCurrentPosition()+BL.getTargetPosition())/distance,-.5,-.07));
+            BR.setPower(Range.clip((-BR.getCurrentPosition()+BR.getTargetPosition())/distance,-.5,-.07));
+        }
+
+        TARGET_ANGLE_DEGREES = 40.0;
+        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+
+        while (colorBackReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
+            if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
+                if (yawPIDResult.isOnTarget()) {
+                    setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
+                    setDrive(0);
+                    IS_DONE = true;
+//                    telemetry.addData("PIDOutput", df.format(0.00));
+//                    telemetry.addData("STUPID");
+                } else {
+                    double output = yawPIDResult.getOutput();
+                    if (output > MAX_POWER){
+                        output = MAX_POWER;
+                    }else if (output < MIN_POWER){
+                        output = MIN_POWER;
+                    }
+                    setDrive(output, -output);
+                    telemetry.addData("PIDOutput", df.format(output) + ", " +
+                            df.format(-output));
+                    addTelemetry();
+                }
+
+//                telemetry.addData("Yaw", df.format(navx.getYaw()));
+//                telemetry.addData("target", df.format(navx.getYaw()));
+            }
+            telemetry.update();
         }
     }
 
