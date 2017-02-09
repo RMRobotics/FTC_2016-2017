@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,8 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.rmrobotics.core.DataLogger;
 
 @TeleOp(name = "feRMi - DataCollection", group = "feRMi")
 public class dataCollection extends OpMode{
@@ -32,10 +35,14 @@ public class dataCollection extends OpMode{
     private DigitalChannel beaconToggle;
     private DigitalChannel dataCollect;
 
+    private DataLogger dataLogger;
+
     final int BLUE_LED_CHANNEL = 0;
     final int RED_LED_CHANNEL = 1;
     private boolean BLUE_LED = false;
     private boolean RED_LED = true;
+
+    protected AHRS navx;
 
     @Override
     public void init() {
@@ -72,6 +79,17 @@ public class dataCollection extends OpMode{
 
         dim.setLED(RED_LED_CHANNEL, RED_LED);
         dim.setLED(BLUE_LED_CHANNEL, BLUE_LED);
+
+        // navx initialization and calibration
+        dim = hardwareMap.deviceInterfaceModule.get("dim");
+        navx = AHRS.getInstance(dim, 0, AHRS.DeviceDataType.kProcessedData, (byte) 50);
+        while (navx.isCalibrating()) {
+            telemetry.addData("Status", !navx.isCalibrating());
+            telemetry.update();
+        }
+        navx.zeroYaw();
+
+        dataLogger = new DataLogger("FirstTestCuz");
     }
 
     @Override
@@ -88,6 +106,12 @@ public class dataCollection extends OpMode{
         }
 
         if(dataCollect.getState()){
+            dataLogger.newLine();
+            dataLogger.addBeacon(colorLeftReader.read(0x04, 1)[0]);
+            dataLogger.addSensors(rangeReader.read(0x04, 2)[0],navx.getYaw());
+            dataLogger.addEncoders(FL.getCurrentPosition(),FR.getCurrentPosition(),BR.getCurrentPosition(),BL.getCurrentPosition());
+            dataLogger.addTarEncoders(FL.getTargetPosition(),FR.getTargetPosition(),BR.getTargetPosition(),BL.getTargetPosition());
+            dataLogger.addServos(harvester.getPosition(),beaconArm.getPosition(),index.getPosition());
             //Add navx data as well
         }
 
@@ -98,6 +122,10 @@ public class dataCollection extends OpMode{
         telemetry.addData("Toggle", beaconToggle.getState());
         telemetry.addData("Data", dataCollect.getState());
 
+    }
+
+    public void stop(){
+        dataLogger.closeDataLogger();
     }
 
     private void LEDToggle(){
