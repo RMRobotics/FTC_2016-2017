@@ -27,7 +27,8 @@ public class BeaconRecognizer {
     double contrast = 1;
     double brightness = 0;
     int expBtnDiam = 40;
-    Rect searchArea = new Rect(0, 0, 160, 640);
+//    Rect searchArea = new Rect(0, 0, 160, 640);
+    Rect searchArea = new Rect(0, 250, 160, 500);
     int expBtnOffset = 80; // Offset from the top of search rectangle
     Size btnSurround = new Size(100, 110); // Box to check color around button
     Mat buttonMask = null;

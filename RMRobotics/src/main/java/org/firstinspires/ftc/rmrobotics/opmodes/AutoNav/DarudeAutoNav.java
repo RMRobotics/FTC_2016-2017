@@ -661,61 +661,6 @@ public class DarudeAutoNav extends LinearOpMode {
         }
     }
 
-    /*
-    private Mat GetCameraImage() {
-        Mat mat = null;
-        while (mat == null) {
-            try {
-                VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
-                Image rgb = null;
-                long numImages = frame.getNumImages();
-                for (int i = 0; i < numImages; i++) { //finds a frame that is in color, not grayscale
-                    if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
-                        rgb = frame.getImage(i);
-                        break;
-                    }
-                }
-                if (rgb != null && rgb.getPixels() != null) {
-                    ByteBuffer bb = rgb.getPixels();
-                    byte[] b = new byte[bb.remaining()];
-                    bb.get(b);
-
-                    mat = new Mat(rgb.getBufferHeight(), rgb.getBufferWidth(), CvType.CV_8UC3);
-                    mat.put(0, 0, b);
-
-                    frame.close();
-
-//                Imgproc.pyrDown(mat, mat);
-                    Imgproc.resize(mat, mat, new Size(852, 480));
-                    Core.flip(mat, mat, 1);
-
-//                Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.ARGB_8888);
-//                bm = bm.copy(Bitmap.Config.RGB_565, true);
-//                bm.copyPixelsFromBuffer(rgb.getPixels());
-                }
-            } catch (InterruptedException ex) {
-                sleep(10);
-            }
-        }
-        return mat;
-    }
-
-    // Display image on phone's screen
-    protected volatile static Bitmap mImageMap = null;
-    private void DisplayImage(Mat img) {
-        // Scale down x2
-        Core.flip(img, img, -1);
-        mImageMap = Bitmap.createBitmap(img.cols(), img.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(img, mImageMap);
-
-        ((FtcRobotControllerActivity) hardwareMap.appContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mImageView.setImageBitmap(mImageMap);
-            }
-        });
-    }
-*/
 
 
     static public void ADBLog(String msg) {

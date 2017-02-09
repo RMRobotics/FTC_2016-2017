@@ -153,15 +153,19 @@ public class Drive2 implements Runnable {
     private volatile double speed = 0;
 
     public void DriveByEncoders(double heading, double power, int distance) {
+        resetDistance();
         VecDrive(10, 0, power, 20000);
         yawPIDController.setSetpoint(heading);
         while (opmode.opModeIsActive()) {
-            if (getDistance() > distance) break;
+            int d = getDistance();
+            if (d > distance) break;
+//            BetterDarudeAutoNav.ADBLog("Dist: " + d);
             opmode.sleep(5);
         }
     }
 
     public void DriveByEncodersStr(double heading, double x, double y, double power, int distance) {
+        resetDistance();
         VecDrive(x, y, power, 20000);
         yawPIDController.setSetpoint(heading);
         while (opmode.opModeIsActive()) {
@@ -172,6 +176,17 @@ public class Drive2 implements Runnable {
 
     public void TurnToAngle(double heading) {
         yawPIDController.setSetpoint(heading);
+
+        try {
+            while (opmode.opModeIsActive()) {
+//                BetterDarudeAutoNav.ADBLog("TurnToAngle: Yaw=" + navx_device.getYaw() + ", AV=" + yawPIDController.angular_velocity);
+                if (Math.abs(navx_device.getYaw() - heading) < TOLERANCE_DEGREES
+                        && Math.abs(yawPIDController.angular_velocity) < 0.01) break;
+                sleep(20);
+            }
+        } catch(InterruptedException ex) {
+            BetterDarudeAutoNav.ADBLog("Interrupted TurnToAngle");
+        }
     }
 
     public void SetYawPID_P(double p) {
@@ -214,7 +229,7 @@ public class Drive2 implements Runnable {
             coef = 1.0;
         }
 
-        DarudeAutoNav.ADBLog("Voltage: " + volt + ", coeff: " + coef);
+//        BetterDarudeAutoNav.ADBLog("Voltage: " + volt + ", coeff: " + coef);
         return coef;
     }
 
@@ -229,7 +244,7 @@ public class Drive2 implements Runnable {
                 reqV.put(1,(float)0);
             } else {
                 reqV.multiply(((float) sp) / reqV.magnitude());
-                reqV.getData()[0] /= 3; // Adjust X power
+                reqV.getData()[0] /= 2; // Adjust X power
             }
             lastCommandTime = runtime.milliseconds();
             driveDuration = maxDuration;
@@ -250,7 +265,7 @@ public class Drive2 implements Runnable {
 //        double prevStep = runtime.milliseconds();
 
 
-        try {
+//        try {
             while (running && opmode.opModeIsActive()) {
 
                 if (newReq) {
@@ -278,19 +293,19 @@ public class Drive2 implements Runnable {
                         reqV.put(1, 0);
                         newReq = true;
                     }
-//                    DarudeAutoNav.ADBLog("Running too long. Stop!");
+//                    BetterDarudeAutoNav.ADBLog("Running too long. Stop!");
                 }
 
-//                DarudeAutoNav.ADBLog("Running. Current pow: " + powV.get(0) + ":" + powV.get(1));
-//                DarudeAutoNav.ADBLog("Running. Current req: " + reqV.get(0) + ":" + reqV.get(1));
-//                DarudeAutoNav.ADBLog("Running. Current del: " + delV.get(0) + ":" + delV.get(1));
+//                BetterDarudeAutoNav.ADBLog("Running. Current pow: " + powV.get(0) + ":" + powV.get(1));
+//                BetterDarudeAutoNav.ADBLog("Running. Current req: " + reqV.get(0) + ":" + reqV.get(1));
+//                BetterDarudeAutoNav.ADBLog("Running. Current del: " + delV.get(0) + ":" + delV.get(1));
                 setMoveAngle(powV.get(0), powV.get(1), 1);
-                sleep(5);
             }
-        }  catch (InterruptedException e) {
-            brake();
-            emergencyBrake();
-        }
+
+//        catch (InterruptedException e) {
+//            brake();
+//            emergencyBrake();
+//        }
         brake();
         emergencyBrake();
     }
@@ -301,34 +316,76 @@ public class Drive2 implements Runnable {
         emergencyBrake();
     }
 
+
+    private int prevLF = 0;
+    private int prevLB = 0;
+    private int prevRF = 0;
+    private int prevRB = 0;
+    private boolean enable_strife_counter = false;
+    private float deltaY = 0;
+
+    public void resetYDist() {
+        prevLF = frontLeft.getCurrentPosition();
+        prevLB = backLeft.getCurrentPosition();
+        prevRF = frontRight.getCurrentPosition();
+        prevRB = backRight.getCurrentPosition();
+    }
+
+    public double getYDistIncr() {
+
+        int lf = frontLeft.getCurrentPosition();
+        int lb = backLeft.getCurrentPosition();
+        int left = (lf-prevLF) - (lb-prevLB);
+        int rf = frontRight.getCurrentPosition();
+        int rb = backRight.getCurrentPosition();
+        int right = (rb-prevRB) - (rf-prevRF);
+
+//        BetterDarudeAutoNav.ADBLog("lf: " + (lf-prevLF) + ", lb: " + (lb-prevLB) + ", rb: " + (rb-prevRB) + ", rf: " + (rf-prevRF));
+
+        prevLF = lf;
+        prevLB = lb;
+        prevRF = rf;
+        prevRB = rb;
+
+        double res = (left + right);
+        if(res < 0) return res/16;
+        else return res/12;
+
+    }
+
     public void setMoveAngle(double x, double y, double power) {
-//        DarudeAutoNav.ADBLog("Power: " + x + ", " + y);
+//        BetterDarudeAutoNav.ADBLog("Power: " + x + ", " + y);
         // Rotate 90 degrees
         double Xr = 0.707 * x + 0.707 * y;
+        Xr *= power;
         double Yr = 0.707 * x - 0.707 * y;
+        Yr *= power;
+        boolean moving = (Math.abs(Xr) + Math.abs(Yr)) > 0.001;
 
-//        angle = angle + Math.PI / 4;
-//        getDistance();
         try {
+            yawPIDController.moving = moving;
             if (yawPIDController.waitForNewUpdate(yawPIDResult, GYRO_DEVICE_TIMEOUT_MS)) {
+                double av = yawPIDResult.angular_velocity;
+                double error = yawPIDResult.error;
                 if (yawPIDResult.isOnTarget()) {
-                    double flp = power * Xr;
-                    double frp = power * Yr;
+                    double flp = Xr;
+                    double frp = Yr;
                     double blp = frp;
                     double brp = flp;
                     frontLeft.setPower(flp);
                     frontRight.setPower(frp);
                     backLeft.setPower(blp);
                     backRight.setPower(brp);
-                    DarudeAutoNav.ADBLog("On target motor speed: fl,br:" + flp + ", fr,bl: " + frp + ", av= " + yawPIDController.angular_velocity);
+//                    BetterDarudeAutoNav.ADBLog("On target motor speed: fl,br:" + flp + ", fr,bl: " + frp
+//                            + ", err: " + error + ", av= " + av);
                 } else {
                     double output = yawPIDResult.getOutput();
-                    double flp = power * Xr;
-                    double frp = power * Yr;
+                    double flp = Xr;
+                    double frp = Yr;
                     double blp = frp;
                     double brp = flp;
 
-                    if(Math.abs(flp) + Math.abs(frp) < 0.05) {
+                    if(!moving) {
                         output = yawPIDResult.getStationaryOutput(0.1);
                     }
 
@@ -336,9 +393,19 @@ public class Drive2 implements Runnable {
                     frontRight.setPower(frp - output);
                     backLeft.setPower(blp + output);
                     backRight.setPower(brp - output);
-                    DarudeAutoNav.ADBLog("Motor speed: fl,br:" + flp + ", fr,bl: " + frp + ", out:" + output + ", av= " + yawPIDController.angular_velocity);
+//                    BetterDarudeAutoNav.ADBLog("Motor speed: fl,br:" + flp + ", fr,bl: " + frp
+//                            + ", err: " + error + ",out: " + output + ", av= " + av);
                 }
-
+                // Calculate odometer
+//                double a = Math.toRadians(yawPIDController.prev_process_value);
+//                int new_LCount = frontLeft.getCurrentPosition();
+//                int new_RCount = frontRight.getCurrentPosition();
+//                int average = ((prevLCount - new_LCount) + (prevRCount - new_RCount))/2;
+//                deltaX += Math.cos(a)*average;
+//                deltaY += Math.sin(a)*average;
+//                prevLCount = new_LCount;
+//                prevRCount = new_RCount;
+//                BetterDarudeAutoNav.ADBLog("Odometer X: " + deltaX + ", Y:" + deltaY);
             } else {
                     /* A timeout occurred */
                 Log.d("navXDriveStraightOp", "Yaw PID waitForNewUpdate() TIMEOUT.");
@@ -361,6 +428,28 @@ public class Drive2 implements Runnable {
         }
     }
 
+    public void brake_and_wait()
+    {
+        try {
+            while (opmode.opModeIsActive()) {
+                synchronized (reqV) {
+                    delV.put(0, 0);
+                    delV.put(1, 0);
+                    reqV.put(0, 0);
+                    reqV.put(1, 0);
+                    powV.put(0, 0);
+                    powV.put(1, 0);
+                    lastCommandTime = runtime.milliseconds();
+                    driveDuration = 30000;
+                }
+                if (!navx_device.isMoving()) break;
+//                BetterDarudeAutoNav.ADBLog("Waiting to stop");
+                sleep(30);
+            }
+        } catch (InterruptedException ex) {}
+    }
+
+
     public void emergencyBrake() {
         frontLeft.setPower(0);
         frontRight.setPower(0);
@@ -379,8 +468,8 @@ public class Drive2 implements Runnable {
         c = backRight.getCurrentPosition();
         r += Math.abs(c - prevBREnc);
 
-//        DarudeAutoNav.ADBLog("Distance: " + frontLeft.getCurrentPosition() + ", " + frontRight.getCurrentPosition() + ", " +
-//                backLeft.getCurrentPosition() + ", " + backRight.getCurrentPosition());
+//        BetterDarudeAutoNav.ADBLog("Distance: " + frontLeft.getCurrentPosition() + ", " + frontRight.getCurrentPosition() + ", " +
+//                backLeft.getCurrentPosition() + ", " + backRight.getCurrentPosition() + ", r:" + r);
 
         return r * 16 / 100;
     }

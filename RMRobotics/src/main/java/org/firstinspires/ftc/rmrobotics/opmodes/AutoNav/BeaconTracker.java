@@ -148,7 +148,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
         Core.flip(img, img, 1);
         img = img.t();
 
-        if (mFrameNum > 10) {
+        if (mFrameNum > 3) {
             switch (eTracker.GetState()) {
                 case RECOGNIZING:
                     img = eTracker.Recognize(img);

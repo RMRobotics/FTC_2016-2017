@@ -9,7 +9,7 @@ import com.kauailabs.navx.ftc.IDataArrivalSubscriber;
 
 
 public class ZPIDController implements IDataArrivalSubscriber {
-    private Object sync_event = new Object();
+    private final Object sync_event = new Object();
     private boolean timestamped = true;
     com.kauailabs.navx.ftc.navXPIDController.navXTimestampedDataSource timestamped_src;
     com.kauailabs.navx.ftc.navXPIDController.navXUntimestampedDataSource untimestamped_src;
@@ -35,32 +35,17 @@ public class ZPIDController implements IDataArrivalSubscriber {
     private double setpoint = 0.0D;
     private double result = 0.0D;
 
+    public volatile boolean moving = false;
+
     public double angular_velocity = 0.0D;
-    private double prev_process_value = 0;
+    public double prev_process_value = 0;
 
     public void untimestampedDataReceived(long curr_system_timestamp, Object kind) {
-        if(this.enabled && !this.timestamped && kind.getClass() == AHRS.DeviceDataType.class) {
-            double process_value;
-            switch(this.untimestamped_src.ordinal()) {
-                case 0:
-                    process_value = (double)this.navx_device.getRawGyroX();
-                    break;
-                default:
-                    process_value = 0.0D;
-            }
-
-            byte num_missed_samples = 0;
-            this.last_system_timestamp = curr_system_timestamp;
-            this.stepController(process_value, num_missed_samples);
-            synchronized(this.sync_event) {
-                this.sync_event.notify();
-            }
-        }
 
     }
 
     public void timestampedDataReceived(long curr_system_timestamp, long curr_sensor_timestamp, Object kind) {
-        if(this.enabled && this.timestamped && kind.getClass() == AHRS.DeviceDataType.class) {
+        if(this.enabled && kind.getClass() == AHRS.DeviceDataType.class) {
             double process_value;
             switch(this.timestamped_src.ordinal()) {
                 case 0:
@@ -70,16 +55,14 @@ public class ZPIDController implements IDataArrivalSubscriber {
                     process_value = 0.0D;
             }
 
-            byte num_missed_samples = 0;
             last_system_timestamp = curr_system_timestamp;
             prev_sensor_timestamp = last_sensor_timestamp;
             last_sensor_timestamp = curr_sensor_timestamp;
-            stepController(process_value, num_missed_samples);
+            stepController(process_value, 0);
             synchronized(this.sync_event) {
                 this.sync_event.notify();
             }
         }
-
     }
 
     public void yawReset() {
@@ -115,15 +98,13 @@ public class ZPIDController implements IDataArrivalSubscriber {
 
     public boolean isNewUpdateAvailable(ZPIDController.PIDResult result) {
         boolean new_data_available;
-        if(this.enabled && (this.timestamped && result.timestamp < this.last_sensor_timestamp || result.timestamp < this.last_system_timestamp)) {
+        if(this.enabled && result.timestamp < this.last_sensor_timestamp) {
             new_data_available = true;
             result.on_target = this.isOnTarget();
             result.output = this.get();
-            if(this.timestamped) {
-                result.timestamp = this.last_sensor_timestamp;
-            } else {
-                result.timestamp = this.last_system_timestamp;
-            }
+            result.timestamp = this.last_sensor_timestamp;
+            result.angular_velocity = this.angular_velocity;
+            result.error = this.error_current;
         } else {
             new_data_available = false;
         }
@@ -132,7 +113,9 @@ public class ZPIDController implements IDataArrivalSubscriber {
     }
 
     public boolean waitForNewUpdate(ZPIDController.PIDResult result, int timeout_ms) throws InterruptedException {
+//        BetterDarudeAutoNav.ADBLog("Wait 1");
         boolean ready = this.isNewUpdateAvailable(result);
+//        BetterDarudeAutoNav.ADBLog("Wait 2");
         if(!ready && !Thread.currentThread().isInterrupted()) {
             Object var4 = this.sync_event;
             synchronized(this.sync_event) {
@@ -141,6 +124,7 @@ public class ZPIDController implements IDataArrivalSubscriber {
 
             ready = this.isNewUpdateAvailable(result);
         }
+//        BetterDarudeAutoNav.ADBLog("Wait 3");
 
         return ready;
     }
@@ -165,16 +149,45 @@ public class ZPIDController implements IDataArrivalSubscriber {
         synchronized(this) {
             double adjP = this.p;
             double absErr = Math.abs(error_current);
- //           if(absErr < 30) adjP /=2;
 
             this.error_current = this.setpoint - process_variable;
 
             angular_velocity = process_variable - prev_process_value;
-            angular_velocity /= (last_system_timestamp - prev_sensor_timestamp);
-            int dump = 1;
-            if(Math.abs(angular_velocity) > 3E-6 && absErr < 15) {
-                dump = 0;
+            angular_velocity /= last_sensor_timestamp - prev_sensor_timestamp;
+            double dump = 1;
+
+            if(angular_velocity == 0.0 || Math.signum(angular_velocity) == Math.signum(error_current)) {
+                // Correcting
+                if(!moving) {
+                    if (Math.abs(angular_velocity) > 0.11 && absErr < 30) {
+                        dump = 0; // brake
+                    } else if (Math.abs(angular_velocity) > 0.09 && absErr < 18) {
+                        dump = 0; // brake
+                    } else if (Math.abs(angular_velocity) > 0.075 && absErr < 15.5) {
+                        dump = 0; // brake
+                    } else if (Math.abs(angular_velocity) > 0.06 && absErr < 13) {
+                        dump = 0; // brake
+                    } else if (absErr < 5 && Math.abs(angular_velocity) > 0.01) {
+                        dump = 0;  // stop just before target
+                    }
+                } else {
+                    if (absErr < 20 && Math.abs(angular_velocity) > 0.06) {
+                        dump = -10;  // stop rotation
+                    } else if (Math.abs(angular_velocity) > 0.09 && absErr < 25) {
+                        dump = 0; // brake
+                    } else if (Math.abs(angular_velocity) > 0.075 && absErr < 21) {
+                        dump = 0; // brake
+                    } else if (Math.abs(angular_velocity) > 0.06 && absErr < 17) {
+                        dump = 0; // brake
+                    }
+                }
+
+//                else if(absErr < 20) adjP /=1.7;
+            } else {
+                // Moving in the wrong direction, apply maz correction
+                if(Math.abs(angular_velocity) > 0.02) dump = 10;
             }
+//            BetterDarudeAutoNav.ADBLog("av: " + angular_velocity + ", err: " + absErr + ", dump: " + dump + ", mov: " + moving);
 
             double estimated_i;
             if(this.continuous) {
@@ -318,6 +331,8 @@ public class ZPIDController implements IDataArrivalSubscriber {
         public double output = 0.0D;
         public long timestamp = 0L;
         public boolean on_target = false;
+        public double angular_velocity = 0;
+        public double error = 0;
 
         public PIDResult() {
         }
