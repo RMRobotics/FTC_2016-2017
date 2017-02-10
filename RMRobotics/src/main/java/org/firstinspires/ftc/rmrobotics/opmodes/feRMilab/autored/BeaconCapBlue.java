@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 
 /**
- * Created by Simon on 1/6/16.
+ * Created by Peter on 2/10/17.
  */
-// RED TEAM
 
-
-@Autonomous(name = "BeaconCap")
-public class BeaconCap extends FeRMiLinear {
-
+public class BeaconCapBlue extends FeRMiLinear {
     @Override
     public void runOpMode() {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
@@ -42,15 +37,15 @@ public class BeaconCap extends FeRMiLinear {
         double initPos = Math.abs(FL.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FL.getCurrentPosition() + initPos < -3500) {
+            if (FL.getCurrentPosition() + initPos < 3500) {
                 scale = 1;
-            } else if (FL.getCurrentPosition() + initPos > -2400) {
+            } else if (FL.getCurrentPosition() + initPos > 2400) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() + initPos > -2400) {
-                setDrive(scale * 0.5);
+            if (FL.getCurrentPosition() + initPos > 2400) {
+                setDrive(scale * -0.5);
             } else {
-                setDrive(scale * 0.1);
+                setDrive(scale * -0.1);
             }
         }
         setDrive(0);
@@ -59,7 +54,7 @@ public class BeaconCap extends FeRMiLinear {
 
         // drives backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-            setDrive(0.07);
+            setDrive(-0.07);
         }
         addTelemetry();
         setDrive(0, 0, 0, 0);
@@ -69,14 +64,14 @@ public class BeaconCap extends FeRMiLinear {
         while (Math.abs(navx.getYaw() + 86) > 3 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 86 > 0) {
-                scale = -1;
-            } else {
                 scale = 1;
+            } else {
+                scale = -1;
             }
             if (Math.abs(navx.getYaw() + 86) > 10) {
-                setDrive(scale * 0.25, -scale * 0.25);
+                setDrive(-scale * 0.25, scale * 0.25);
             } else {
-                setDrive(scale * 0.07, -scale * 0.07);
+                setDrive(-scale * 0.07, scale * 0.07);
             }
         }
         setDrive(0, 0, 0, 0);
@@ -87,18 +82,18 @@ public class BeaconCap extends FeRMiLinear {
         while (navx.getYaw() > -85 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 85 > 0) {
-                scale = -1;
-            } else {
                 scale = 1;
+            } else {
+                scale = -1;
             }
-            setDrive(scale * 0.05, -scale * 0.05);
+            setDrive(-scale * 0.05, scale * 0.05);
         }
         setDrive(0);
         addTelemetry();
 
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
-            setDrive(-0.1);
+            setDrive(0.1);
             addTelemetry();
         }
         setDrive(0);
@@ -119,10 +114,10 @@ public class BeaconCap extends FeRMiLinear {
         // move beacon pusher arm to appropriate location
         if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
             //left is red, right is blue
-            swingArm.setPosition(.75);
+            swingArm.setPosition(-.75);
         }
         else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
-            swingArm.setPosition(.15);
+            swingArm.setPosition(-.15);
         }
         addTelemetry();
 
@@ -131,9 +126,9 @@ public class BeaconCap extends FeRMiLinear {
         // drive forward to hit beacon
         //while (rangeReader.read(0x04, 2)[1] < 13 && opModeIsActive()) {
         while (runtime.milliseconds() - initTime < 1000 && opModeIsActive()) {
-        // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
-            setDrive(-0.15, -0.15, -0.15, -0.15);
+            // drive forward to hit beacon
+            //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
+            setDrive(0.15, 0.15, 0.15, 0.15);
             addTelemetry();
         }
 
@@ -142,10 +137,10 @@ public class BeaconCap extends FeRMiLinear {
 
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
-            setDrive(0.2, 0.2, 0.2, 0.2);
+            setDrive(-0.2, -0.2, -0.2, -0.2);
             addTelemetry();
         }
-        swingArm.setPosition(0.5);
+        swingArm.setPosition(-0.5);
 
         setDrive(0);
 
@@ -185,11 +180,11 @@ public class BeaconCap extends FeRMiLinear {
 //        sleep(100);
 
         // turn towards second line
-        while (navx.getYaw() < -5 && opModeIsActive()) {
+        while (navx.getYaw() < 5 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(.15, -0.15, .15, -0.15);
+                setDrive(-.15, 0.15, -.15, 0.15);
             } else {
-                setDrive(.07, -0.07, .07, -0.07);
+                setDrive(-.07, 0.07, -.07, 0.07);
             }
             addTelemetry();
         }
@@ -207,26 +202,26 @@ public class BeaconCap extends FeRMiLinear {
 //
         // drive forward slightly to move center color sensor off the first line
         double start = runtime.milliseconds();
-        while (runtime.milliseconds() - start < 350 && opModeIsActive()) {
-            setDrive(-0.6);
+        while (runtime.milliseconds() - start < -350 && opModeIsActive()) {
+            setDrive(0.6);
             addTelemetry();
         }
         double checkFirst = -2500;
         // drive forward until center color sensor detects second line
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-            int scale = -1;
+            int scale = 1;
             int relDis = FL.getCurrentPosition() - curEnc;
-            if (relDis > -2500) {
-                setDrive(-0.35);
-                checkFirst = -2800;
+            if (relDis > 2500) {
+                setDrive(0.35);
+                checkFirst = 2800;
             } else {
                 if (relDis > checkFirst) {
-                    scale = -1;
-                } else if(relDis <= -3500) {
-                    checkFirst = -2500;
                     scale = 1;
+                } else if(relDis <= 3500) {
+                    checkFirst = 2500;
+                    scale = -1;
                 }
-                setDrive(scale*0.07);
+                setDrive(scale*-0.07);
             }
         }
 
@@ -236,7 +231,7 @@ public class BeaconCap extends FeRMiLinear {
 //
         //drive backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-            setDrive(-0.04);
+            setDrive(0.04);
         }
         addTelemetry();
 //
@@ -247,14 +242,14 @@ public class BeaconCap extends FeRMiLinear {
         while (Math.abs(navx.getYaw() + 88) > 3 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
                 scale = 1;
+            } else {
+                scale = -1;
             }
             if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2,scale*.2,-scale*.2);
+                setDrive(-scale * 0.2, scale * 0.2,-scale*.2,scale*.2);
             } else {
-                setDrive(scale * 0.07, -scale * 0.07, scale * 0.07, -scale * 0.07);
+                setDrive(-scale * 0.07, scale * 0.07, -scale * 0.07, scale * 0.07);
             }
             //addTelemetry();
         }
@@ -294,7 +289,7 @@ public class BeaconCap extends FeRMiLinear {
 //
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
-            setDrive(-0.1);
+            setDrive(0.1);
             addTelemetry();
         }
 //
@@ -307,10 +302,10 @@ public class BeaconCap extends FeRMiLinear {
 //        // move beacon pusher arm to appropriate location
         if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 3){
             //left is red, right is blue
-            swingArm.setPosition(.75);
+            swingArm.setPosition(-.75);
         }
         else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 10){
-            swingArm.setPosition(.15);
+            swingArm.setPosition(-.15);
         }
 //        addTelemetry();
 //
@@ -318,9 +313,9 @@ public class BeaconCap extends FeRMiLinear {
         // drive forward to hit beacon
         //while (rangeReader.read(0x04, 2)[1] < 13 && opModeIsActive()) {
         while (runtime.milliseconds() - initTime < 1000 && opModeIsActive()) {
-        // drive forward to hit beacon
-        //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
-            setDrive(-0.15, -0.15, -0.15, -0.15);
+            // drive forward to hit beacon
+            //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
+            setDrive(0.15, 0.15, 0.15, 0.15);
             addTelemetry();
         }
 //
@@ -329,7 +324,7 @@ public class BeaconCap extends FeRMiLinear {
 //
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive()) {
-            setDrive(0.1, 0.1, 0.1, 0.1);
+            setDrive(-0.1, -0.1, -0.1, -0.1);
             addTelemetry();
         }
 //
@@ -340,11 +335,11 @@ public class BeaconCap extends FeRMiLinear {
         while (Math.abs(navx.getYaw() -45) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() -45 > 0) {
-                scale = -1;
-            } else {
                 scale = 1;
+            } else {
+                scale = -1;
             }
-            setDrive(-scale* 0.07, scale * 0.07);
+            setDrive(scale* 0.07, -scale * 0.07);
         }
 //
         setDrive(0, 0, 0, 0);
@@ -385,4 +380,5 @@ public class BeaconCap extends FeRMiLinear {
 //        setDrive(0);
 //        sleep(100);
     }
+}
 }
