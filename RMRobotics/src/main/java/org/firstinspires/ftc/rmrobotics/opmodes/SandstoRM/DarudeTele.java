@@ -50,7 +50,8 @@ public class DarudeTele extends OpMode {
         lift = hardwareMap.dcMotor.get("lift");
         wheelFR.setDirection(DcMotorSimple.Direction.REVERSE);
         wheelBR.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         beaconL = hardwareMap.crservo.get("leftP");
         beaconR = hardwareMap.crservo.get("rightP");
         beaconL.setPower(0);

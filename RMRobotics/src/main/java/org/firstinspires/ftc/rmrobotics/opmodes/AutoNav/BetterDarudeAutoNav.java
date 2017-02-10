@@ -66,6 +66,9 @@ public class BetterDarudeAutoNav extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+    private DcMotor shootL;
+    private DcMotor shootR;
+
 
     private Drive2 drive = null;
 
@@ -110,37 +113,6 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             VuforiaTrackables targets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
 
-
-
-
-            ButtonFinder.EllipseLocationResult btn = null;
-            BeaconRecognizer br = new BeaconRecognizer();
-
-            while(br != null) {
-                ADBLog("Recognizing");
-                Mat img = GetCameraImage();
-                img = img.t();
-                btn = br.detectButtons(img, true);
-                img = img.t();
-                DisplayImage(img);
-                if (btn != null) {
-                    ADBLog("Recognized, got button");
-                    continue;
-                }
-                ADBLog("Cannot find button in the image");
-                sleep(10);
-            }
-
-
-
-
-
-
-
-
-
-
-
             // Enable frame grabbing
             Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
             vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
@@ -178,6 +150,10 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             frontRight = hardwareMap.dcMotor.get("wheelFR");
             backLeft = hardwareMap.dcMotor.get("wheelBL");
             backRight = hardwareMap.dcMotor.get("wheelBR");
+            shootL = hardwareMap.dcMotor.get("shootL");
+            shootR = hardwareMap.dcMotor.get("shootR");
+            shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //and servo
             leftPusher = hardwareMap.crservo.get("leftP");
@@ -293,14 +269,27 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 //                    return;
 //                }
 
+                shootL.setPower(-1);
+                shootR.setPower(-1);
+                drive.DriveByEncoders(0, 0.4, 450);
+                drive.brake();
+                sleep(500);
+                latch.setPosition(1.1);
+                sleep(750);
+                latch.setPosition(.5);
+                sleep(1000);
+                latch.setPosition(1.1);
+                sleep(1500);
+                latch.setPosition(.5);
+                shootL.setPower(0);
+                shootR.setPower(0);
 
-                drive.DriveByEncoders(0, 0.3, 100);
                 ADBLog("Step 1");
-                drive.DriveByEncoders(35 * dir, 0.4, 500);
-                drive.DriveByEncoders(35 * dir, 0.5, 200);
-                drive.DriveByEncoders(35 * dir, 0.5, 100);
+                drive.DriveByEncoders(58 * dir, 0.4, 527);
+                drive.DriveByEncoders(58 * dir, 0.5, 250);
+                drive.DriveByEncoders(58 * dir, 0.5, 100);
                 ADBLog("Step 2");
-                drive.DriveByEncoders(0 * dir, 0.5, 300);
+                drive.DriveByEncoders(0 * dir, 0.5, 370);
                 drive.DriveByEncoders(0 * dir, 0.5, 2);
                 drive.DriveByEncoders(0 * dir, 0.4, 200);
                 drive.brake();
