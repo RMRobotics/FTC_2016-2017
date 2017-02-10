@@ -71,7 +71,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 
     //servo
     CRServo leftPusher;
-    CRServo rightPusher;
+    Servo rightPusher;
     Servo latch;
 
     //navx
@@ -89,46 +89,9 @@ public class BetterDarudeAutoNav extends LinearOpMode {
     private final int RECOGNITION_TOLER_X = 30; // Positioning tolerance along Y
     private final int REPOSITION_DIST = 480; // Distance to back up if out of position to recognize button
 
-/*
-    @Override
-    public void runOpMode() throws InterruptedException {
-        BeaconTracker bt = new BeaconTracker(
-                (CameraBridgeViewBase) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(R.id.camera_view),
-                this,
-                true);
-        ADBLog("Created OpenCV");
-        //first runthru variable
-        boolean start = true;
-        int verify = 0;
-        while (opModeIsActive()) {
-            if (bt.GetState() == Tracker.State.RECOGNIZING) {
-                //trying to find button
-                sleep(30);
-                ADBLog("Recognizing");
-            } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
-                ADBLog("Recognized. Starting approach.");
-                bt.SetState(Tracker.State.TRACKING);
-                drive.resetDistance();
-            } else if (bt.GetState() == Tracker.State.LOST) {
-                // Lost button.  FeelsBadMan Todo: Try to recover button somehow !!
-                sleep(5);
-                ADBLog("Lost button.");
-                continue;
-            } else if (bt.GetState() == Tracker.State.TRACKING) {
-                RotatedRect btn = bt.getBtnPosition();
-                if (btn == null) {
-                    sleep(5); // No updates yet, wait
-                    continue;
-                }
-            }
-        }
-    }
-    */
-
     @Override
     public void runOpMode() throws InterruptedException {
         {
-
             // Read config file
             AutoNavConfig cfg = new AutoNavConfig();
             cfg.ReadConfig(((FtcRobotControllerActivity) hardwareMap.appContext));
@@ -145,6 +108,38 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             vuforia = new RMVuforia(parameters);
             Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
             VuforiaTrackables targets = this.vuforia.loadTrackablesFromAsset("FTC_2016-17");
+
+
+
+
+
+            ButtonFinder.EllipseLocationResult btn = null;
+            BeaconRecognizer br = new BeaconRecognizer();
+
+            while(br != null) {
+                ADBLog("Recognizing");
+                Mat img = GetCameraImage();
+                img = img.t();
+                btn = br.detectButtons(img, true);
+                img = img.t();
+                DisplayImage(img);
+                if (btn != null) {
+                    ADBLog("Recognized, got button");
+                    continue;
+                }
+                ADBLog("Cannot find button in the image");
+                sleep(10);
+            }
+
+
+
+
+
+
+
+
+
+
 
             // Enable frame grabbing
             Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
@@ -178,10 +173,6 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 //            List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
 //            allTrackables.addAll(targets);
 
-//            // Enable frame grabbing
-//            Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true); //This line is very important, make sure the keep the format constant throughout the program. I'm using the MotoG2. I've also tested on the ZTE speeds and I found that they use RGB888
-//            vuforia.setFrameQueueCapacity(1); //tells VuforiaLocalizer to only store one frame at a time
-
             //init motors
             frontLeft = hardwareMap.dcMotor.get("wheelFL");
             frontRight = hardwareMap.dcMotor.get("wheelFR");
@@ -191,16 +182,14 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             //and servo
             leftPusher = hardwareMap.crservo.get("leftP");
             leftPusher.setPower(0);
-            rightPusher = hardwareMap.crservo.get("rightP");
-            rightPusher.setPower(0);
+            rightPusher = hardwareMap.servo.get("rightP");
+            rightPusher.setPosition(0.1);
 
             latch = hardwareMap.servo.get("latch");
             latch.setPosition(0.5);
 
             // Create NAVX device
-
             DeviceInterfaceModule dim = hardwareMap.deviceInterfaceModule.get("dim");
-            ;
             ADBLog(dim.toString());
 
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
@@ -256,11 +245,6 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 stop();
                 if (true) return;
             }
-
-
-            // Initialize display view
-//            mImageView = (ImageView) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(com.qualcomm.ftcrobotcontroller.R.id.imageViewId);
-
 
             targets.activate();
             float x = 0;
@@ -360,7 +344,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 drive.TurnToAngle(90 * dir);
                 ADBLog("Step 5");
 
-                rightPusher.setPower(0);
+                rightPusher.setPosition(0.1);
                 leftPusher.setPower(0);
 
                 // Approaching first target
@@ -381,7 +365,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                     drive.brake();
                 }
 
-                rightPusher.setPower(0);
+                rightPusher.setPosition(0.1);
                 leftPusher.setPower(0);
 
                 drive.DriveByEncoders(90 * dir, -0.2, 100);
@@ -393,7 +377,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 drive.Stop();
                 leftPusher.setPower(0);
                 leftPusher.close();
-                rightPusher.setPower(0);
+                rightPusher.setPosition(0.1);
                 rightPusher.close();
                 latch.setPosition(0.5);
                 latch.close();
@@ -402,6 +386,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             }
         }
     }
+
 
     private volatile static double initial_time = 0;
 
@@ -422,95 +407,31 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         return array[0] * 10;
     }
 
-    static final double Y_DIST = 150;
-    static final double X_TOLERANCE = 20;
     Integrator I = new Integrator(400);
     double prevX = 0;
     double prevY = 0;
     double prevT = runtime.milliseconds();
 
-    enum States {OFF_LEFT, OFF_RIGHT, ON_TARGET}
-
-    ;
-
     private double Approach(VuforiaTrackable target) {
-        double x = 0;
-        double y = 1000;
-        double offset = 0;
-        int angle = 0;
-        int prevAngle = 0;
-        double d = 1000;
-        double head = 90 * dir;
+        double X = 0;
+        double Y = 1000;
 
-        // First intercept perpendicular line
-/*        while (opModeIsActive())
-        {
-            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) target.getListener()).getRawUpdatedPose();
-            if(((VuforiaTrackableDefaultListener) target.getListener()).isVisible()) {
-                if (pose != null) {
-                    float[] poseData = Arrays.copyOfRange(pose.transposed().getData(), 0, 16);
-                    x = poseData[3];
-                    y = poseData[11];
-
-                    double b = Math.atan(x / y);
-                    double a = Math.toRadians(navx_device.getYaw()-head);
-
-                    double r = Math.sqrt(x * x + y * y);
-                    x = r * Math.sin(b + a);
-                    offset = 170 * Math.sin(a);
-                    ADBLog("Angles: a= " + a / Math.PI * 180 + ", b= " + b / Math.PI * 180);
-                    ADBLog("Coords: x'= " + x + ", y'= " + y + ", r=" + r + ", x= " + x + ", offset=" + offset);
-
-                    d = (x + offset)*1;
-
-                    if(Math.abs(d) > 70) {
-
-                        int dist = (int) Math.abs(Math.sqrt(2) * d);
-
-                        ADBLog("Driving for: " + dist);
-                        if (d < 0) {
-                            drive.TurnToAngle(-30 + head);
-                            drive.DriveByEncoders(-30 + head, 0.17, dist);
-                            drive.brake();
-                        } else {
-                            drive.TurnToAngle(30 + head);
-                            drive.DriveByEncoders(30 + head, 0.17, dist);
-                            drive.brake();
-                        }
-                    }
-
-                    drive.brake();
-                    drive.TurnToAngle(head);
-//                    sleep(200);
-                    break;
-                } else {
-                    //continue;
-                    ADBLog("Continue");
-                }
-            } else {
-                ADBLog("Lost beacon. What to do?");
-            }
-            sleep(10);
-        }*/
-
-
+        // First find target
         VectorF vuf_coord = new VectorF(0, 0);
         while (!getVuforiaCoord(target, vuf_coord, 100)) {
             ADBLog("Lost Vurforia track. Do something!!!");
             sleep(30);
         }
 
-        x = prevX = vuf_coord.getData()[0] - 10;
-        y = prevY = getRangeSensor();
+        X = prevX = vuf_coord.getData()[0] - 10;
+        Y = prevY = getRangeSensor();
         drive.resetYDist();
         I.Reset();
         boolean retesting = false;
-        ADBLog("Intercepted. Coords: X:" + x + ", Y:" + y);
+        ADBLog("Intercepted. Coords: X:" + X + ", Y:" + Y);
 
         // Follow perpendicular
-        int retest = 0;
         while (opModeIsActive()) {
-            double mult = 1;
             if (((VuforiaTrackableDefaultListener) target.getListener()).isVisible()) {
                 if (!getVuforiaCoord(target, vuf_coord, 100)) {
                     // Lost Vuforia track! Do something!
@@ -518,8 +439,8 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                     continue;
                 }
 
-                x = (vuf_coord.getData()[0] + 20);
-                y = getRangeSensor();
+                X = (vuf_coord.getData()[0] + 20);
+                Y = getRangeSensor();
 
                 double currT = runtime.milliseconds();
                 // Get incremental data from drive
@@ -528,14 +449,13 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 I.Add(Xd, currT);
 
                 double xi = 1.5 * I.Get(currT);
-                double pX = x - xi;
-                double XE = pX;
+                double XE = X - xi;
                 double absXE = Math.abs(XE);
-                double XV = (prevX - x) / (currT - prevT);
+                double XV = (prevX - X) / (currT - prevT);
 
-                double YE = y - RECOGNITION_DIST_Y;
+                double YE = Y - RECOGNITION_DIST_Y;
                 double absYE = Math.abs(YE);
-                double YV = (prevY - y) / (currT - prevT);
+                double YV = (prevY - Y) / (currT - prevT);
 
                 double x_dir = 2*Math.signum(XE);
                 double y_dir = Math.signum(YE);
@@ -568,7 +488,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                     }
 
                     // Stop strafing if prediction is past target and Vuforia didn't catch up yet. Don't go back.
-                    if (Math.signum(x) != Math.signum(pX)) {
+                    if (Math.signum(X) != Math.signum(XE)) {
                         x_dir = 0;
                     } else {
                         if (XV == 0.0 || Math.signum(XV) == Math.signum(XE)) { // Check whether going into right direction
@@ -591,63 +511,20 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                     }
                 }
 
-                ADBLog("x:" + x + ", xi:" + xi + ", y:" + y + ", pX:" + pX + ", XE:" + XE + ", YE:" + YE + ", XV: " + XV + ", YV:" + YV + ", xd:" + x_dir + ", yd:" + y_dir + ", sp:" + sp);
+                ADBLog("x:" + X + ", xi:" + xi + ", y:" + Y + ", XE:" + XE + ", YE:" + YE + ", XV: " + XV + ", YV:" + YV + ", xd:" + x_dir + ", yd:" + y_dir + ", sp:" + sp);
                 drive.VecDriveBalanced(y_dir, x_dir, sp, 2000);
 
 
-                prevX = x;
-                prevY = y;
+                prevX = X;
+                prevY = Y;
                 prevT = currT;
-
-/*
-
-                    double sp = 0.2;
-                    double dist = Math.sqrt(x*x + (y- RECOGNITION_DIST_Y)*(y- RECOGNITION_DIST_Y));
-
-                    int duration = 200;
-                    int delay = 10;
-                    if(dist < 100) {
-                        duration = 150;
-                        delay = 100;
-                        sp = 0.6;
-                        drive.brake();
-                    } else if (dist < 200) {
-                        sp = 0.1;
-                    }
-
-                    ADBLog("Coords: x= " + x + ", y= " + y + ", sp=" + sp + ", duration=" + duration + ", time=" + retest);
-
-                    if (Math.abs(y - RECOGNITION_DIST_Y) < RECOGNITION_TOLER_Y
-                        && Math.abs(x) < RECOGNITION_TOLER_X ) {
-                        drive.brake_and_wait();
-                        ADBLog("In position");
-                        if(retest > 0) break;
-                        retest = 1;
-                        sleep(80);
-                        continue;
-                    } else retest = 0;
-
-                    //if (Math.abs(y - 420) < 100) sp = 0.2;
-
-                    drive.resetDistance();
-                    sleep(delay);
-                    drive.VecDriveBalanced(y - RECOGNITION_DIST_Y, x, sp*mult, 500);
-                    sleep(duration);
-                    if(drive.getDistance() < 5) {
-                        mult = 2;
-                    }
-                    else if(drive.getDistance() > 30) {
-                        mult = 1;
-                    }
-                    ADBLog("Dist: " + drive.getDistance() + ", Mult: " + mult);
-                    */
             }
         }
 
         ADBLog("Brake");
         drive.brake();
 
-        return x;
+        return X;
     }
 
     private boolean RecognizeAndPush(boolean isRed) {
@@ -659,69 +536,29 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         while(opModeIsActive()) {
             ADBLog("Recognizing");
             Mat img = GetCameraImage();
-            ADBLog("Recognizing, got image");
             img = img.t();
             btn = br.detectButtons(img, isRed);
-            ADBLog("Recognizing, got button");
             img = img.t();
             DisplayImage(img);
             if (btn != null) {
+                ADBLog("Recognized, got button");
                 break;
             }
             ADBLog("Cannot find button in the image");
             sleep(10);
             if (runtime.milliseconds() - start_time > 1000) {
-                // Cannot locate beacon, retry approach
                 ADBLog("Cannot locate beacon, retry approach");
                 return false;
             }
         }
         if(btn == null) return false;
 
-        /*
-        boolean located = false;
-        // OpenCV beacon tracking class
-        BeaconTracker bt = null;
-        boolean isRight = false;
-        // here goes code for poking the button via image recognition
-        try {
-            // Start OpenCV
-            // Starting video stream
-            bt = new BeaconTracker(
-                    (CameraBridgeViewBase) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(R.id.camera_view),
-                    this,
-                    isRed);
-            ADBLog("Created OpenCV");
-
-            double start_time = runtime.milliseconds();
-
-            while (opModeIsActive()) {
-                if (bt.GetState() == Tracker.State.RECOGNIZING) {
-                    //trying to find button
-                    sleep(50);
-                    ADBLog("Recognizing");
-                    if (runtime.milliseconds() - start_time > 6000) {
-                        // Cannot locate beacon, retry approach
-                        ADBLog("Cannot locate beacon, retry approach");
-                        return false;
-                    }
-                } else if (bt.GetState() == Tracker.State.RECOGNIZED) {
-                    ADBLog("Recognized");
-                    isRight = bt.button().isRight;
-                    located = true;
-                    break;
-//                        bt.SetState(Tracker.State.TRACKING);
-                }
-            }
-            bt.Close();
-
-            */
         if (!opModeIsActive()) return false;
 
-         // Now press!
+         // Now push!
          if (btn.isRight) {
              ADBLog("============= Pushing right");
-             rightPusher.setPower(1);
+             rightPusher.setPosition(0.5);
          } else {
              ADBLog("============= Pushing left");
              leftPusher.setPower(-1);
@@ -733,7 +570,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         drive.brake();
 
         if (btn.isRight) {
-            rightPusher.setPower(-1);
+            rightPusher.setPosition(0.1);
         } else {
             leftPusher.setPower(1);
         }
@@ -828,13 +665,8 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 
                     frame.close();
 
-//                Imgproc.pyrDown(mat, mat);
                     Imgproc.resize(mat, mat, new Size(852, 480));
                     Core.flip(mat, mat, 1);
-
-//                Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.ARGB_8888);
-//                bm = bm.copy(Bitmap.Config.RGB_565, true);
-//                bm.copyPixelsFromBuffer(rgb.getPixels());
                 }
             } catch (InterruptedException ex) {
                 sleep(10);

@@ -79,10 +79,10 @@ public class DarudeTele extends OpMode {
         if ((double) Collections.max(l) > 1) {
             max = (double) Collections.max(l);
         }
-        wheelFL.setPower((-forward - strafe + rotate) / max);
-        wheelFR.setPower((-forward + strafe - rotate) / max);
-        wheelBL.setPower((-forward + strafe + rotate) / max);
-        wheelBR.setPower((-forward - strafe - rotate) / max);
+        wheelFL.setPower((-forward + strafe + rotate) / max);
+        wheelFR.setPower((-forward - strafe - rotate) / max);
+        wheelBL.setPower((-forward - strafe + rotate) / max);
+        wheelBR.setPower((-forward + strafe - rotate) / max);
 
         if (gamepad2.right_bumper) {
             shootL.setPower(1.0);
