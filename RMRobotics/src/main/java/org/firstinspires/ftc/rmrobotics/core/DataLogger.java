@@ -132,11 +132,11 @@ public class DataLogger {
         addField(index);
     }
 
-    public void addSensors(double range,double navx){
+    public void addSensors(double range){
         newLine();
         addField("ServoValue: rangefinder-navx");
         addField(range);
-        addField(navx);
+//        addField(navx);
     }
 
     public void newLine() {

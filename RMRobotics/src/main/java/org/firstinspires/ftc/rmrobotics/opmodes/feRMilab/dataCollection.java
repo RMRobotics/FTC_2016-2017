@@ -108,10 +108,10 @@ public class dataCollection extends OpMode{
         if(dataCollect.getState()){
             dataLogger.newLine();
             dataLogger.addBeacon(colorLeftReader.read(0x04, 1)[0]);
-            dataLogger.addSensors(rangeReader.read(0x04, 2)[0],navx.getYaw());
-            dataLogger.addEncoders(FL.getCurrentPosition(),FR.getCurrentPosition(),BR.getCurrentPosition(),BL.getCurrentPosition());
-            dataLogger.addTarEncoders(FL.getTargetPosition(),FR.getTargetPosition(),BR.getTargetPosition(),BL.getTargetPosition());
-            dataLogger.addServos(harvester.getPosition(),beaconArm.getPosition(),index.getPosition());
+            dataLogger.addSensors(rangeReader.read(0x04, 2)[0]);
+//            dataLogger.addEncoders(FL.getCurrentPosition(),FR.getCurrentPosition(),BR.getCurrentPosition(),BL.getCurrentPosition());
+//            dataLogger.addTarEncoders(FL.getTargetPosition(),FR.getTargetPosition(),BR.getTargetPosition(),BL.getTargetPosition());
+//            dataLogger.addServos(harvester.getPosition(),beaconArm.getPosition(),index.getPosition());
             //Add navx data as well
         }
 
