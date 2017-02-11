@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
  * Created by Peter on 2/10/17.
  */
 
+@Autonomous(name = "BeaconCapBlue")
 public class BeaconCapBlue extends FeRMiLinear {
     @Override
     public void runOpMode() {
@@ -357,28 +359,27 @@ public class BeaconCapBlue extends FeRMiLinear {
     }
 
     private void turnRobotCorner(int a){
-        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - a) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + a > 0) {
+            if (navx.getYaw() - a < 0) {
                 //if robot has turned less than a degrees in left direction
                 scale = -1;
             } else {
                 //if robot has turned more than a degrees in left direction
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw() + a) > 15){
+            if (Math.abs(navx.getYaw() - a) > 15){
                 //if robot has turned less than (a-15) degrees in either direction
                 //then turns robot at a faster speed
-                setDrive(scale * 0.4, 0);
+                setDrive(0, scale * 0.4);
             } else {
                 //if robot has turned more than (a-15) degrees in either direction
                 //turns robot at a slower speed
-                setDrive(scale * 0.07, 0);
+                setDrive(0, scale * 0.07);
             }
         }
         addTelemetry();
 //        setDrive(0);
 //        sleep(100);
     }
-}
 }
