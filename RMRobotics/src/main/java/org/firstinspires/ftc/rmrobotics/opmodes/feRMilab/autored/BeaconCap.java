@@ -62,7 +62,7 @@ public class BeaconCap extends FeRMiLinear {
             setDrive(0.07);
         }
         addTelemetry();
-        setDrive(0, 0, 0, 0);
+        setDrive(0);
 //        sleep(100);
 
         // turn left until back color sensor also detects the line
