@@ -155,7 +155,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           android:layout_height="fill_parent"
           android:visibility="gone"
           android:id="@+id/camera_view" />
-
     </FrameLayout>
 
     <TextView

@@ -10,6 +10,6 @@ dependencies {
 }
 repositories {
     flatDir {
-        dirs 'libs', 'C:\\Users\\Peter\\navx-micro\\android\\libs'
+        dirs 'libs', 'C:\\Users\\Tolia\\navx-micro\\android\\libs'
     }
 }
