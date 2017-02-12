@@ -2,6 +2,8 @@ package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
 
 
 import android.graphics.Bitmap;
+import android.util.JsonReader;
+import android.util.JsonWriter;
 import android.widget.ImageView;
 
 import com.kauailabs.navx.ftc.AHRS;
@@ -32,11 +34,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.firstinspires.ftc.robotcore.internal.VuforiaLocalizerImpl;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -159,7 +168,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             leftPusher = hardwareMap.crservo.get("leftP");
             leftPusher.setPower(0);
             rightPusher = hardwareMap.servo.get("rightP");
-            rightPusher.setPosition(0.1);
+            rightPusher.setPosition(0);
 
             latch = hardwareMap.servo.get("latch");
             latch.setPosition(0.5);
@@ -193,35 +202,6 @@ public class BetterDarudeAutoNav extends LinearOpMode {
             );
             drive.ReverseDirection();
 
-            // To test drive train set TestDriveTrain to true
-            boolean TestDriveTrain = false;
-            if (TestDriveTrain) {
-
-                drive.testFrontLeft(1);
-                sleep(1000);
-                drive.testFrontLeft(0.0);
-                sleep(1000);
-
-                drive.testFrontRight(1);
-                sleep(1000);
-                drive.testFrontRight(0.0);
-                sleep(1000);
-
-                drive.testBackLeft(1);
-                sleep(1000);
-                drive.testBackLeft(0.0);
-                sleep(1000);
-
-                drive.testBackRight(1);
-                sleep(1000);
-                drive.testBackRight(0.0);
-                sleep(1000);
-
-
-                stop();
-                if (true) return;
-            }
-
             targets.activate();
             float x = 0;
             float y = 0;
@@ -248,34 +228,13 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 ADBLog("Start");
                 new Thread(drive).start();
 
-
-//                drive.TurnToAngle(90);
-//                sleep(2000);
-//
-//                drive.TurnToAngle(45);
-//                sleep(2000);
-
-//                drive.DriveByEncoders(0, 0.3, 100);
-//                drive.DriveByEncoders(45, 0.3, 1200);
-//                drive.brake();
-
-//
-//                drive.resetYDist();
-//                drive.VecDriveBalanced(-3,10,0.3,2000);
-//                sleep(3000);
-//                ADBLog("Strafe: " + drive.getYDistIncr());
-//
-//                if (true) {
-//                    return;
-//                }
-
-                //shootL.setPower(-1);
-                //shootR.setPower(-1);
-                drive.DriveByEncoders(0, 0.4, 450);
+                shootL.setPower(-1);
+                shootR.setPower(-1);
+                drive.DriveByEncoders(0, 0.4, 335);
                 drive.brake();
-                sleep(500);
+                sleep(1000);
                 latch.setPosition(1.1);
-                sleep(750);
+                sleep(760);
                 latch.setPosition(.5);
                 sleep(1000);
                 latch.setPosition(1.1);
@@ -286,12 +245,11 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 
                 ADBLog("Step 1");
                 drive.DriveByEncoders(63 * dir, 0.4, 590);
-                drive.DriveByEncoders(63 * dir, 0.5, 250);
+                drive.DriveByEncoders(63 * dir, 0.5, 750);
                 drive.DriveByEncoders(63 * dir, 0.5, 100);
                 ADBLog("Step 2");
-                drive.DriveByEncoders(0 * dir, 0.5, 470);
-                drive.DriveByEncoders(0 * dir, 0.5, 2);
-                drive.DriveByEncoders(0 * dir, 0.4, 200);
+                drive.DriveByEncoders(0 * dir, 0.5, 300);
+                drive.DriveByEncoders(0 * dir, 0.4, 100);
                 drive.brake();
                 ADBLog("Step 4");
                 drive.TurnToAngle(90 * dir);
@@ -326,14 +284,14 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 drive.DriveByEncoders(90 * dir, -0.3, 100);
                 ADBLog("Step 2-2");
                 drive.DriveByEncoders(172 * dir, -0.4, 400);
-                drive.DriveByEncoders(172 * dir, -0.5, 700);
-                drive.DriveByEncoders(172 * dir, -0.5, 900);
+                drive.DriveByEncoders(172 * dir, -0.5, 500);
+                drive.DriveByEncoders(172 * dir, -0.5, 1070);
                 drive.brake();
                 ADBLog("Step 3-2");
                 drive.TurnToAngle(90 * dir);
                 ADBLog("Step 5");
 
-                rightPusher.setPosition(0.1);
+                rightPusher.setPosition(0);
                 leftPusher.setPower(0);
 
                 // Approaching first target
@@ -354,13 +312,11 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                     drive.brake();
                 }
 
-                rightPusher.setPosition(0.1);
-                leftPusher.setPower(0);
-
                 drive.DriveByEncoders(90 * dir, -0.2, 100);
                 drive.brake();
                 sleep(50);
-
+                rightPusher.setPosition(0);
+                leftPusher.setPower(0);
             } finally {
                 ADBLog("Exiting opmode");
                 drive.Stop();
@@ -401,6 +357,118 @@ public class BetterDarudeAutoNav extends LinearOpMode {
     double prevY = 0;
     double prevT = runtime.milliseconds();
 
+    private double Approach(VuforiaTrackable target) {
+        double X = 0;
+        double Y = 1000;
+
+        // First find target
+        VectorF vuf_coord = new VectorF(0, 0);
+        while (!getVuforiaCoord(target, vuf_coord, 100)) {
+            ADBLog("Lost Vurforia track. Do something!!!");
+            sleep(30);
+        }
+
+        X = prevX = vuf_coord.getData()[0] - 10;
+        Y = prevY = getRangeSensor();
+        drive.resetYDist();
+        I.Reset();
+        boolean retesting = false;
+        ADBLog("Intercepted. Coords: X:" + X + ", Y:" + Y);
+
+        // Follow perpendicular
+        while (opModeIsActive()) {
+            if (((VuforiaTrackableDefaultListener) target.getListener()).isVisible()) {
+                if (!getVuforiaCoord(target, vuf_coord, 100)) {
+                    // Lost Vuforia track! Do something!
+                    ADBLog("Lost Vurforia track. Do something!!!");
+                    continue;
+                }
+
+                X = (vuf_coord.getData()[0] + 20);
+                Y = getRangeSensor();
+
+                double currT = runtime.milliseconds();
+                // Get incremental data from drive
+                double Xd = drive.getYDistIncr();
+
+                I.Add(Xd, currT);
+
+                double xi = 1.1 * I.Get(currT);
+                double XE = X - xi;
+                double absXE = Math.abs(XE);
+                double XV = (prevX - X) / (currT - prevT);
+
+                double YE = Y - RECOGNITION_DIST_Y;
+                double absYE = Math.abs(YE);
+                double YV = (prevY - Y) / (currT - prevT);
+
+                double x_dir = 2*Math.signum(XE);
+                double y_dir = Math.signum(YE);
+
+                double sp = 0.3;
+
+                // Set speed according to Y distance
+                if (absYE < 100) {
+                    sp = 0.23;
+                }
+
+                if (absYE < 50) {
+                    if (Math.abs(YV) < 0.01) {
+                        if(!retesting) {
+                            retesting = true;
+                            sleep(300);
+                        } else break; // Got into position
+                    }
+                    drive.brake(); // Still moving, check later
+                    x_dir = 0;
+                    y_dir = 0;
+                } else {
+                    // Set speed according to direction of Y movement
+                    if (YV == 0.0 || Math.signum(YV) == Math.signum(YE)) {
+                        // Going in right direction
+                        if ((absYE < RECOGNITION_TOLER_Y + 30) && (Math.abs(YV) > 0.1)) y_dir = 0;
+                    } else {
+                        // Going in wrong direction
+                        if (Math.abs(YV) > 0.05) y_dir = -y_dir;
+                    }
+
+
+                        if (XV == 0.0 || Math.signum(XV) == Math.signum(XE)) { // Check whether going into right direction
+                            if (absXE < RECOGNITION_TOLER_X/2) {
+                                x_dir = 0; // Within tolerance, stop strafing
+                            }
+                            if (absXE < RECOGNITION_TOLER_X + 90) {
+                                x_dir /= 2; // Close to target and moving fast, stop strafing
+                            }
+                            if (absXE < RECOGNITION_TOLER_X + 30 && Math.abs(XV) > 0.1) {
+                                x_dir = 0; // Close to target and moving fast, stop strafing
+                            }
+                        } else {
+                            //if(Math.abs(XV) > 0.02) x_dir = -x_dir;
+                            if (absXE < RECOGNITION_TOLER_X) {
+                                x_dir = 0; // Within tolerance, stop strafing.
+                            }
+                            // Moving in wrong direction and not close to target X. Continue and hope it sorts itself out.
+                        }
+                }
+
+                ADBLog("x:" + X + ", xi:" + xi + ", y:" + Y + ", XE:" + XE + ", YE:" + YE + ", XV: " + XV + ", YV:" + YV + ", xd:" + x_dir + ", yd:" + y_dir + ", sp:" + sp);
+                drive.VecDriveBalanced(y_dir, x_dir, sp, 2000);
+
+
+                prevX = X;
+                prevY = Y;
+                prevT = currT;
+            }
+        }
+
+        ADBLog("Brake");
+        drive.brake();
+
+        return X;
+    }
+
+    /*
     private double Approach(VuforiaTrackable target) {
         double X = 0;
         double Y = 1000;
@@ -514,7 +582,8 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         drive.brake();
 
         return X;
-    }
+    }*/
+
 
     private boolean RecognizeAndPush(boolean isRed) {
         ButtonFinder.EllipseLocationResult btn = null;
@@ -547,7 +616,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
          // Now push!
          if (btn.isRight) {
              ADBLog("============= Pushing right");
-             rightPusher.setPosition(0.5);
+             rightPusher.setPosition(1);
          } else {
              ADBLog("============= Pushing left");
              leftPusher.setPower(-1);
@@ -555,8 +624,9 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         sleep(100);
 
         int Y = getRangeSensor();
-        drive.DriveByEncoders(90 * dir, 0.2, Y + 90);
+        drive.DriveByEncoders(90 * dir, 0.2, Y + 180);
         drive.brake();
+        sleep(100);
 
         if (btn.isRight) {
             rightPusher.setPosition(0.1);
@@ -686,3 +756,70 @@ public class BetterDarudeAutoNav extends LinearOpMode {
     }
 }
 
+class AutoNavConfig {
+    public boolean isRed = false;
+    public String firstBeacon = "";
+    public String secondBeacon = "";
+    public boolean isRight = true;
+
+    public void ReadConfig(FtcRobotControllerActivity act) {
+        try {
+            InputStream in = act.openFileInput("DarudeAutoNavCfg");
+            JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+            reader.beginObject();
+            reader.nextName();
+            isRed = reader.nextBoolean();
+            reader.nextName();
+            firstBeacon = reader.nextString();
+            reader.nextName();
+            secondBeacon = reader.nextString();
+            reader.nextName();
+            isRight = reader.nextBoolean();
+            reader.endObject();
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            RobotLog.d("Cannot create config file, creating default");
+            // Create default file
+            firstBeacon = "Wheels";
+            secondBeacon = "Tools";
+            WriteConfig(act);
+        } catch (IOException ex) {
+            RobotLog.d("Cannot create config file");
+        }
+    }
+
+    public void WriteConfig(FtcRobotControllerActivity act) {
+        try {
+            OutputStream out = act.openFileOutput("DarudeAutoNavCfg",0);
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+            writer.setIndent("  ");
+            writer.beginObject();
+            writer.name("red").value(isRed);
+            writer.name("firstBeacon").value(firstBeacon);
+            writer.name("secondBeacon").value(secondBeacon);
+            writer.name("isRight").value(isRight);
+            writer.endObject();
+            writer.close();
+        } catch (FileNotFoundException ex) {
+            RobotLog.d("Cannot create config file");
+        } catch (IOException ex) {
+            RobotLog.d("Cannot create config file");
+        }
+    }
+}
+
+class RMVuforia extends VuforiaLocalizerImpl {
+    RMVuforia(VuforiaLocalizer.Parameters parameters) {
+        super(parameters);
+    }
+
+    // Pause and release camera
+    public void RMPause() {
+        pauseAR();
+    }
+
+    // Resume Vuforia
+    public void RMResume() {
+        resumeAR();
+    }
+}

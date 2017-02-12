@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
 
 
-import android.content.Context;
-import android.support.annotation.IdRes;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,13 +11,8 @@ import android.widget.Space;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.rmrobotics.opmodes.AutoNav.DarudeAutoNav;
-
-import static android.os.Debug.waitForDebugger;
 
 /**
  * Created by Peter on 1/24/2017.

@@ -187,7 +187,7 @@ public class Drive implements Runnable {
                 if(runtime.milliseconds() - lastCommandTime > driveDuration) {
                     // Stop
                     VecDrive(0,0,0,0,0,10000); // Stop for 10 secs, than we will stop for another 10 and so on until new command arrives
-                    DarudeAutoNav.ADBLog("Running too long. Stop!");
+                    BetterDarudeAutoNav.ADBLog("Running too long. Stop!");
                 }
                 sleep(5);
                 if(runtime.milliseconds() - prevStep > TRAN_STEP_TIME) {
@@ -196,7 +196,7 @@ public class Drive implements Runnable {
                         currentVector = goalVector;
                     } else {
                         currentVector = stackVector.pop();
-                        DarudeAutoNav.ADBLog("Updating direction. Current Vec: " + currentVector.get(0) + ":" + currentVector.get(1));
+                        BetterDarudeAutoNav.ADBLog("Updating direction. Current Vec: " + currentVector.get(0) + ":" + currentVector.get(1));
                     }
                     prevStep = runtime.milliseconds();
                 }
