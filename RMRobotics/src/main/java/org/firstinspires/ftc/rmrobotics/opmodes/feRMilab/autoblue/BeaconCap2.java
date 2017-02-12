@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autoblue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,29 +9,29 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 /**
  * Created by Simon on 1/6/16.
  */
-// RED TEAM
+// BLUE TEAM
 
 
-@Autonomous(name = "RED: Beacon")
-public class BeaconCap extends FeRMiLinear {
+@Autonomous(name = "BLUE: Beacon")
+public class BeaconCap2 extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER);
 
         // turn towards first beacon
-        turnCorner(37);
+        turnCorner(40);
 
         // drive forward until center color sensor detects line
-        double initPos = Math.abs(FL.getCurrentPosition());
+        double initPos = Math.abs(FR.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FL.getCurrentPosition() + initPos < -3500) {
+            if (FR.getCurrentPosition() + initPos < -3500) {
                 scale = 1;
-            } else if (FL.getCurrentPosition() + initPos > -2400) {
+            } else if (FR.getCurrentPosition() + initPos > -2400) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() + initPos > -2400) {
+            if (FR.getCurrentPosition() + initPos > -2400) {
                 setDrive(scale * 0.5);
             } else {
                 setDrive(scale * 0.1);
@@ -47,14 +47,14 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 86) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 90 > 0) {
+            if (navx.getYaw() - 90 > 0) {
                 scale = -1;
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
+            if (Math.abs(navx.getYaw() - 88) > 10) {
                 setDrive(scale * 0.2, -scale * 0.2);
             } else {
                 setDrive(scale * 0.07, -scale * 0.07);
@@ -73,11 +73,11 @@ public class BeaconCap extends FeRMiLinear {
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
-                //left is red, right is blue
-                swingArm.setPosition(.75);
+                //left is blue, right is red
+                swingArm.setPosition(.15);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
-                swingArm.setPosition(.15);
+                swingArm.setPosition(.75);
                 detected = true;
             }
         }
@@ -120,34 +120,32 @@ public class BeaconCap extends FeRMiLinear {
         //FIRST BEACON DONE
 
         // turn towards second line
-        while (navx.getYaw() < -2 && opModeIsActive()) {
+        while (navx.getYaw() > 2 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(.15, -0.15);
+                setDrive(-0.15, 0.15);
             } else {
-                setDrive(0.07, -0.07);
+                setDrive(-0.07, 0.07);
             }
         }
 
         setDrive(0);
 
         // drive forward slightly to move center color sensor off the first line
-        int curEnc = FL.getCurrentPosition();
         double start = runtime.milliseconds();
         while (runtime.milliseconds() - start < 450 && opModeIsActive()) {
             setDrive(-0.6);
         }
 
         // drive forward until center color sensor detects second line
-        double checkFirst = -2500;
-        initPos = Math.abs(FL.getCurrentPosition());
+        initPos = Math.abs(FR.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FL.getCurrentPosition() + initPos < -3000) {
+            if (FR.getCurrentPosition() + initPos < -3000) {
                 scale = 1;
-            } else if (FL.getCurrentPosition() + initPos > -1500) {
+            } else if (FR.getCurrentPosition() + initPos > -1500) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() + initPos > -1500) {
+            if (FR.getCurrentPosition() + initPos > -1500) {
                 setDrive(scale * 0.5);
             } else {
                 setDrive(scale * 0.1);
@@ -162,14 +160,14 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         //turn left towards beacon
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 86) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + 90 > 0) {
+            if (navx.getYaw() - 90 > 0) {
                 scale = -1;
             } else {
                 scale = 1;
             }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
+            if (Math.abs(navx.getYaw() - 88) > 10) {
                 setDrive(scale * 0.2, -scale * 0.2);
             } else {
                 setDrive(scale * 0.07, -scale * 0.07);
@@ -189,11 +187,11 @@ public class BeaconCap extends FeRMiLinear {
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
-                //left is red, right is blue
-                swingArm.setPosition(.75);
+                //left is blue, right is red
+                swingArm.setPosition(0.15);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
-                swingArm.setPosition(.15);
+                swingArm.setPosition(0.75);
                 detected = true;
             }
         }
@@ -222,45 +220,45 @@ public class BeaconCap extends FeRMiLinear {
     }
 
     private void turnCenter(int a){
-        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - a) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + a > 0) {
+            if (navx.getYaw() - a > 0) {
                 //if robot has turned less than a degrees in left direction
-                scale = -1;
+                scale = 1;
             } else {
                 //if robot has turned more than a degrees in left direction
-                scale = 1;
+                scale = -1;
             }
-            if (Math.abs(navx.getYaw() + a) > 15){
+            if (Math.abs(navx.getYaw() - a) > 15){
                 //if robot has turned less than (a-15) degrees in either direction
                 //then turns robot at a faster speed
-                setDrive(scale * 0.4, -scale * 0.4);
+                setDrive(-scale * 0.4, scale * 0.4);
             } else {
                 //if robot has turned more than (a-15) degrees in either direction
                 //turns robot at a slower speed
-                setDrive(scale * 0.07, -scale * 0.07);
+                setDrive(-scale * 0.07, scale * 0.07);
             }
         }
     }
 
     private void turnCorner(int a){
-        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - a) > 2 && opModeIsActive()) {
             int scale;
-            if (navx.getYaw() + a > 0) {
+            if (navx.getYaw() - a > 0) {
                 //if robot has turned less than a degrees in left direction
-                scale = -1;
+                scale = 1;
             } else {
                 //if robot has turned more than a degrees in left direction
-                scale = 1;
+                scale = -1;
             }
-            if (Math.abs(navx.getYaw() + a) > 15){
+            if (Math.abs(navx.getYaw() - a) > 15){
                 //if robot has turned less than (a-15) degrees in either direction
                 //then turns robot at a faster speed
-                setDrive(scale * 0.4, 0);
+                setDrive(0, scale * 0.4);
             } else {
                 //if robot has turned more than (a-15) degrees in either direction
                 //turns robot at a slower speed
-                setDrive(scale * 0.07, 0);
+                setDrive(0, scale * 0.07);
             }
         }
     }
