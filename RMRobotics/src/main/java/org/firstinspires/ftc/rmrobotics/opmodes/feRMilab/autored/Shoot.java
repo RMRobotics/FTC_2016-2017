@@ -12,7 +12,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 // RED TEAM
 
 
-@Autonomous(name = "Shoot")
+@Autonomous(name = "RED: Shoot")
 public class Shoot extends FeRMiLinear {
 
     @Override

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name = "servoCalibration")
+@Disabled
 public class servoCalibration extends OpMode {
 
     private Servo servo;

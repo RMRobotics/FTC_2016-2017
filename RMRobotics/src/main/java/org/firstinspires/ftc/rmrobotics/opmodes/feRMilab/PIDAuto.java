@@ -2,6 +2,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 import java.text.DecimalFormat;
 
 @Autonomous(name = "PIDAuto")
+@Disabled
 public class PIDAuto extends FeRMiLinear {
 
     private double TARGET_ANGLE_DEGREES = -55.0;

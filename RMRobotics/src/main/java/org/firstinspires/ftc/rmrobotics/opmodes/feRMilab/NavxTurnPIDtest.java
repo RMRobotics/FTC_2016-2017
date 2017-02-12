@@ -2,6 +2,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 import java.text.DecimalFormat;
 
 @Autonomous(name = "Turn")
+@Disabled
 public class NavxTurnPIDtest extends FeRMiLinear {
 
     private final double TARGET_ANGLE_DEGREES = 90.0;
