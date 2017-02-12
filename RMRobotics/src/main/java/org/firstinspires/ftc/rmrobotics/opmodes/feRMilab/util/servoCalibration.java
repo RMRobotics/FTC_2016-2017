@@ -17,7 +17,7 @@ public class servoCalibration extends OpMode {
 
     @Override
     public void init() {
-        servo = hardwareMap.servo.get("liftHold");
+        servo = hardwareMap.servo.get("swingArm");
         h = hardwareMap.servo.get("h");
         h.setPosition(0.5);
     }

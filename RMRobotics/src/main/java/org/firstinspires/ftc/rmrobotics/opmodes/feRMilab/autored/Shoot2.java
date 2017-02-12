@@ -7,20 +7,17 @@ import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 
 /**
- * Created by Simon on 1/6/16.
+ * Created by Simon on 2/12/17.
  */
-// RED TEAM
 
-
-@Autonomous(name = "RED: Shoot")
-public class Shoot extends FeRMiLinear {
-
+@Autonomous(name = "BOTH: Shoot2")
+public class Shoot2 extends FeRMiLinear {
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
         setDrive(0.4);
-        sleep(100);
+        sleep(500);
         setDrive(0);
         flyL.setPower(0.985);
         flyR.setPower(0.985);
@@ -28,12 +25,11 @@ public class Shoot extends FeRMiLinear {
         index.setPosition(0.5);
         sleep(200);
         belt.setPower(1.0);
-        sleep(3000);
+        sleep(1000);
 
         flyL.setPower(0);
         flyR.setPower(0);
         belt.setPower(0);
         stop();
     }
-
 }

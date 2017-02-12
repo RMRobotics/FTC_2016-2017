@@ -139,7 +139,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         swingArm.setPosition(0.5);
         harvester.setPosition(0.5);
         index.setPosition(0.1);
-        liftHold.setPosition(0.29);
+        liftHold.setPosition(0.18);
     }
 
     protected void addTelemetry() {

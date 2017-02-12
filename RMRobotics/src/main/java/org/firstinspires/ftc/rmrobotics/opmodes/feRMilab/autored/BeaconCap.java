@@ -74,10 +74,10 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
                 //left is red, right is blue
-                swingArm.setPosition(.75);
+                swingArm.setPosition(0.65);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
-                swingArm.setPosition(.15);
+                swingArm.setPosition(0.25);
                 detected = true;
             }
         }
@@ -89,10 +89,10 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         // back away from beacon
-        while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive() && detected) {
+        while (rangeReader.read(0x04, 2)[0] < 17 && opModeIsActive()) {
             setDrive(0.2);
         }
-        swingArm.setPosition(0.5);
+        swingArm.setPosition(0.4);
 
         setDrive(0);
 
@@ -116,6 +116,12 @@ public class BeaconCap extends FeRMiLinear {
         index.setPosition(.1);
         flyL.setPower(0);
         flyR.setPower(0);
+
+        sleep(200);
+
+        while (rangeReader.read(0x04, 2)[0] > 15 && opModeIsActive()) {
+            setDrive(0.2);
+        }
 
         //FIRST BEACON DONE
 
@@ -190,10 +196,10 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
                 //left is red, right is blue
-                swingArm.setPosition(.75);
+                swingArm.setPosition(0.65);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
-                swingArm.setPosition(.15);
+                swingArm.setPosition(0.25);
                 detected = true;
             }
         }
