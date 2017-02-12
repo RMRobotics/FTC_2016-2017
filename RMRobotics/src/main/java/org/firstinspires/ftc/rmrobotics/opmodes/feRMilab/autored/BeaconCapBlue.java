@@ -61,12 +61,12 @@ public class BeaconCapBlue extends FeRMiLinear {
         /*while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(-0.07);
         }*/
-        addTelemetry();
-        setDrive(0);
+//        addTelemetry();
+//        setDrive(0);
 //        sleep(100);
 
         // turn left until back color sensor also detects the line
-        while (Math.abs(navx.getYaw() - 86) > 3 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - 86) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() - 86 < 0) {
                 scale = -1;
@@ -95,7 +95,7 @@ public class BeaconCapBlue extends FeRMiLinear {
         }
         */
 //        setDrive(0);
-        addTelemetry();
+//        addTelemetry();
 
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
@@ -124,7 +124,7 @@ public class BeaconCapBlue extends FeRMiLinear {
         else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
             swingArm.setPosition(.75);
         }
-        addTelemetry();
+//        addTelemetry();
 
 
         double initTime = runtime.milliseconds();
@@ -134,7 +134,7 @@ public class BeaconCapBlue extends FeRMiLinear {
             // drive forward to hit beacon
             //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
             setDrive(-0.15);
-            addTelemetry();
+//            addTelemetry();
         }
 
 //        setDrive(0, 0, 0, 0);
@@ -143,7 +143,7 @@ public class BeaconCapBlue extends FeRMiLinear {
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
             setDrive(0.2);
-            addTelemetry();
+//            addTelemetry();
         }
         swingArm.setPosition(0.5);
 
@@ -191,7 +191,7 @@ public class BeaconCapBlue extends FeRMiLinear {
             } else {
                 setDrive(-.07, 0.07, -.07, 0.07);
             }
-            addTelemetry();
+//            addTelemetry();
         }
 
         setDrive(0, 0, 0, 0);
@@ -207,38 +207,58 @@ public class BeaconCapBlue extends FeRMiLinear {
 //
         // drive forward slightly to move center color sensor off the first line
         double start = runtime.milliseconds();
-        while (runtime.milliseconds() - start < -350 && opModeIsActive()) {
+        while (runtime.milliseconds() - start < 400 && opModeIsActive()) {
             setDrive(0.6);
+//            addTelemetry();
+        }
+//        double checkFirst = -2500;
+//        // drive forward until center color sensor detects second line
+//        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
+//            int scale = 1;
+//            int relDis = FL.getCurrentPosition() - curEnc;
+//            if (relDis > 2200) {
+//                setDrive(0.35);
+//                checkFirst = 2800;
+//            } else {
+//                if (relDis > checkFirst) {
+//                    scale = 1;
+//                } else if(relDis <= 3500) {
+//                    checkFirst = 2500;
+//                    scale = -1;
+//                }
+//                setDrive(scale*-0.1);
+//            }
+//        }
+        initPos = Math.abs(FR.getCurrentPosition());
+        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
+            int scale = -1;
+            if (FR.getCurrentPosition() - initPos < -2800) {
+                //travelled more than 3500
+                scale = 1;
+            } else if (FR.getCurrentPosition() - initPos > -2000) {
+                //travelled less than 2400
+                scale = -1;
+            }
+            if (FR.getCurrentPosition() - initPos > -2000) {
+                //travelled less than 2400
+                setDrive(scale * 0.5);
+            } else {
+                setDrive(scale * 0.1);
+            }
             addTelemetry();
         }
-        double checkFirst = -2500;
-        // drive forward until center color sensor detects second line
-        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-            int scale = 1;
-            int relDis = FL.getCurrentPosition() - curEnc;
-            if (relDis > 2500) {
-                setDrive(0.35);
-                checkFirst = 2800;
-            } else {
-                if (relDis > checkFirst) {
-                    scale = 1;
-                } else if(relDis <= 3500) {
-                    checkFirst = 2500;
-                    scale = -1;
-                }
-                setDrive(scale*-0.07);
-            }
-        }
+        setDrive(0);
+        sleep(100);
 
 //
 //        setDrive(0);
-        sleep(100);
+//        sleep(100);
 //
         //drive backwards to correct for overshooting
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.04);
         }
-        addTelemetry();
+//        addTelemetry();
 //
 //        setDrive(0);
 //        sleep(100);
@@ -258,7 +278,7 @@ public class BeaconCapBlue extends FeRMiLinear {
             }
             //addTelemetry();
         }
-        addTelemetry();
+//        addTelemetry();
 
         setDrive(0);
 //        sleep(100);
@@ -295,7 +315,7 @@ public class BeaconCapBlue extends FeRMiLinear {
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
             setDrive(0.1);
-            addTelemetry();
+//            addTelemetry();
         }
 //
         setDrive(0);
@@ -321,7 +341,7 @@ public class BeaconCapBlue extends FeRMiLinear {
             // drive forward to hit beacon
             //while (rangeReader.read(0x04, 2)[1] < 12 && opModeIsActive()) {
             setDrive(0.15, 0.15, 0.15, 0.15);
-            addTelemetry();
+//            addTelemetry();
         }
 //
 ////        setDrive(0, 0, 0, 0);
@@ -330,7 +350,7 @@ public class BeaconCapBlue extends FeRMiLinear {
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive()) {
             setDrive(-0.1, -0.1, -0.1, -0.1);
-            addTelemetry();
+//            addTelemetry();
         }
 //
 //        setDrive(0, 0, 0, 0);
@@ -381,7 +401,7 @@ public class BeaconCapBlue extends FeRMiLinear {
                 setDrive(0, scale * 0.07);
             }
         }
-        addTelemetry();
+//        addTelemetry();
 //        setDrive(0);
 //        sleep(100);
     }
