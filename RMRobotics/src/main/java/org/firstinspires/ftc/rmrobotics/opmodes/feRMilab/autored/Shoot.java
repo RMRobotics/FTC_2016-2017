@@ -22,8 +22,8 @@ public class Shoot extends FeRMiLinear {
         setDrive(0.4);
         sleep(100);
         setDrive(0);
-        flyL.setPower(0.985);
-        flyR.setPower(0.985);
+        flyL.setPower(0.975);
+        flyR.setPower(0.975);
         sleep(200);
         index.setPosition(0.5);
         sleep(200);

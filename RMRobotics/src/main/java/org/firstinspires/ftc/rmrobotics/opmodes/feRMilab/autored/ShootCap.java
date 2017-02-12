@@ -16,13 +16,16 @@ public class ShootCap extends FeRMiLinear {
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
+        sleep(10000);
+
         //drive
         setDrive(0.5);
-        sleep(500);
+        sleep(700);
+        setDrive(0);
 
         //shoot
-        flyL.setPower(.985);
-        flyR.setPower(.985);
+        flyL.setPower(0.95);
+        flyR.setPower(0.95);
         sleep(200);
         index.setPosition(0.5);
         sleep(200);
@@ -34,7 +37,14 @@ public class ShootCap extends FeRMiLinear {
 
         //drive
         setDrive(.5);
-        sleep(1000);
+        sleep(1350);
+
+        setDrive(0);
+
+        while (opModeIsActive()) {
+            telemetry.addData("yee", "eet");
+            telemetry.update();
+        }
 
         stop();
     }

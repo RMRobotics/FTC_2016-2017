@@ -34,7 +34,7 @@ public class BeaconCap2 extends FeRMiLinear {
             if (FR.getCurrentPosition() + initPos > -2400) {
                 setDrive(scale * 0.5);
             } else {
-                setDrive(scale * 0.1);
+                setDrive(scale * 0.07);
             }
         }
         setDrive(0);
@@ -89,7 +89,7 @@ public class BeaconCap2 extends FeRMiLinear {
         }
 
         // back away from beacon
-        while (rangeReader.read(0x04, 2)[0] < 17 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
             setDrive(0.2);
         }
         swingArm.setPosition(0.4);
@@ -98,8 +98,8 @@ public class BeaconCap2 extends FeRMiLinear {
 
         initTime = runtime.milliseconds();
         while(runtime.milliseconds()-initTime < 3500 && opModeIsActive()) {
-            flyL.setPower(0.985);
-            flyR.setPower(0.985);
+            flyL.setPower(0.85);
+            flyR.setPower(0.85);
             if (runtime.milliseconds() - initTime > 1000) {
                 index.setPosition(.5);
                 belt.setPower(1);
@@ -118,10 +118,6 @@ public class BeaconCap2 extends FeRMiLinear {
         flyR.setPower(0);
 
         sleep(200);
-
-        while (rangeReader.read(0x04, 2)[0] > 15 && opModeIsActive()) {
-            setDrive(0.2);
-        }
 
         //FIRST BEACON DONE
 
@@ -213,10 +209,10 @@ public class BeaconCap2 extends FeRMiLinear {
             setDrive(0.1);
         }
 
-        turnCenter(45);
+        turnCenter(50);
 
         initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
+        while (runtime.milliseconds() - initTime < 2300 && opModeIsActive()) {
             setDrive(0.4);
         }
 
