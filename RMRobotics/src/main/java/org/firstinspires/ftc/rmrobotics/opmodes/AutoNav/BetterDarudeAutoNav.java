@@ -269,8 +269,8 @@ public class BetterDarudeAutoNav extends LinearOpMode {
 //                    return;
 //                }
 
-                shootL.setPower(-1);
-                shootR.setPower(-1);
+                //shootL.setPower(-1);
+                //shootR.setPower(-1);
                 drive.DriveByEncoders(0, 0.4, 450);
                 drive.brake();
                 sleep(500);
@@ -285,11 +285,11 @@ public class BetterDarudeAutoNav extends LinearOpMode {
                 shootR.setPower(0);
 
                 ADBLog("Step 1");
-                drive.DriveByEncoders(58 * dir, 0.4, 527);
-                drive.DriveByEncoders(58 * dir, 0.5, 250);
-                drive.DriveByEncoders(58 * dir, 0.5, 100);
+                drive.DriveByEncoders(63 * dir, 0.4, 590);
+                drive.DriveByEncoders(63 * dir, 0.5, 250);
+                drive.DriveByEncoders(63 * dir, 0.5, 100);
                 ADBLog("Step 2");
-                drive.DriveByEncoders(0 * dir, 0.5, 370);
+                drive.DriveByEncoders(0 * dir, 0.5, 470);
                 drive.DriveByEncoders(0 * dir, 0.5, 2);
                 drive.DriveByEncoders(0 * dir, 0.4, 200);
                 drive.brake();

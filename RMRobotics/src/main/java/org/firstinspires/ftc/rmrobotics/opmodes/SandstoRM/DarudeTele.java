@@ -33,11 +33,11 @@ public class DarudeTele extends OpMode {
     private DcMotor harvest;
     private DcMotor lift;
     private CRServo beaconL;
-    private CRServo beaconR;
+    private Servo beaconR;
     private Servo index;
     private Servo grabberL;
     private Servo grabberR;
-
+    private double servoPosition;
     public void init() {
 
         wheelFL = hardwareMap.dcMotor.get("wheelFL");
@@ -53,9 +53,10 @@ public class DarudeTele extends OpMode {
         shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         beaconL = hardwareMap.crservo.get("leftP");
-        beaconR = hardwareMap.crservo.get("rightP");
+        beaconR = hardwareMap.servo.get("rightP");
         beaconL.setPower(0);
-        beaconR.setPower(0);
+        servoPosition = .1;
+        beaconR.setPosition(servoPosition);
         index = hardwareMap.servo.get("latch");
 //          servoHeight = 2.3;
         timer = new ElapsedTime();
@@ -144,7 +145,9 @@ public class DarudeTele extends OpMode {
         }else{index.setPosition(.5);}
 
         beaconL.setPower(gamepad2.left_stick_y);
-        beaconR.setPower(gamepad2.right_stick_y);
+        servoPosition += gamepad2.right_stick_y * -.2;
+        if (servoPosition >= 1.3) servoPosition = 1.3;
+        if (servoPosition <= 0) servoPosition = 0;
     }
 }
 
