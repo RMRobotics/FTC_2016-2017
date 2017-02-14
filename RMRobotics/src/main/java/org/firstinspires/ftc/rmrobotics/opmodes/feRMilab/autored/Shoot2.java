@@ -16,20 +16,24 @@ public class Shoot2 extends FeRMiLinear {
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
+        // drive for .5 seconds at .4 power
         setDrive(0.4);
         sleep(500);
         setDrive(0);
+
+        // turn on flywheels for .2 seconds at .975 seconds
         flyL.setPower(0.975);
         flyR.setPower(0.975);
         sleep(200);
+
+        // open indexer
         index.setPosition(0.5);
         sleep(200);
+
+        // turn on belt
         belt.setPower(1.0);
         sleep(1000);
 
-        flyL.setPower(0);
-        flyR.setPower(0);
-        belt.setPower(0);
         stop();
     }
 }
