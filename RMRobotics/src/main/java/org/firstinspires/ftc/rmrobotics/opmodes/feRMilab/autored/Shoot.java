@@ -19,20 +19,24 @@ public class Shoot extends FeRMiLinear {
     public void runOpMode() {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
+        // drive for .1 seconds at .4 power
         setDrive(0.4);
         sleep(100);
         setDrive(0);
+
+        // turn on flywheels to .975 power
         flyL.setPower(0.975);
         flyR.setPower(0.975);
         sleep(200);
+
+        // open indexer
         index.setPosition(0.5);
         sleep(200);
+
+        //turn on belt
         belt.setPower(1.0);
         sleep(3000);
 
-        flyL.setPower(0);
-        flyR.setPower(0);
-        belt.setPower(0);
         stop();
     }
 
