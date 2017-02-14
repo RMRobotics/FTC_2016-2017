@@ -121,6 +121,10 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 dim.setLED(1, false);
                 dim.setLED(0, true);
                 break;
+            case NEITHER:
+                dim.setLED(1, false);
+                dim.setLED(1, true);
+                break;
             default:
                 dim.setLED(0, false);
                 dim.setLED(0, true);
