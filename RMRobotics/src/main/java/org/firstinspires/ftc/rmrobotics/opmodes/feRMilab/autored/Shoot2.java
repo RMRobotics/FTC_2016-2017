@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 /**
  * Created by Simon on 2/12/17.
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 public class Shoot2 extends FeRMiLinear {
     @Override
     public void runOpMode() throws InterruptedException {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
         // drive for .5 seconds at .4 power
         setDrive(0.4);

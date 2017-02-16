@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 /**
  * Created by RM Robotics on 2/4/2017.
@@ -14,7 +15,7 @@ public class Cap extends FeRMiLinear {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        super.initialize(Color.NEITHER, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.NEITHER, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
         //turn at an angle
         turnRobotCorner(45);
