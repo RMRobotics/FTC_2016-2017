@@ -166,10 +166,12 @@ public abstract class FeRMiLinear extends LinearOpMode {
     }
 
     protected void driveTime(double power, int time){
+        //drives at power for time
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < time && opModeIsActive()) {
-            setDrive(scale*0.4);
+            setDrive(0.4);
         }
+        setDrive(0);
     }
 
     protected void driveEncoder(double power, int encoder){

@@ -89,10 +89,11 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         // drive forward to hit beacon
-        initTime = runtime.milliseconds();
+        driveTime(-.15, 600);
+        /*initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
             setDrive(-0.15);
-        }
+        }*/
 
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
@@ -208,10 +209,11 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         // drive forward to hit beacon
-        initTime = runtime.milliseconds();
+        driveTime(-.15, 600);
+        /*initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
             setDrive(-0.15);
-        }
+        }*/
 
         // back away from beacon
         while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive() && detected) {
@@ -222,12 +224,13 @@ public class BeaconCap extends FeRMiLinear {
         turnCenter(45, 0.4);
 
         //drive to knock off cap ball
-        initTime = runtime.milliseconds();
+        driveTime(.4, 2000);
+        /*initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
             setDrive(0.4);
         }
 
-        setDrive(0);
+        setDrive(0);*/
 
         stop();
     }
