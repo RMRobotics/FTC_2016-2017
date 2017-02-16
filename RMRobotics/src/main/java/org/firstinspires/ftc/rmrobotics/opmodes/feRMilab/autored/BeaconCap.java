@@ -19,11 +19,9 @@ import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
 @Autonomous(name = "RED: Beacon")
 public class BeaconCap extends FeRMiLinear {
 
-    Direction direction = BACKWARD;
-
     @Override
     public void runOpMode() {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
 
         // turn towards first beacon
         turnCorner(37, 0.4);
@@ -53,6 +51,8 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
+        turnCorner(86, 0.2);
+        /*
         while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 90 > 0) {
@@ -66,7 +66,7 @@ public class BeaconCap extends FeRMiLinear {
                 setDrive(scale * 0.07, -scale * 0.07);
             }
         }
-        setDrive(0);
+        */
 
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
@@ -128,15 +128,15 @@ public class BeaconCap extends FeRMiLinear {
         //FIRST BEACON DONE
 
         // turn towards second line
-        while (navx.getYaw() < -2 && opModeIsActive()) {
+        turnCenter(-2, .15);
+        /*while (navx.getYaw() < -2 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
                 setDrive(.15, -0.15);
             } else {
                 setDrive(0.07, -0.07);
             }
         }
-
-        setDrive(0);
+        setDrive(0)*/
 
         // drive forward slightly to move center color sensor off the first line
         int curEnc = FL.getCurrentPosition();
@@ -170,7 +170,8 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         //turn left towards beacon
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
+        turnCenter(86, 0.2);
+        /*while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 90 > 0) {
                 scale = -1;
@@ -183,7 +184,7 @@ public class BeaconCap extends FeRMiLinear {
                 setDrive(scale * 0.07, -scale * 0.07);
             }
         }
-        setDrive(0);
+        setDrive(0);*/
 
         // drive forward until close enough to beacon
         while (rangeReader.read(0x04, 2)[0] > 14 && opModeIsActive()) {
@@ -217,8 +218,10 @@ public class BeaconCap extends FeRMiLinear {
             setDrive(0.1);
         }
 
+        //turn towards center goal
         turnCenter(45, 0.4);
 
+        //drive to knock off cap ball
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
             setDrive(0.4);
@@ -227,87 +230,5 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         stop();
-    }
-
-    private void turnCenter(int degree, double power){
-        int scale;
-        switch (direction){
-            case FORWARD:
-                scale = 1;
-                break;
-            case BACKWARD:
-                scale = -1;
-                break;
-            default:
-                scale = -1;
-                break;
-        }
-
-        // while robot is more than 2 degrees away from target degree
-        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
-            int correct = scale;
-            if (navx.getYaw() - degree <= 0) {
-                // if robot is turning in the right direction
-                correct = scale;
-            } else {
-                // if robot has overturned
-                correct = scale * -1;
-            }
-            if (Math.abs(navx.getYaw() - degree) > 15){
-                // if robot is more than 15 degrees away from target degree
-                // faster speed
-                setDrive(correct * power, -correct * power);
-            } else {
-                // if robot is within 15 degrees away from target degree
-                // slower speed
-                setDrive(correct * (power/5.5), -correct * (power/5.5));
-            }
-        }
-    }
-
-    private void turnCorner(int degree, double power){
-
-        int scale;
-        switch (direction){
-            case FORWARD:
-                scale = 1;
-                break;
-            case BACKWARD:
-                scale = -1;
-                break;
-            default:
-                scale = -1;
-                break;
-        }
-
-        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
-            int correct = scale;
-            if (navx.getYaw() - degree <= 0) {
-                // if robot is turning in the right direction
-                correct = scale;
-            } else {
-                //if robot has overturned
-                correct = scale * -1;
-            }
-            if (Math.abs(navx.getYaw() - degree) > 15){
-                // if robot is more than 15 degrees away from target degree
-                //faster speed
-                if (correct == 1){
-                    setDrive(correct * power, 0);
-                }
-                else if (correct == -1){
-                    setDrive(0, correct * power);
-                }
-            } else {
-                // if robot is within 15 degrees away from target degree
-                //slower speed
-                if (correct == 1){
-                    setDrive(correct * (power/5.5), 0);
-                }
-                else if (correct == -1){
-                    setDrive(0, correct * (power/5.5));
-                }
-            }
-        }
     }
 }

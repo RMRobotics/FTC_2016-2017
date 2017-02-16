@@ -164,7 +164,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         liftHold.setPosition(0.18);
     }
 
-    private void turnCenter(int degree, double power){
+    protected void turnCenter(int degree, double power){
 
         // while robot is more than 2 degrees away from target degree
         while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
@@ -186,9 +186,11 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 setDrive(correct * (power/5.5), -correct * (power/5.5));
             }
         }
+        setDrive(0);
+        sleep(100);
     }
 
-    private void turnCorner(int degree, double power){
+    protected void turnCorner(int degree, double power){
 
         while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
             int correct = scale;
@@ -212,15 +214,17 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 // if robot is within 15 degrees away from target degree
                 //slower speed
                 if (correct == 1){
-                    setDrive(correct * (power/5.5), 0);
+                    setDrive(correct * (0.07), 0);
                 }
                 else if (correct == -1){
-                    setDrive(0, correct * (power/5.5));
+                    setDrive(0, correct * (power/0.07));
                 }
             }
         }
+        setDrive(0);
+        sleep(100);
     }
-
+    
     protected void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
