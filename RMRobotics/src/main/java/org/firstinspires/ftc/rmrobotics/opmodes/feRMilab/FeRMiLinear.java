@@ -178,8 +178,18 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     }
 
-    protected void driveRange(double power, int range){
+    protected void driveToRange(double power, int range){
+        while (rangeReader.read(0x04, 2)[0] > range && opModeIsActive()) {
+            setDrive(power);
+        }
+        setDrive(0);
+    }
 
+    protected void driveAwayRange(double power, int range){
+        while (rangeReader.read(0x04, 2)[0] < range && opModeIsActive()) {
+            setDrive(power);
+        }
+        setDrive(0);
     }
 
     protected void turnCenter(int degree, double power){
