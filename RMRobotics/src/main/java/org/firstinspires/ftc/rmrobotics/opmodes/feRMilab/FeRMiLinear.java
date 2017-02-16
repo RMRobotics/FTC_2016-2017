@@ -55,6 +55,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected I2cDeviceSynch rangeReader;
 
     protected int scale;
+    protected double initTime;
 
     public void initialize(Color c, DcMotor.RunMode r, Direction direction) {
         // motor initialization
@@ -164,6 +165,21 @@ public abstract class FeRMiLinear extends LinearOpMode {
         liftHold.setPosition(0.18);
     }
 
+    protected void driveTime(double power, int time){
+        initTime = runtime.milliseconds();
+        while (runtime.milliseconds() - initTime < time && opModeIsActive()) {
+            setDrive(scale*0.4);
+        }
+    }
+
+    protected void driveEncoder(double power, int encoder){
+
+    }
+
+    protected void driveRange(double power, int range){
+
+    }
+
     protected void turnCenter(int degree, double power){
 
         // while robot is more than 2 degrees away from target degree
@@ -224,7 +240,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         setDrive(0);
         sleep(100);
     }
-    
+
     protected void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
