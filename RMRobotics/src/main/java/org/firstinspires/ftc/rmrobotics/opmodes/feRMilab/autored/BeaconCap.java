@@ -5,6 +5,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
+
+import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
+import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
 
 /**
  * Created by Simon on 1/6/16.
@@ -15,12 +19,14 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 @Autonomous(name = "RED: Beacon")
 public class BeaconCap extends FeRMiLinear {
 
+    Direction direction = BACKWARD;
+
     @Override
     public void runOpMode() {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
         // turn towards first beacon
-        turnCorner(37);
+        turnCorner(37, 0.4);
 
         // drive forward until center color sensor detects line
         double initPos = Math.abs(FL.getCurrentPosition());
@@ -211,7 +217,7 @@ public class BeaconCap extends FeRMiLinear {
             setDrive(0.1);
         }
 
-        turnCenter(45);
+        turnCenter(45, 0.4);
 
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
@@ -223,46 +229,84 @@ public class BeaconCap extends FeRMiLinear {
         stop();
     }
 
-    private void turnCenter(int a){
-        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + a > 0) {
-                //if robot has turned less than a degrees in left direction
-                scale = -1;
-            } else {
-                //if robot has turned more than a degrees in left direction
+    private void turnCenter(int degree, double power){
+        int scale;
+        switch (direction){
+            case FORWARD:
                 scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + a) > 15){
-                //if robot has turned less than (a-15) degrees in either direction
-                //then turns robot at a faster speed
-                setDrive(scale * 0.4, -scale * 0.4);
+                break;
+            case BACKWARD:
+                scale = -1;
+                break;
+            default:
+                scale = -1;
+                break;
+        }
+
+        // while robot is more than 2 degrees away from target degree
+        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+            int correct = scale;
+            if (navx.getYaw() - degree <= 0) {
+                // if robot is turning in the right direction
+                correct = scale;
             } else {
-                //if robot has turned more than (a-15) degrees in either direction
-                //turns robot at a slower speed
-                setDrive(scale * 0.07, -scale * 0.07);
+                // if robot has overturned
+                correct = scale * -1;
+            }
+            if (Math.abs(navx.getYaw() - degree) > 15){
+                // if robot is more than 15 degrees away from target degree
+                // faster speed
+                setDrive(correct * power, -correct * power);
+            } else {
+                // if robot is within 15 degrees away from target degree
+                // slower speed
+                setDrive(correct * (power/5.5), -correct * (power/5.5));
             }
         }
     }
 
-    private void turnCorner(int a){
-        while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + a > 0) {
-                //if robot has turned less than a degrees in left direction
-                scale = -1;
-            } else {
-                //if robot has turned more than a degrees in left direction
+    private void turnCorner(int degree, double power){
+
+        int scale;
+        switch (direction){
+            case FORWARD:
                 scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + a) > 15){
-                //if robot has turned less than (a-15) degrees in either direction
-                //then turns robot at a faster speed
-                setDrive(scale * 0.4, 0);
+                break;
+            case BACKWARD:
+                scale = -1;
+                break;
+            default:
+                scale = -1;
+                break;
+        }
+
+        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+            int correct = scale;
+            if (navx.getYaw() - degree <= 0) {
+                // if robot is turning in the right direction
+                correct = scale;
             } else {
-                //if robot has turned more than (a-15) degrees in either direction
-                //turns robot at a slower speed
-                setDrive(scale * 0.07, 0);
+                //if robot has overturned
+                correct = scale * -1;
+            }
+            if (Math.abs(navx.getYaw() - degree) > 15){
+                // if robot is more than 15 degrees away from target degree
+                //faster speed
+                if (correct == 1){
+                    setDrive(correct * power, 0);
+                }
+                else if (correct == -1){
+                    setDrive(0, correct * power);
+                }
+            } else {
+                // if robot is within 15 degrees away from target degree
+                //slower speed
+                if (correct == 1){
+                    setDrive(correct * (power/5.5), 0);
+                }
+                else if (correct == -1){
+                    setDrive(0, correct * (power/5.5));
+                }
             }
         }
     }
