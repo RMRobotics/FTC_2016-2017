@@ -233,19 +233,19 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 // if robot is more than 15 degrees away from target degree
                 //faster speed
                 if (correct == 1){
-                    setDrive(correct * power, 0);
+                    setDrive(0, correct * power);
                 }
                 else if (correct == -1){
-                    setDrive(0, correct * power);
+                    setDrive(correct * power, 0);
                 }
             } else {
                 // if robot is within 15 degrees away from target degree
                 //slower speed
                 if (correct == 1){
-                    setDrive(correct * (0.07), 0);
+                    setDrive(0, correct * (0.07));
                 }
                 else if (correct == -1){
-                    setDrive(0, correct * (power/0.07));
+                    setDrive(correct * (power/0.07), 0);
                 }
             }
         }

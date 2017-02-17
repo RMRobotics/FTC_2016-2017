@@ -24,7 +24,7 @@ public class BeaconCap extends FeRMiLinear {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
 
         // turn towards first beacon
-        turnCorner(37, 0.4);
+        turnCorner(-37, 0.4);
 
         // drive forward until center color sensor detects line
         double initPos = Math.abs(FL.getCurrentPosition());
@@ -51,7 +51,7 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        turnCorner(86, 0.2);
+        turnCorner(-86, 0.2);
         /*
         while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
             int scale;
@@ -131,7 +131,7 @@ public class BeaconCap extends FeRMiLinear {
         // FIRST BEACON DONE
 
         // turn towards second line
-        turnCenter(-2, .15);
+        turnCenter(2, .15);
         /*while (navx.getYaw() < -2 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
                 setDrive(.15, -0.15);
@@ -173,7 +173,7 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         //turn left towards beacon
-        turnCenter(86, 0.2);
+        turnCenter(-86, 0.2);
         /*while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + 90 > 0) {
