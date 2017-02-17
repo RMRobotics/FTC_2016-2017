@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 /**
  * Created by RM Robotics on 2/11/2017.
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 public class BlueBeaconCap extends FeRMiLinear {
     @Override
     public void runOpMode() {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
 
         // turn towards first beacon
         turnRobotCorner(37);

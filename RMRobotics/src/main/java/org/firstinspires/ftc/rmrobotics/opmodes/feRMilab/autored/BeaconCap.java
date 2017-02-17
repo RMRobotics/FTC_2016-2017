@@ -5,10 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
-import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
 
 /**
  * Created by Simon on 1/6/16.
@@ -24,7 +22,7 @@ public class BeaconCap extends FeRMiLinear {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
 
         // turn towards first beacon
-        turnCorner(-37, 0.4);
+        turnCorner(37, 0.4, ); // changed the angle of turn
 
         // drive forward until center color sensor detects line
         double initPos = Math.abs(FL.getCurrentPosition());
@@ -51,7 +49,7 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        turnCorner(-86, 0.2);
+        turnCorner(86, 0.2, ); //changed beacon to
         /*
         while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
             int scale;

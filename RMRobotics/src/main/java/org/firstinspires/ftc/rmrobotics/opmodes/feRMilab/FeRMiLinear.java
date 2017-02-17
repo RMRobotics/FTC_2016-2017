@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
+import org.firstinspires.ftc.rmrobotics.util.TurnDirection;
 
 import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
 import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
@@ -218,10 +219,24 @@ public abstract class FeRMiLinear extends LinearOpMode {
         sleep(100);
     }
 
-    protected void turnCorner(int degree, double power){
+    protected void turnCorner(int degree, double power, TurnDirection tDir){
 
-        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
-            int correct = scale;
+        float delta = degree - navx.getYaw();
+        float mag = Math.abs(delta);
+        float dir = Math.signum(delta);
+        while(mag > 2 && opModeIsActive()){
+            if(tDir == TurnDirection.LEFT_TURN){
+                setDrive(0, dir*power);
+            }else if(tDir == TurnDirection.RIGHT_TURN){
+                setDrive(dir*power, 0);
+            }
+            delta = degree - navx.getYaw();
+            mag = Math.abs(delta);
+            dir = Math.signum(delta);
+        }
+
+/*        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+            int correct;
             if (navx.getYaw() - degree <= 0) {
                 // if robot is turning in the right direction
                 correct = scale;
@@ -248,7 +263,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
                     setDrive(correct * (power/0.07), 0);
                 }
             }
-        }
+        }*/
         setDrive(0);
         sleep(100);
     }
