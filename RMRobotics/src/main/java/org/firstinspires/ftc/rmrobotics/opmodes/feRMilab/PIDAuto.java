@@ -2,14 +2,17 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 import java.text.DecimalFormat;
 
 @Autonomous(name = "PIDAuto")
+@Disabled
 public class PIDAuto extends FeRMiLinear {
 
     private double TARGET_ANGLE_DEGREES = -55.0;
@@ -27,7 +30,7 @@ public class PIDAuto extends FeRMiLinear {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
 
         navXPIDController yawPIDController = new navXPIDController(navx, navXPIDController.navXTimestampedDataSource.YAW);
 

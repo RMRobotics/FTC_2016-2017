@@ -2,13 +2,16 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 import java.text.DecimalFormat;
 
 @Autonomous(name = "Turn")
+@Disabled
 public class NavxTurnPIDtest extends FeRMiLinear {
 
     private final double TARGET_ANGLE_DEGREES = 90.0;
@@ -22,7 +25,7 @@ public class NavxTurnPIDtest extends FeRMiLinear {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
 
         navXPIDController yawPIDController = new navXPIDController(navx, navXPIDController.navXTimestampedDataSource.YAW);
 

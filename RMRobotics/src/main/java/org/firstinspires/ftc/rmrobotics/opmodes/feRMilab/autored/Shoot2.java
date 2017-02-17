@@ -8,24 +8,21 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 /**
- * Created by Simon on 1/6/16.
+ * Created by Simon on 2/12/17.
  */
-// RED TEAM
 
-
-@Autonomous(name = "RED: Shoot")
-public class Shoot extends FeRMiLinear {
-
+@Autonomous(name = "BOTH: Shoot2")
+public class Shoot2 extends FeRMiLinear {
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
-        // drive for .1 seconds at .4 power
+        // drive for .5 seconds at .4 power
         setDrive(0.4);
-        sleep(100);
+        sleep(500);
         setDrive(0);
 
-        // turn on flywheels to .975 power
+        // turn on flywheels for .2 seconds at .975 seconds
         flyL.setPower(0.975);
         flyR.setPower(0.975);
         sleep(200);
@@ -34,11 +31,10 @@ public class Shoot extends FeRMiLinear {
         index.setPosition(0.5);
         sleep(200);
 
-        //turn on belt
+        // turn on belt
         belt.setPower(1.0);
-        sleep(3000);
+        sleep(1000);
 
         stop();
     }
-
 }

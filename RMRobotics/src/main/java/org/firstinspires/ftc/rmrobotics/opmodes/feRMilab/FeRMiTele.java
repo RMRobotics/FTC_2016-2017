@@ -31,6 +31,8 @@ public class FeRMiTele extends OpMode {
     private Servo index;
     private Servo liftHold;
 
+    private boolean triggered = false;
+
     @Override
     public void init() {
         FL = hardwareMap.dcMotor.get("FL");
@@ -126,11 +128,17 @@ public class FeRMiTele extends OpMode {
         }
 
         if (gamepad2.y) {
+            flyL.setPower(.985);
+            flyR.setPower(.985);
+        } else if (gamepad2.a) {
+            flyL.setPower(-.985);
+            flyR.setPower(-.985);
+        } else if (gamepad2.right_bumper) {
             flyL.setPower(1);
             flyR.setPower(1);
-        } else if (gamepad2.a) {
-            flyL.setPower(-1);
-            flyR.setPower(-1);
+//        } else if (gamepad2.left_bumper) {
+//            flyL.setPower(-1);
+//            flyR.setPower(-1);
         } else {
             flyL.setPower(0);
             flyR.setPower(0);
@@ -158,8 +166,11 @@ public class FeRMiTele extends OpMode {
 
         if (gamepad2.dpad_down) {
             liftHold.setPosition(1);
+            triggered = true;
+        } else if (triggered) {
+            liftHold.setPosition(0);
         } else {
-            liftHold.setPosition(0.29);
+            liftHold.setPosition(0.18);
         }
 
         addTelemetry();

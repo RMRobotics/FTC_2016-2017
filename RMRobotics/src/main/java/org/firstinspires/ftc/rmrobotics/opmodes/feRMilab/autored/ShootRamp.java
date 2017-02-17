@@ -5,13 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Created by RM Robotics on 2/4/2017.
+ * Created by Simon on 2/12/17.
  */
-@Autonomous(name = "cap")
-public class CapAutoLinear extends LinearOpMode {
+@Autonomous(name = "RED: Shoot Ramp")
+public class ShootRamp extends LinearOpMode{
+    private ElapsedTime runtime = new ElapsedTime();
 
     private DcMotor FL;
     private DcMotor FR;
@@ -22,9 +24,15 @@ public class CapAutoLinear extends LinearOpMode {
 
     private DeviceInterfaceModule dim;
     double startPos;
-
+    protected DcMotor flyL;
+    protected DcMotor flyR;
+    protected DcMotor belt;
+    protected Servo index;
     @Override
     public void runOpMode() throws InterruptedException {
+
+
+
         FL = hardwareMap.dcMotor.get("FL");
         FR = hardwareMap.dcMotor.get("FR");
         BL = hardwareMap.dcMotor.get("BL");
@@ -33,7 +41,7 @@ public class CapAutoLinear extends LinearOpMode {
         BR.setDirection(DcMotor.Direction.REVERSE);
         setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         dim = hardwareMap.deviceInterfaceModule.get("dim");
 
@@ -52,21 +60,31 @@ public class CapAutoLinear extends LinearOpMode {
         navx.zeroYaw();
 
         waitForStart();
+        runtime.reset(); // reset runtime counter
+
+        driveRobot(1500, -0.4);
+
+        flyL.setPower(0.985);
+        flyR.setPower(0.985);
+        sleep(200);
+        index.setPosition(0.5);
+        sleep(200);
+        belt.setPower(1.0);
+        sleep(3000);
+
+        setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //turn at an angle
         turnRobotCorner(45);
 
         //drive forward
-        driveRobot(3000, -.3);
+        driveRobot(895, -.4);
 
-        //wait
-        sleep(3000);
+        //face ramp
+        turnRobot(130);
 
-        //drive forward
-        driveRobot(500, -.2);
-
-        //knock-off capball
-        //turnRobot(500);
+        //drive onto ramp
+        driveRobot(2500, -.4);
 
         while (opModeIsActive()){
             addTelemetry();
@@ -76,7 +94,6 @@ public class CapAutoLinear extends LinearOpMode {
     private void driveRobot(int distance, double power){
         startPos = FL.getCurrentPosition();
         while (FL.getCurrentPosition() - startPos > (-1*distance) && opModeIsActive()){
-            //while robot has not traveled distance amount
             setDrive(power);
         }
         setDrive(0);
@@ -87,19 +104,13 @@ public class CapAutoLinear extends LinearOpMode {
         while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + a > 0) {
-                //if robot has turned less than a degrees in left direction
                 scale = -1;
             } else {
-                //if robot has turned more than a degrees in left direction
                 scale = 1;
             }
             if (Math.abs(navx.getYaw()) < (a - 10)){
-                //if robot has turned less than (a-10) degrees in either direction
-                //then turns robot at a faster speed
                 setDrive(scale * 0.25, 0);
             } else {
-                //if robot has turned more than (a-10) degrees in either direction
-                //turns robot at a slower speed
                 setDrive(scale * 0.07, 0);
             }
         }
@@ -111,10 +122,8 @@ public class CapAutoLinear extends LinearOpMode {
         while (Math.abs(navx.getYaw() + a) > 2 && opModeIsActive()) {
             int scale;
             if (navx.getYaw() + a > 0) {
-                //if robot has turned less than a degrees in left direction
                 scale = -1;
             } else {
-                //if robot has turned more than a degrees in left direction
                 scale = 1;
             }
             if (Math.abs(navx.getYaw()) < (a - 10)) {
@@ -128,7 +137,7 @@ public class CapAutoLinear extends LinearOpMode {
     }
 
     private void addTelemetry() {
-//        telemetry.addData("1 Time", runtime.seconds());
+        telemetry.addData("1 Time", runtime.seconds());
         telemetry.addData("2 Yaw", navx.getYaw());
 //        telemetry.addData("3 ColorBack", colorBackReader.read(0x08, 1)[0] & 0xFF);
 //        telemetry.addData("4 ColorCenter", colorCenterReader.read(0x08, 1)[0] & 0xFF);
@@ -168,3 +177,6 @@ public class CapAutoLinear extends LinearOpMode {
         BR.setPower(p2);
     }
 }
+
+
+

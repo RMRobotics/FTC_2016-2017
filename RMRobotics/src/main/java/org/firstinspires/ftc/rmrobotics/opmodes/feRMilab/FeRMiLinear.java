@@ -13,6 +13,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
+
+import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
+import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
 
 /**
  * Created by Simon on 2/6/17.
@@ -50,7 +54,10 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected I2cDevice range;
     protected I2cDeviceSynch rangeReader;
 
-    public void initialize(Color c, DcMotor.RunMode r) {
+    protected int scale;
+    protected double initTime;
+
+    public void initialize(Color c, DcMotor.RunMode r, Direction direction) {
         // motor initialization
         FL = hardwareMap.dcMotor.get("FL");
         FR = hardwareMap.dcMotor.get("FR");
@@ -121,9 +128,25 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 dim.setLED(1, false);
                 dim.setLED(0, true);
                 break;
+            case NEITHER:
+                dim.setLED(1, false);
+                dim.setLED(1, true);
+                break;
             default:
                 dim.setLED(0, false);
                 dim.setLED(0, true);
+                break;
+        }
+
+        switch (direction){
+            case FORWARD:
+                scale = 1;
+                break;
+            case BACKWARD:
+                scale = -1;
+                break;
+            default:
+                scale = -1;
                 break;
         }
 
@@ -139,7 +162,95 @@ public abstract class FeRMiLinear extends LinearOpMode {
         swingArm.setPosition(0.5);
         harvester.setPosition(0.5);
         index.setPosition(0.1);
-        liftHold.setPosition(0.29);
+        liftHold.setPosition(0.18);
+    }
+
+    protected void driveTime(double power, int time){
+        //drives at power for time
+        initTime = runtime.milliseconds();
+        while (runtime.milliseconds() - initTime < time && opModeIsActive()) {
+            setDrive(0.4);
+        }
+        setDrive(0);
+    }
+
+    protected void driveEncoder(double power, int encoder){
+
+    }
+
+    protected void driveToRange(double power, int range){
+        while (rangeReader.read(0x04, 2)[0] > range && opModeIsActive()) {
+            setDrive(power);
+        }
+        setDrive(0);
+    }
+
+    protected void driveAwayRange(double power, int range){
+        while (rangeReader.read(0x04, 2)[0] < range && opModeIsActive()) {
+            setDrive(power);
+        }
+        setDrive(0);
+    }
+
+    protected void turnCenter(int degree, double power){
+
+        // while robot is more than 2 degrees away from target degree
+        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+            int correct = scale;
+            if (navx.getYaw() - degree <= 0) {
+                // if robot is turning in the right direction
+                correct = scale;
+            } else {
+                // if robot has overturned
+                correct = scale * -1;
+            }
+            if (Math.abs(navx.getYaw() - degree) > 15){
+                // if robot is more than 15 degrees away from target degree
+                // faster speed
+                setDrive(correct * power, -correct * power);
+            } else {
+                // if robot is within 15 degrees away from target degree
+                // slower speed
+                setDrive(correct * (power/5.5), -correct * (power/5.5));
+            }
+        }
+        setDrive(0);
+        sleep(100);
+    }
+
+    protected void turnCorner(int degree, double power){
+
+        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+            int correct = scale;
+            if (navx.getYaw() - degree <= 0) {
+                // if robot is turning in the right direction
+                correct = scale;
+            } else {
+                //if robot has overturned
+                correct = scale * -1;
+            }
+            if (Math.abs(navx.getYaw() - degree) > 15){
+                // if robot is more than 15 degrees away from target degree
+                //faster speed
+                if (correct == 1){
+                    setDrive(0, correct * power);
+                }
+                else if (correct == -1){
+                    setDrive(correct * power, 0);
+                }
+            } else {
+                // if robot is within 15 degrees away from target degree
+                //slower speed
+                if (correct == 1){
+                    setDrive(0, correct * (0.07));
+                }
+                else if (correct == -1){
+                    setDrive(correct * (power/0.07), 0);
+                }
+            }
+        }
+        setDrive(0);
+        sleep(100);
     }
 
     protected void addTelemetry() {

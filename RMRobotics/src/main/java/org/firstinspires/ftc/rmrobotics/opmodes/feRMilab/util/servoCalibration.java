@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,7 +17,7 @@ public class servoCalibration extends OpMode {
 
     @Override
     public void init() {
-        servo = hardwareMap.servo.get("liftHold");
+        servo = hardwareMap.servo.get("swingArm");
         h = hardwareMap.servo.get("h");
         h.setPosition(0.5);
     }
