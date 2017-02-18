@@ -14,10 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
-import org.firstinspires.ftc.rmrobotics.util.TurnDirection;
-
-import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.FORWARD;
 
 /**
  * Created by Simon on 2/6/17.
@@ -219,15 +215,15 @@ public abstract class FeRMiLinear extends LinearOpMode {
         sleep(100);
     }
 
-    protected void turnCorner(int degree, double power, TurnDirection tDir){
+    protected void turnCorner(int degree, double power, Direction tDir){
 
         float delta = degree - navx.getYaw();
         float mag = Math.abs(delta);
         float dir = Math.signum(delta);
         while(mag > 2 && opModeIsActive()){
-            if(tDir == TurnDirection.LEFT_TURN){
+            if(tDir == Direction.LEFT){
                 setDrive(0, dir*power);
-            }else if(tDir == TurnDirection.RIGHT_TURN){
+            }else if(tDir == Direction.RIGHT){
                 setDrive(dir*power, 0);
             }
             delta = degree - navx.getYaw();

@@ -6,5 +6,9 @@ package org.firstinspires.ftc.rmrobotics.util;
 
 public enum Direction {
     FORWARD,
-    BACKWARD
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    CLOCKWISE,
+    COUNTERCLOCKWISE
 }
