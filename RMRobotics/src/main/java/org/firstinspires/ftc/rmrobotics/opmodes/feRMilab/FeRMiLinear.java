@@ -190,26 +190,19 @@ public abstract class FeRMiLinear extends LinearOpMode {
     }
 
     protected void turnCenter(int degree, double power){
-
-        // while robot is more than 2 degrees away from target degree
-        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
-            int correct = scale;
-            if (navx.getYaw() - degree <= 0) {
-                // if robot is turning in the right direction
-                correct = scale;
-            } else {
-                // if robot has overturned
-                correct = scale * -1;
-            }
-            if (Math.abs(navx.getYaw() - degree) > 15){
-                // if robot is more than 15 degrees away from target degree
-                // faster speed
-                setDrive(correct * power, -correct * power);
-            } else {
-                // if robot is within 15 degrees away from target degree
-                // slower speed
-                setDrive(correct * (power/5.5), -correct * (power/5.5));
-            }
+        // finds the difference between the target and the starting angle
+        float delta = degree - navx.getYaw();
+        // sets the magnitude of the turn (absolute value of delta)
+        float mag = Math.abs(delta);
+        // whether or not you are turning left or right
+        float dir = Math.signum(delta);
+        // while robot is more than 2 degrees away from the target angle
+        while (mag > 2 && opModeIsActive()) {
+            setDrive(dir*power, -dir*power);
+            // update distance from target angle
+            delta = degree - navx.getYaw();
+            mag = Math.abs(delta);
+            dir = Math.signum(delta);
         }
         setDrive(0);
         sleep(100);
