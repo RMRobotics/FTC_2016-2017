@@ -39,13 +39,13 @@ public class ShootRamp extends FeRMiLinear {
         sleep(3000);
 
         //turn at an angle
-        turnCorner(-45, 0.4);
+        turnCorner(-45, 0.4, Direction.RIGHT);
 
         //drive forward
         driveEncoder(700, 0.4);
 
         //face ramp
-        turnCenter(-130);
+        turnCenter(-130, 0.4);
 
         //drive onto ramp
         driveEncoder(2500, 0.4);
