@@ -217,15 +217,23 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected void turnCorner(int degree, double power, Direction tDir){
 
+        // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
+        // sets the magnitude of the turn (absolute value of delta)
         float mag = Math.abs(delta);
+        // whether or not you are turning left or right
         float dir = Math.signum(delta);
+        // while robot is more than 2 degrees away from the target angle
         while(mag > 2 && opModeIsActive()){
+            // if the left side of the drive train is used
             if(tDir == Direction.LEFT){
-                setDrive(0, dir*power);
-            }else if(tDir == Direction.RIGHT){
                 setDrive(dir*power, 0);
             }
+            // if the right side is used
+            else if(tDir == Direction.RIGHT){
+                setDrive(0, -dir*power);
+            }
+            // update distance from target angle
             delta = degree - navx.getYaw();
             mag = Math.abs(delta);
             dir = Math.signum(delta);
