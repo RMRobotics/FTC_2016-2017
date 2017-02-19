@@ -23,7 +23,7 @@ public class turnFunctions extends FeRMiLinear{
         setDrive(0);
         sleep(5000);
 
-        telemetry.addData("1 Turn Function: turnCenter", "90");
+        telemetry.addData("1 Turn Function: turnCenter", "-90");
         telemetry.update();
         turnCenter(-90, 0.4);
         setDrive(0);
@@ -35,7 +35,7 @@ public class turnFunctions extends FeRMiLinear{
         setDrive(0);
         sleep(5000);
 
-        telemetry.addData("1 Turn Function: turnCorner", "90");
+        telemetry.addData("1 Turn Function: turnCorner", "-90");
         telemetry.update();
         turnCorner(-90, 0.4, Direction.RIGHT);
         setDrive(0);
