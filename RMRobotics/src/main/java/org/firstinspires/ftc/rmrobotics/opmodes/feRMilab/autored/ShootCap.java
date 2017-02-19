@@ -21,8 +21,7 @@ public class ShootCap extends FeRMiLinear {
         sleep(10000);
 
         // drive for .7 seconds on .5 power
-        setDrive(0.5);
-        sleep(700);
+        driveTime(0.5,700);
         setDrive(0);
 
         // shoot at .95 power
@@ -42,10 +41,7 @@ public class ShootCap extends FeRMiLinear {
         belt.setPower(0);
 
         //drive for 1.35 seconds on .5 power
-        setDrive(.5);
-        sleep(1350);
-
-        //stop drive
+        driveTime(0.5,1350);
         setDrive(0);
 
         //program continues to run until stop button pressed

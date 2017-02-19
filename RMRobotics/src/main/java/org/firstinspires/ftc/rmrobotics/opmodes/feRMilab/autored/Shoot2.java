@@ -18,8 +18,7 @@ public class Shoot2 extends FeRMiLinear {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
         // drive for .5 seconds at .4 power
-        setDrive(0.4);
-        sleep(500);
+        driveTime(0.4,500);
         setDrive(0);
 
         // turn on flywheels for .2 seconds at .975 seconds
