@@ -198,6 +198,12 @@ public abstract class FeRMiLinear extends LinearOpMode {
         float dir = Math.signum(delta);
         // while robot is more than 2 degrees away from the target angle
         while (mag > 2 && opModeIsActive()) {
+            if(mag < 15){
+                power = 0.07;
+            }
+            else if(mag > 15) {
+                power = 0.4;
+            }
             setDrive(dir*power, -dir*power);
             // update distance from target angle
             delta = degree - navx.getYaw();
@@ -218,6 +224,12 @@ public abstract class FeRMiLinear extends LinearOpMode {
         // while robot is more than 2 degrees away from the target angle
         while(mag > 2 && opModeIsActive()){
             // if the left side of the drive train is used
+            if(mag < 15){
+                power = 0.07;
+            }
+            else if(mag > 15) {
+                power = 0.4;
+            }
             if(tDir == Direction.LEFT){
                 setDrive(dir*power, 0);
             }
