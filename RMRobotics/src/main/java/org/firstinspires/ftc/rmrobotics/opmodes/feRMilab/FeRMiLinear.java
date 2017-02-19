@@ -22,6 +22,8 @@ import org.firstinspires.ftc.rmrobotics.util.Direction;
 public abstract class FeRMiLinear extends LinearOpMode {
     protected ElapsedTime runtime = new ElapsedTime();
 
+    public double power = 0.4;
+
     protected DcMotor FL;
     protected DcMotor FR;
     protected DcMotor BL;
@@ -189,7 +191,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         setDrive(0);
     }
 
-    protected void turnCenter(int degree, double power){
+    protected void turnCenter(int degree){
         // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
         // sets the magnitude of the turn (absolute value of delta)
@@ -198,11 +200,8 @@ public abstract class FeRMiLinear extends LinearOpMode {
         float dir = Math.signum(delta);
         // while robot is more than 2 degrees away from the target angle
         while (mag > 2 && opModeIsActive()) {
-            if(mag < 15){
+            if(mag < 15) {
                 power = 0.07;
-            }
-            else if(mag > 15) {
-                power = 0.4;
             }
             setDrive(dir*power, -dir*power);
             // update distance from target angle
@@ -214,7 +213,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         sleep(100);
     }
 
-    protected void turnCorner(int degree, double power, Direction tDir){
+    protected void turnCorner(int degree, Direction tDir){
         // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
         // sets the magnitude of the turn (absolute value of delta)
@@ -226,9 +225,6 @@ public abstract class FeRMiLinear extends LinearOpMode {
             // if the left side of the drive train is used
             if(mag < 15){
                 power = 0.07;
-            }
-            else if(mag > 15) {
-                power = 0.4;
             }
             if(tDir == Direction.LEFT){
                 setDrive(dir*power, 0);
