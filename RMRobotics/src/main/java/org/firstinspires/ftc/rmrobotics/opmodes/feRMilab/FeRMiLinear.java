@@ -216,7 +216,6 @@ public abstract class FeRMiLinear extends LinearOpMode {
     }
 
     protected void turnCorner(int degree, double power, Direction tDir){
-
         // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
         // sets the magnitude of the turn (absolute value of delta)
@@ -237,36 +236,6 @@ public abstract class FeRMiLinear extends LinearOpMode {
             delta = degree - navx.getYaw();
             mag = Math.abs(delta);
             dir = Math.signum(delta);
-        }*/
-
-        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
-            int correct;
-            if (navx.getYaw() - degree <= 0) {
-                // if robot is turning in the right direction
-                correct = scale;
-            } else {
-                //if robot has overturned
-                correct = scale * -1;
-            }
-            if (Math.abs(navx.getYaw() - degree) > 15){
-                // if robot is more than 15 degrees away from target degree
-                //faster speed
-                if (correct == 1){
-                    setDrive(0, correct * power);
-                }
-                else if (correct == -1){
-                    setDrive(correct * power, 0);
-                }
-            } else {
-                // if robot is within 15 degrees away from target degree
-                //slower speed
-                if (correct == 1){
-                    setDrive(0, correct * (0.07));
-                }
-                else if (correct == -1){
-                    setDrive(correct * (power/0.07), 0);
-                }
-            }
         }
         setDrive(0);
         sleep(100);
