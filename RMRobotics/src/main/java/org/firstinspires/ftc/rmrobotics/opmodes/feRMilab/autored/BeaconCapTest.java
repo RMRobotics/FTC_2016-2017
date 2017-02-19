@@ -1,13 +1,20 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
+/**
+ * Created by RM Robotics on 2/15/2017.
+ */
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 
-import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.LEFT;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
+import org.firstinspires.ftc.rmrobotics.util.Color;
 
 /**
  * Created by Simon on 1/6/16.
@@ -16,14 +23,14 @@ import static org.firstinspires.ftc.rmrobotics.util.Direction.LEFT;
 
 
 @Autonomous(name = "RED: Beacon")
-public class BeaconCap extends FeRMiLinear {
+public class BeaconCapTest extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
 
         // turn towards first beacon
-        turnCorner(37, 0.4, LEFT); // changed the angle of turn
+        turnCorner(37);
 
         // drive forward until center color sensor detects line
         double initPos = Math.abs(FL.getCurrentPosition());
@@ -50,29 +57,14 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        turnCorner(86, 0.2, LEFT); //changed beacon to
-        /*
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
-        */
+        turnCenter(-86); // using the turnCenter Function in FeRMiLinear
+        setDrive(0);
 
         // drive forward until close enough to beacon
-        driveToRange(-0.1, 17);
-        /*while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
             setDrive(-0.1);
         }
-        setDrive(0);*/
+        setDrive(0);
 
         boolean detected = false;
         double initTime = runtime.milliseconds();
@@ -89,20 +81,18 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         // drive forward to hit beacon
-        driveTime(-.15, 600);
-        /*initTime = runtime.milliseconds();
+        initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
             setDrive(-0.15);
-        }*/
+        }
 
         // back away from beacon
-        driveAwayRange(0.2, 15);
-        /*while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
             setDrive(0.2);
         }
         swingArm.setPosition(0.4);
 
-        setDrive(0);*/
+        setDrive(0);
 
         initTime = runtime.milliseconds();
         while(runtime.milliseconds()-initTime < 3500 && opModeIsActive()) {
@@ -127,25 +117,25 @@ public class BeaconCap extends FeRMiLinear {
 
         sleep(200);
 
-        // FIRST BEACON DONE
+        //FIRST BEACON DONE
 
         // turn towards second line
-        turnCenter(2, .15);
-        /*while (navx.getYaw() < -2 && opModeIsActive()) {
+        while (navx.getYaw() < -2 && opModeIsActive()) {
             if (Math.abs(navx.getYaw()) > 25) {
                 setDrive(.15, -0.15);
             } else {
                 setDrive(0.07, -0.07);
             }
         }
-        setDrive(0)*/
+
+        setDrive(0);
 
         // drive forward slightly to move center color sensor off the first line
-        driveTime(-0.6, 450);
-        /*double start = runtime.milliseconds();
+        int curEnc = FL.getCurrentPosition();
+        double start = runtime.milliseconds();
         while (runtime.milliseconds() - start < 450 && opModeIsActive()) {
             setDrive(-0.6);
-        }*/
+        }
 
         // drive forward until center color sensor detects second line
         double checkFirst = -2500;
@@ -172,29 +162,15 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         //turn left towards beacon
-        turnCenter(-86, 0.2);
-        /*while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
-        setDrive(0);*/
+        turnCenter(-86); // using the turnCenter Function in FeRMi Linear
+        setDrive(0);
 
         // drive forward until close enough to beacon
-        driveToRange(-0.1, 14);
-        /*while (rangeReader.read(0x04, 2)[0] > 14 && opModeIsActive()) {
+        while (rangeReader.read(0x04, 2)[0] > 14 && opModeIsActive()) {
             setDrive(-0.1);
         }
         setDrive(0);
-        sleep(100);*/
+        sleep(100);
 
         detected = false;
         initTime = runtime.milliseconds();
@@ -211,29 +187,24 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         // drive forward to hit beacon
-        driveTime(-.15, 600);
-        /*initTime = runtime.milliseconds();
+        initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
             setDrive(-0.15);
-        }*/
+        }
 
         // back away from beacon
-        driveAwayRange(.1, 20);
-        /*while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive() && detected) {
+        while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive() && detected) {
             setDrive(0.1);
-        }*/
+        }
 
-        //turn towards center goal
-        turnCenter(45, 0.4);
+        turnCenter(45);
 
-        //drive to knock off cap ball
-        driveTime(.4, 2000);
-        /*initTime = runtime.milliseconds();
+        initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
             setDrive(0.4);
         }
 
-        setDrive(0);*/
+        setDrive(0);
 
         stop();
     }
