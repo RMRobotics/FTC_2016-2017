@@ -217,7 +217,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected void turnCorner(int degree, double power, Direction tDir){
 
-        float delta = degree - navx.getYaw();
+        /*float delta = degree - navx.getYaw();
         float mag = Math.abs(delta);
         float dir = Math.signum(delta);
         while(mag > 2 && opModeIsActive()){
@@ -229,9 +229,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
             delta = degree - navx.getYaw();
             mag = Math.abs(delta);
             dir = Math.signum(delta);
-        }
+        }*/
 
-/*        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
+        while (Math.abs(navx.getYaw() - degree) > 2 && opModeIsActive()) {
             int correct;
             if (navx.getYaw() - degree <= 0) {
                 // if robot is turning in the right direction
@@ -259,7 +259,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
                     setDrive(correct * (power/0.07), 0);
                 }
             }
-        }*/
+        }
         setDrive(0);
         sleep(100);
     }
