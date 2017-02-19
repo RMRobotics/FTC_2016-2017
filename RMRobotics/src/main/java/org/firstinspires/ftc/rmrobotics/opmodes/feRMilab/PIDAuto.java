@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.Direction;
 
 import java.text.DecimalFormat;
 
@@ -29,7 +30,7 @@ public class PIDAuto extends FeRMiLinear {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
 
         navXPIDController yawPIDController = new navXPIDController(navx, navXPIDController.navXTimestampedDataSource.YAW);
 
