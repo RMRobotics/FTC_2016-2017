@@ -1,5 +1,15 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
+/**
+ * Created by RM Robotics on 2/15/2017.
+ */
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
+import org.firstinspires.ftc.rmrobotics.util.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -13,7 +23,7 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 
 
 @Autonomous(name = "RED: Beacon")
-public class BeaconCap extends FeRMiLinear {
+public class BeaconCapTest extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
@@ -47,19 +57,7 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
+        turnCenter(-86); // using the turnCenter Function in FeRMiLinear
         setDrive(0);
 
         // drive forward until close enough to beacon
@@ -164,19 +162,7 @@ public class BeaconCap extends FeRMiLinear {
         }
 
         //turn left towards beacon
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
+        turnCenter(-86); // using the turnCenter Function in FeRMi Linear
         setDrive(0);
 
         // drive forward until close enough to beacon

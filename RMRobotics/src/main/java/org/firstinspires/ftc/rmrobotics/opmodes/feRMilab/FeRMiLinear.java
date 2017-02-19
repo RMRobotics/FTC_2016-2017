@@ -207,5 +207,27 @@ public abstract class FeRMiLinear extends LinearOpMode {
         BL.setTargetPosition(BL.getCurrentPosition() + p3);
         BR.setTargetPosition(BR.getCurrentPosition() + p4);
     }
+    protected void turnCenter(int a){
+        while (Math.abs(navx.getYaw() - a) > 2 && opModeIsActive()) {
+            int scale;
+            if (navx.getYaw() - a > 0) {
+                //if robot has turned less than a degrees in left direction
+                scale = -1;
+            } else {
+                //if robot has turned more than a degree in left direction
+                scale = 1;
+            }
+            if (Math.abs(navx.getYaw() - a) > 15){
+                //if robot has turned less than (a-15) degrees in either direction
+                //then turns robot at a faster speed
+                setDrive(scale * 0.4, -scale * 0.4);
+            } else {
+                //if robot has turned more than (a-15) degrees in either direction
+                //turns robot at a slower speed
+                setDrive(scale * 0.07, -scale * 0.07);
+            }
+        }
+
+    }
 
 }
