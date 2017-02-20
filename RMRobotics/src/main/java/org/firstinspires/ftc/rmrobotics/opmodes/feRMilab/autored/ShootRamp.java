@@ -7,6 +7,9 @@ import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
+import static org.firstinspires.ftc.rmrobotics.util.Drive.ENCODER;
+import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
+
 /**
  * Created by Simon on 2/12/17.
  */
@@ -17,7 +20,7 @@ public class ShootRamp extends FeRMiLinear {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
         // drive for .1 seconds at .4 power
-        driveTime(0.4, 100);
+        drive(TIME, 100, 0.4);
         sleep(200);
 
         // turn on flywheels to .975 power
@@ -34,16 +37,16 @@ public class ShootRamp extends FeRMiLinear {
         sleep(3000);
 
         //turn at an angle
-        turn(-45, 0.4, Direction.RIGHT);
+        turn(Direction.RIGHT, -45, 0.4);
 
         //drive forward
-        driveEncoder(700, 0.4);
+        drive(TIME, 700, 0.4);
 
         //face ramp
-        turn(-130, 0.4, Direction.CENTER);
+        turn(Direction.CENTER, -130, 0.4);
 
         //drive onto ramp
-        driveEncoder(2500, 0.4);
+        drive(ENCODER, 2500, 0.4);
 
         while (opModeIsActive()){
             addTelemetry();

@@ -7,6 +7,8 @@ import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
+import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
+
 /**
  * Created by Simon on 2/12/17.
  */
@@ -21,7 +23,7 @@ public class ShootCap extends FeRMiLinear {
         sleep(10000);
 
         // drive for .7 seconds on .5 power
-        driveTime(0.5,700);
+        drive(TIME, 700, 0.5);
         setDrive(0);
 
         // shoot at .95 power
@@ -41,7 +43,7 @@ public class ShootCap extends FeRMiLinear {
         belt.setPower(0);
 
         //drive for 1.35 seconds on .5 power
-        driveTime(0.5,1350);
+        drive(TIME, 1350, 0.5);
         setDrive(0);
 
         //program continues to run until stop button pressed

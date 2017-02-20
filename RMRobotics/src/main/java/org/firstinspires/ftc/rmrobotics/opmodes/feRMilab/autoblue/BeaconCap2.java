@@ -212,7 +212,7 @@ public class BeaconCap2 extends FeRMiLinear {
             setDrive(0.1);
         }
 
-        turn(50, 0.4, CENTER);
+        turn(CENTER, 50, 0.4);
 
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2300 && opModeIsActive()) {

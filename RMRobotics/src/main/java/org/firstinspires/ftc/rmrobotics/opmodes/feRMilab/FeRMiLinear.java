@@ -163,7 +163,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         liftHold.setPosition(0.18);
     }
 
-    protected void drive(Drive type, double power, int val) {
+    protected void drive(Drive type, int val, double power) {
         switch (type) {
             case TIME:
                 initTime = runtime.milliseconds();
