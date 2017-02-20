@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
+import org.firstinspires.ftc.rmrobotics.util.Drive;
 
 /**
  * Created by Simon on 2/6/17.
@@ -162,60 +163,80 @@ public abstract class FeRMiLinear extends LinearOpMode {
         liftHold.setPosition(0.18);
     }
 
-    protected void driveTime(double power, int time){
-        //drives at power for time
-        initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < time && opModeIsActive()) {
-            setDrive(0.4);
+    protected void drive(Drive type, double power, int val) {
+        switch (type) {
+            case TIME:
+                initTime = runtime.milliseconds();
+                while (runtime.milliseconds() - initTime < val && opModeIsActive()) {
+                    setDrive(power);
+                }
+                break;
+            case ENCODER:
+                double mag = Math.abs(power);
+                setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                setEnc(val);
+                int shift = 0;
+                // TODO: check to see if acceleration code functions properly
+                while (Math.abs(FL.getCurrentPosition() - val) > 5 && opModeIsActive()) {
+                    if (shift * 0.02 < mag) {
+                        setDrive(shift * 0.05);
+                        shift ++;
+                        sleep(300);
+                    } else {
+                        setDrive(mag);
+                    }
+                }
+                break;
+            case RANGE:
+                float delta = val - rangeReader.read(0x04, 2)[0];
+                float dir = Math.signum(delta);
+                if (dir > 0) {
+                    while (rangeReader.read(0x04, 2)[0] < val && opModeIsActive()) {
+                        setDrive(power);
+                    }
+                } else if (dir < 0) {
+                    while (rangeReader.read(0x04, 2)[0] > val && opModeIsActive()) {
+                        setDrive(power);
+                    }
+                }
+                break;
+            default:
+                break;
         }
-        setDrive(0);
     }
 
-    protected void driveEncoder(int distance, double power){
-        int startPos = FL.getCurrentPosition();
-        while(FL.getCurrentPosition() - startPos > (scale*distance) && opModeIsActive()) {
-            setDrive(power);
-        }
+//    protected void driveTime(double power, int time){
+//        //drives at power for time
+//        initTime = runtime.milliseconds();
+//        while (runtime.milliseconds() - initTime < time && opModeIsActive()) {
+//            setDrive(0.4);
+//        }
+//        setDrive(0);
+//    }
+//
+//    protected void driveEncoder(int distance, double power){
+//        int startPos = FL.getCurrentPosition();
+//        while(FL.getCurrentPosition() - startPos > (scale*distance) && opModeIsActive()) {
+//            setDrive(power);
+//        }
+//
+//    }
+//
+//    protected void driveToRange(double power, int range){
+//        while (rangeReader.read(0x04, 2)[0] > range && opModeIsActive()) {
+//            setDrive(power);
+//        }
+//        setDrive(0);
+//    }
+//
+//    protected void driveAwayRange(double power, int range){
+//        while (rangeReader.read(0x04, 2)[0] < range && opModeIsActive()) {
+//            setDrive(power);
+//        }
+//        setDrive(0);
+//    }
 
-    }
-
-    protected void driveToRange(double power, int range){
-        while (rangeReader.read(0x04, 2)[0] > range && opModeIsActive()) {
-            setDrive(power);
-        }
-        setDrive(0);
-    }
-
-    protected void driveAwayRange(double power, int range){
-        while (rangeReader.read(0x04, 2)[0] < range && opModeIsActive()) {
-            setDrive(power);
-        }
-        setDrive(0);
-    }
-
-    protected void turnCenter(int degree, double power){
-        // finds the difference between the target and the starting angle
-        float delta = degree - navx.getYaw();
-        // sets the magnitude of the turn (absolute value of delta)
-        float mag = Math.abs(delta);
-        // whether or not you are turning left or right
-        float dir = Math.signum(delta);
-        // while robot is more than 2 degrees away from the target angle
-        while (mag > 2 && opModeIsActive()) {
-            if(mag < 15) {
-                power = 0.07;
-            }
-            setDrive(dir*power, -dir*power);
-            // update distance from target angle
-            delta = degree - navx.getYaw();
-            mag = Math.abs(delta);
-            dir = Math.signum(delta);
-        }
-        setDrive(0);
-        sleep(100);
-    }
-
-    protected void turnCorner(int degree, double power, Direction tDir){
+    protected void turn(Direction side, int degree, double power) {
         // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
         // sets the magnitude of the turn (absolute value of delta)
@@ -224,25 +245,80 @@ public abstract class FeRMiLinear extends LinearOpMode {
         float dir = Math.signum(delta);
         // while robot is more than 2 degrees away from the target angle
         while(mag > 2 && opModeIsActive()){
-            // if the left side of the drive train is used
-            if(mag < 15){
+            if(mag < 12){
                 power = 0.07;
             }
-            if(tDir == Direction.LEFT){
-                setDrive(dir*power, 0);
-            }
-            // if the right side is used
-            else if(tDir == Direction.RIGHT){
-                setDrive(0, -dir*power);
+            switch (side) {
+                case CENTER:
+                    setDrive(dir*power, -dir*power);
+                    break;
+                case LEFT:
+                    setDrive(dir*power, 0);
+                    break;
+                case RIGHT:
+                    setDrive(0, -dir*power);
+                    break;
+                default:
+                    setDrive(0);
+                    break;
             }
             // update distance from target angle
             delta = degree - navx.getYaw();
             mag = Math.abs(delta);
             dir = Math.signum(delta);
         }
-        setDrive(0);
-        sleep(100);
     }
+
+//    protected void turnCenter(int degree, double power){
+//        // finds the difference between the target and the starting angle
+//        float delta = degree - navx.getYaw();
+//        // sets the magnitude of the turn (absolute value of delta)
+//        float mag = Math.abs(delta);
+//        // whether or not you are turning left or right
+//        float dir = Math.signum(delta);
+//        // while robot is more than 2 degrees away from the target angle
+//        while (mag > 2 && opModeIsActive()) {
+//            if(mag < 15) {
+//                power = 0.07;
+//            }
+//            setDrive(dir*power, -dir*power);
+//            // update distance from target angle
+//            delta = degree - navx.getYaw();
+//            mag = Math.abs(delta);
+//            dir = Math.signum(delta);
+//        }
+//        setDrive(0);
+//        sleep(100);
+//    }
+//
+//    protected void turnCorner(int degree, double power, Direction tDir){
+//        // finds the difference between the target and the starting angle
+//        float delta = degree - navx.getYaw();
+//        // sets the magnitude of the turn (absolute value of delta)
+//        float mag = Math.abs(delta);
+//        // whether or not you are turning left or right
+//        float dir = Math.signum(delta);
+//        // while robot is more than 2 degrees away from the target angle
+//        while(mag > 2 && opModeIsActive()){
+//            // if the left side of the drive train is used
+//            if(mag < 15){
+//                power = 0.07;
+//            }
+//            if(tDir == Direction.LEFT){
+//                setDrive(dir*power, 0);
+//            }
+//            // if the right side is used
+//            else if(tDir == Direction.RIGHT){
+//                setDrive(0, -dir*power);
+//            }
+//            // update distance from target angle
+//            delta = degree - navx.getYaw();
+//            mag = Math.abs(delta);
+//            dir = Math.signum(delta);
+//        }
+//        setDrive(0);
+//        sleep(100);
+//    }
 
     protected void addTelemetry() {
         telemetry.addData("1 Time", runtime.seconds());

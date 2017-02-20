@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
-import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
@@ -39,13 +34,13 @@ public class ShootRamp extends FeRMiLinear {
         sleep(3000);
 
         //turn at an angle
-        turnCorner(-45, 0.4, Direction.RIGHT);
+        turn(-45, 0.4, Direction.RIGHT);
 
         //drive forward
         driveEncoder(700, 0.4);
 
         //face ramp
-        turnCenter(-130, 0.4);
+        turn(-130, 0.4, Direction.CENTER);
 
         //drive onto ramp
         driveEncoder(2500, 0.4);
