@@ -10,7 +10,7 @@ import org.firstinspires.ftc.rmrobotics.util.Direction;
  * Created by poofs on 2/19/2017.
  */
 
-@Autonomous(name = "Test Turn Functions")
+@Autonomous(name = "Test Functions")
 public class turnFunctions extends FeRMiLinear{
 
     @Override

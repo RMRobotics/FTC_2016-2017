@@ -173,7 +173,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected void driveEncoder(int distance, double power){
         int startPos = FL.getCurrentPosition();
-        while(FL.getCurrentPosition() - startPos > (scale*distance) && opModeIsActive()) {
+        while(FL.getCurrentPosition() - startPos < (scale*distance) && opModeIsActive()) {
             setDrive(power);
         }
 
