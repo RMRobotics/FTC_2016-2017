@@ -9,6 +9,7 @@ public enum Direction {
     BACKWARD,
     LEFT,
     RIGHT,
+    CENTER,
     CLOCKWISE,
     COUNTERCLOCKWISE
 }

@@ -7,6 +7,8 @@ import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
+import static org.firstinspires.ftc.rmrobotics.util.Direction.CENTER;
+
 /**
  * Created by Simon on 1/6/16.
  */
@@ -210,7 +212,7 @@ public class BeaconCap2 extends FeRMiLinear {
             setDrive(0.1);
         }
 
-        turnCenter(50, 0.4);
+        turn(CENTER, 50, 0.4);
 
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 2300 && opModeIsActive()) {

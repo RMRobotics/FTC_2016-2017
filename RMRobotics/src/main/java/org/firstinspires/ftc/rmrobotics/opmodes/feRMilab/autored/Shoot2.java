@@ -7,6 +7,8 @@ import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
+import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
+
 /**
  * Created by Simon on 2/12/17.
  */
@@ -18,8 +20,7 @@ public class Shoot2 extends FeRMiLinear {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
         // drive for .5 seconds at .4 power
-        setDrive(0.4);
-        sleep(500);
+        drive(TIME, 500, 0.4);
         setDrive(0);
 
         // turn on flywheels for .2 seconds at .975 seconds
