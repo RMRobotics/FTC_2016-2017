@@ -193,7 +193,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         setDrive(0);
     }
 
-    protected void turnCenter(int degree, double power) {
+    /*protected void turnCenter(int degree, double power) {
         // finds the difference between the target and the starting angle
         float delta = degree - navx.getYaw();
         // sets the magnitude of the turn (absolute value of delta)
@@ -212,7 +212,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
             dir = Math.signum(delta);
 
         }
-    }
+    }*/
     protected void drive(Drive type, int val, double power) {
         switch (type) {
             case TIME:
@@ -223,30 +223,34 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 break;
             case ENCODER:
                 double mag = Math.abs(power);
-                setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                setEnc(val);
+                val = val*scale;
+                double dir = Math.signum(val - FL.getCurrentPosition());
+                setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                setEnc(val);
                 int shift = 0;
                 // TODO: check to see if acceleration code functions properly
                 while (Math.abs(FL.getCurrentPosition() - val) > 5 && opModeIsActive()) {
+                    telemetry.addData("current Encoder value: ", FL.getCurrentPosition());
+                    telemetry.update();
                     if (shift * 0.02 < mag) {
-                        setDrive(shift * 0.05);
+                        setDrive(scale * dir * shift * 0.05);
                         shift ++;
-                        sleep(300);
+                        sleep(200);
                     } else {
-                        setDrive(mag);
+                        setDrive(scale * dir * mag);
                     }
                 }
                 break;
             case RANGE:
                 float delta = val - rangeReader.read(0x04, 2)[0];
-                float dir = Math.signum(delta);
+                dir = Math.signum(delta);
                 if (dir > 0) {
                     while (rangeReader.read(0x04, 2)[0] < val && opModeIsActive()) {
-                        setDrive(power);
+                        setDrive(-scale * power);
                     }
                 } else if (dir < 0) {
                     while (rangeReader.read(0x04, 2)[0] > val && opModeIsActive()) {
-                        setDrive(power);
+                        setDrive(scale*power);
                     }
                 }
                 break;
