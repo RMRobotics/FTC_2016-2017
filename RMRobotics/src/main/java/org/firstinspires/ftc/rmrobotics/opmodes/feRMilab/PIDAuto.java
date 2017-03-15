@@ -107,7 +107,7 @@ public class PIDAuto extends FeRMiLinear {
         TARGET_ANGLE_DEGREES = 40.0;
         yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
 
-        while (colorBackReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
+        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
                 if (yawPIDResult.isOnTarget()) {
                     setZeroMode(DcMotor.ZeroPowerBehavior.BRAKE);
