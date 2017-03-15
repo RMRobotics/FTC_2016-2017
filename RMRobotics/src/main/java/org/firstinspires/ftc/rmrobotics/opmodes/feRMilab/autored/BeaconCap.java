@@ -53,29 +53,10 @@ public class BeaconCap extends FeRMiLinear {
         setDrive(0);
 
         // turn left towards beacon
-        turn(LEFT, -86, 0.2);
-        /*
-        while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
-        */
+        turn(CENTER, -86, 0.2);
 
         // drive forward until close enough to beacon
-        drive(RANGE, 17, -0.1);
-        /*while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
-            setDrive(-0.1);
-        }
-        setDrive(0);*/
+        drive(RANGE, 17, 0.1); // TODO: check if robot still drives in wrong direction
 
         boolean detected = false;
         double initTime = runtime.milliseconds();
@@ -83,41 +64,35 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
                 //left is red, right is blue
-                swingArm.setPosition(0.65);
+                swingArm.setPosition(1.0);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
-                swingArm.setPosition(0.25);
+                swingArm.setPosition(0);
                 detected = true;
             }
         }
 
         // drive forward to hit beacon
-        drive(TIME, 600, -.15);
-        /*initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
-            setDrive(-0.15);
-        }*/
+        if (detected) {
+            sleep(150);
+            drive(TIME, 600, -0.15); // TODO: check if robot still drives in wrong direction
+        }
 
         // back away from beacon
-        drive(RANGE, 15, 0.2);
-        /*while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
-            setDrive(0.2);
-        }
-        swingArm.setPosition(0.4);
-
-        setDrive(0);*/
+        drive(RANGE, 30, 0.2); // TODO: check if robot still drives in wrong direction
+        swingArm.setPosition(0.5);
 
         initTime = runtime.milliseconds();
-        while(runtime.milliseconds()-initTime < 3500 && opModeIsActive()) {
-            flyL.setPower(0.95);
-            flyR.setPower(0.95);
+        while(runtime.milliseconds()-initTime < 4500 && opModeIsActive()) {
+            flyL.setPower(1.0);
+            flyR.setPower(1.0);
             if (runtime.milliseconds() - initTime > 1000) {
                 index.setPosition(.5);
-                belt.setPower(1);
+                belt.setPower(0.5);
             } else if (runtime.milliseconds() - initTime > 1500) {
                 index.setPosition(.5);
                 belt.setPower(0);
-            } else if (runtime.milliseconds() - initTime > 2500) {
+            } else if (runtime.milliseconds() - initTime > 3000) {
                 index.setPosition(.5);
                 belt.setPower(1);
             }
@@ -133,25 +108,12 @@ public class BeaconCap extends FeRMiLinear {
         // FIRST BEACON DONE
 
         // turn towards second line
-        turn(CENTER, 2, 0.15); // original power value was 0.15
-        /*while (navx.getYaw() < -2 && opModeIsActive()) {
-            if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(.15, -0.15);
-            } else {
-                setDrive(0.07, -0.07);
-            }
-        }
-        setDrive(0)*/
+        turn(CENTER, -12, 0.15); // original power value was 0.15
 
         // drive forward slightly to move center color sensor off the first line
-        drive(TIME, 450, -0.6);
-        /*double start = runtime.milliseconds();
-        while (runtime.milliseconds() - start < 450 && opModeIsActive()) {
-            setDrive(-0.6);
-        }*/
+        drive(TIME, 350, -0.6); // TODO: check if robot still drives in wrong direction
 
         // drive forward until center color sensor detects second line
-        double checkFirst = -2500;
         initPos = Math.abs(FL.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
@@ -160,8 +122,10 @@ public class BeaconCap extends FeRMiLinear {
             } else if (FL.getCurrentPosition() + initPos > -1500) {
                 scale = -1;
             }
-            if (FL.getCurrentPosition() + initPos > -1500) {
+            if (FL.getCurrentPosition() + initPos > -1200) {
                 setDrive(scale * 0.5);
+            } else if (FL.getCurrentPosition() + initPos > -1800) {
+                setDrive(scale * 0.3);
             } else {
                 setDrive(scale * 0.1);
             }
@@ -173,31 +137,13 @@ public class BeaconCap extends FeRMiLinear {
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.04);
         }
+        setDrive(0);
 
         //turn left towards beacon
         turn(CENTER, -86, 0.2);
-        /*while (Math.abs(navx.getYaw() + 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() + 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() + 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
-        setDrive(0);*/
 
         // drive forward until close enough to beacon
-        drive(RANGE, 14, -0.1);
-        /*while (rangeReader.read(0x04, 2)[0] > 14 && opModeIsActive()) {
-            setDrive(-0.1);
-        }
-        setDrive(0);
-        sleep(100);*/
+        drive(RANGE, 14, 0.1);
 
         detected = false;
         initTime = runtime.milliseconds();
@@ -205,40 +151,30 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
                 //left is red, right is blue
-                swingArm.setPosition(0.65);
+                swingArm.setPosition(1.0);
                 detected = true;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
-                swingArm.setPosition(0.25);
+                swingArm.setPosition(0);
                 detected = true;
             }
         }
 
         // drive forward to hit beacon
-        drive(TIME, 600, -.15);
-        /*initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 600 && opModeIsActive() && detected) {
-            setDrive(-0.15);
-        }*/
+        if (detected) {
+            sleep(150);
+            drive(TIME, 600, -.15);
+        }
 
         // back away from beacon
         drive(RANGE, 20, .1);
-        /*while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive() && detected) {
-            setDrive(0.1);
-        }*/
+        swingArm.setPosition(0.5);
 
         //turn towards center goal
-        turn(CENTER, 45, 0.4);
+        turn(CENTER, -60, 0.4);
 
         //drive to knock off cap ball
         drive(TIME, 2000, 0.4);
-        /*initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 2000 && opModeIsActive()) {
-            setDrive(0.4);
-        }
-
-        setDrive(0);*/
 
         stop();
     }
-
-    }
+}

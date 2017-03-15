@@ -26,7 +26,6 @@ public class FeRMiTele extends OpMode {
     private DcMotor belt;
     private DcMotor lift;
 
-    private Servo harvester;
     private Servo beaconArm;
     private Servo index;
     private Servo liftHold;
@@ -54,10 +53,8 @@ public class FeRMiTele extends OpMode {
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        harvester = hardwareMap.servo.get("h");
-        harvester.setPosition(0.5);
         beaconArm = hardwareMap.servo.get("swingArm");
-        beaconArm.setPosition(0.5);
+        beaconArm.setPosition(0.495);
         index = hardwareMap.servo.get("indexer");
         index.setPosition(0.1);
         liftHold = hardwareMap.servo.get("liftHold");
@@ -72,13 +69,13 @@ public class FeRMiTele extends OpMode {
     @Override
     public void loop() {
         double max = 1.0;
-        double forward = gamepad1.left_stick_y*0.8;
-        double strafe = gamepad1.left_stick_x*0.8;
-        double rotate = gamepad1.right_stick_x*0.7;
-        telemetry.addData("FL: forward: ", forward + "+ strafe: " + strafe + "+ rotate: " + rotate);
-        telemetry.addData("FR: forward: ", forward + "- strafe: " + strafe + "- rotate: " + rotate);
-        telemetry.addData("BL: forward: ", forward + "- strafe: " + strafe + "+ rotate: " + rotate);
-        telemetry.addData("BR: forward: ", forward + "+ strafe: " + strafe + "- rotate: " + rotate);
+        double forward = gamepad1.left_stick_y;
+        double strafe = gamepad1.left_stick_x;
+        double rotate = gamepad1.right_stick_x;
+//        telemetry.addData("FL: forward: ", forward + "+ strafe: " + strafe + "+ rotate: " + rotate);
+//        telemetry.addData("FR: forward: ", forward + "- strafe: " + strafe + "- rotate: " + rotate);
+//        telemetry.addData("BL: forward: ", forward + "- strafe: " + strafe + "+ rotate: " + rotate);
+//        telemetry.addData("BR: forward: ", forward + "+ strafe: " + strafe + "- rotate: " + rotate);
 
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
@@ -109,23 +106,23 @@ public class FeRMiTele extends OpMode {
             BR.setPower((forward - strafe + rotate) / max);
         }
 
-        boolean harvest = gamepad1.right_bumper;
-        boolean eject = gamepad1.left_bumper;
-        if (harvest && eject) {
-            harvester.setPosition(0.5);
-            belt.setPower(0);
-        } else if (harvest) {
-            harvester.setDirection(Servo.Direction.FORWARD);
-            harvester.setPosition(0);
-            belt.setPower(1.0);
-        } else if (eject) {
-            harvester.setDirection(Servo.Direction.REVERSE);
-            harvester.setPosition(0);
-            belt.setPower(-1.0);
-        } else {
-            harvester.setPosition(0.5);
-            belt.setPower(0);
-        }
+//        boolean harvest = gamepad1.right_bumper;
+//        boolean eject = gamepad1.left_bumper;
+//        if (harvest && eject) {
+//            harvester.setPosition(0.5);
+//            belt.setPower(0);
+//        } else if (harvest) {
+//            harvester.setDirection(Servo.Direction.FORWARD);
+//            harvester.setPosition(0);
+//            belt.setPower(1.0);
+//        } else if (eject) {
+//            harvester.setDirection(Servo.Direction.REVERSE);
+//            harvester.setPosition(0);
+//            belt.setPower(-1.0);
+//        } else {
+//            harvester.setPosition(0.5);
+//            belt.setPower(0);
+//        }
 
         if (gamepad2.y) {
             flyL.setPower(.985);
