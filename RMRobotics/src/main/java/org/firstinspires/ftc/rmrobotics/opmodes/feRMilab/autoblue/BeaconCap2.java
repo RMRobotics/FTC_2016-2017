@@ -5,9 +5,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
-import org.firstinspires.ftc.rmrobotics.util.Direction;
 
+import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
 import static org.firstinspires.ftc.rmrobotics.util.Direction.CENTER;
+import static org.firstinspires.ftc.rmrobotics.util.Direction.RIGHT;
+import static org.firstinspires.ftc.rmrobotics.util.Drive.RANGE;
+import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
 
 /**
  * Created by Simon on 1/6/16.
@@ -20,24 +23,24 @@ public class BeaconCap2 extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
-        super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
+        super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
 
         // turn towards first beacon
-        turnCorner(40);
+        turn(RIGHT, 42, 0.4);
 
         // drive forward until center color sensor detects line
-        double initPos = Math.abs(FR.getCurrentPosition());
+        double initPos = Math.abs(FL.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FR.getCurrentPosition() + initPos < -3500) {
+            if (FL.getCurrentPosition() + initPos < -3500) {
                 scale = 1;
-            } else if (FR.getCurrentPosition() + initPos > -2400) {
+            } else if (FL.getCurrentPosition() + initPos > -2400) {
                 scale = -1;
             }
-            if (FR.getCurrentPosition() + initPos > -2400) {
+            if (FL.getCurrentPosition() + initPos > -2400) {
                 setDrive(scale * 0.5);
             } else {
-                setDrive(scale * 0.07);
+                setDrive(scale * 0.1);
             }
         }
         setDrive(0);
@@ -49,67 +52,72 @@ public class BeaconCap2 extends FeRMiLinear {
         }
         setDrive(0);
 
-        // turn left towards beacon
-        while (Math.abs(navx.getYaw() - 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() - 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() - 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
-        setDrive(0);
+        // turn right towards beacon
+        turn(CENTER, 86, 0.2);
+
+        sleep(100);
 
         // drive forward until close enough to beacon
-        while (rangeReader.read(0x04, 2)[0] > 17 && opModeIsActive()) {
-            setDrive(-0.1);
-        }
-        setDrive(0);
+        drive(RANGE, 17, 0.1);
 
         boolean detected = false;
         double initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
-            // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
-                //left is blue, right is red
-                swingArm.setPosition(0.25);
-                detected = true;
+                left = Color.RED;
             } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
-                swingArm.setPosition(0.65);
+                left = Color.BLUE;
+            } else {
+                left = Color.NEITHER;
+            }
+            if (Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {
+                right = Color.RED;
+            } else if (Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {
+                right = Color.BLUE;
+            } else {
+                right = Color.NEITHER;
+            }
+
+            // move beacon pusher arm to appropriate location
+            if (left == Color.RED && right == Color.BLUE) {
+                //left is red, right is blue
+                swingArm.setPosition(0);
                 detected = true;
+            } else if (left == Color.BLUE && right == Color.RED) {
+                swingArm.setPosition(1.0);
+                detected = true;
+            } else {
+                if (left == Color.RED || right == Color.BLUE) {
+                    swingArm.setPosition(0);
+                    detected = true;
+                } else if (left == Color.BLUE || right == Color.RED) {
+                    swingArm.setPosition(1.0);
+                    detected = true;
+                }
             }
         }
 
         // drive forward to hit beacon
-        initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 1200 && opModeIsActive() && detected) {
-            setDrive(-0.15);
+        if (detected) {
+            sleep(100);
+            drive(TIME, 750, -0.15);
         }
 
         // back away from beacon
-        while (rangeReader.read(0x04, 2)[0] < 15 && opModeIsActive()) {
-            setDrive(0.2);
-        }
-        swingArm.setPosition(0.4);
-
-        setDrive(0);
+        drive(RANGE, 30, 0.2);
+        swingArm.setPosition(0.5);
 
         initTime = runtime.milliseconds();
-        while(runtime.milliseconds()-initTime < 3500 && opModeIsActive()) {
-            flyL.setPower(0.85);
-            flyR.setPower(0.85);
+        while(runtime.milliseconds()-initTime < 4000 && opModeIsActive()) {
+            flyL.setPower(1.0);
+            flyR.setPower(1.0);
             if (runtime.milliseconds() - initTime > 1000) {
                 index.setPosition(.5);
-                belt.setPower(1);
+                belt.setPower(0.5);
             } else if (runtime.milliseconds() - initTime > 1500) {
                 index.setPosition(.5);
                 belt.setPower(0);
-            } else if (runtime.milliseconds() - initTime > 2500) {
+            } else if (runtime.milliseconds() - initTime > 3000) {
                 index.setPosition(.5);
                 belt.setPower(1);
             }
@@ -120,38 +128,27 @@ public class BeaconCap2 extends FeRMiLinear {
         flyL.setPower(0);
         flyR.setPower(0);
 
-        sleep(200);
-
-        //FIRST BEACON DONE
+        // FIRST BEACON DONE
 
         // turn towards second line
-        while (navx.getYaw() > 2 && opModeIsActive()) {
-            if (Math.abs(navx.getYaw()) > 25) {
-                setDrive(-0.15, 0.15);
-            } else {
-                setDrive(-0.07, 0.07);
-            }
-        }
-
-        setDrive(0);
+        turn(CENTER, 7, 0.15);
 
         // drive forward slightly to move center color sensor off the first line
-        double start = runtime.milliseconds();
-        while (runtime.milliseconds() - start < 450 && opModeIsActive()) {
-            setDrive(-0.6);
-        }
+        drive(TIME, 500, -0.6);
 
         // drive forward until center color sensor detects second line
-        initPos = Math.abs(FR.getCurrentPosition());
+        initPos = Math.abs(FL.getCurrentPosition());
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             int scale = -1;
-            if (FR.getCurrentPosition() + initPos < -3000) {
+            if (FL.getCurrentPosition() + initPos < -3000) {
                 scale = 1;
-            } else if (FR.getCurrentPosition() + initPos > -1500) {
+            } else if (FL.getCurrentPosition() + initPos > -1500) {
                 scale = -1;
             }
-            if (FR.getCurrentPosition() + initPos > -1500) {
+            if (FL.getCurrentPosition() + initPos > -1200) {
                 setDrive(scale * 0.5);
+            } else if (FL.getCurrentPosition() + initPos > -1800) {
+                setDrive(scale * 0.3);
             } else {
                 setDrive(scale * 0.1);
             }
@@ -163,88 +160,77 @@ public class BeaconCap2 extends FeRMiLinear {
         while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
             setDrive(0.04);
         }
-
-        //turn left towards beacon
-        while (Math.abs(navx.getYaw() - 86) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() - 90 > 0) {
-                scale = -1;
-            } else {
-                scale = 1;
-            }
-            if (Math.abs(navx.getYaw() - 88) > 10) {
-                setDrive(scale * 0.2, -scale * 0.2);
-            } else {
-                setDrive(scale * 0.07, -scale * 0.07);
-            }
-        }
         setDrive(0);
+
+        //turn right towards beacon
+        turn(CENTER, 90, 0.2);
+
+        sleep(100);
 
         // drive forward until close enough to beacon
-        while (rangeReader.read(0x04, 2)[0] > 14 && opModeIsActive()) {
-            setDrive(-0.1);
-        }
-        setDrive(0);
-        sleep(100);
+        drive(RANGE, 14, 0.1);
 
         detected = false;
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
+            if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
+                left = Color.RED;
+            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
+                left = Color.BLUE;
+            } else {
+                left = Color.NEITHER;
+            }
+            if (Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {
+                right = Color.RED;
+            } else if (Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {
+                right = Color.BLUE;
+            } else {
+                right = Color.NEITHER;
+            }
+
             // move beacon pusher arm to appropriate location
-            if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
-                //left is blue, right is red
-                swingArm.setPosition(0.25);
+            if (left == Color.RED && right == Color.BLUE) {
+                //left is red, right is blue
+                swingArm.setPosition(0);
                 detected = true;
-            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
-                swingArm.setPosition(0.65);
+            } else if (left == Color.BLUE && right == Color.RED) {
+                swingArm.setPosition(1.0);
                 detected = true;
+            } else {
+                if (left == Color.RED || right == Color.BLUE) {
+                    swingArm.setPosition(0);
+                    detected = true;
+                } else if (left == Color.BLUE || right == Color.RED) {
+                    swingArm.setPosition(1.0);
+                    detected = true;
+                }
             }
         }
 
         // drive forward to hit beacon
-        initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 1200 && opModeIsActive() && detected) {
-            setDrive(-0.15);
+        if (detected) {
+            sleep(100);
+            drive(TIME, 750, -0.15);
         }
 
         // back away from beacon
-        while (rangeReader.read(0x04, 2)[0] < 20 && opModeIsActive() && detected) {
-            setDrive(0.1);
-        }
+        drive(RANGE, 20, .1);
+        swingArm.setPosition(0.5);
 
+        //turn towards center goal
         turn(CENTER, 50, 0.4);
 
-        initTime = runtime.milliseconds();
-        while (runtime.milliseconds() - initTime < 2300 && opModeIsActive()) {
-            setDrive(0.4);
-        }
+        sleep(100);
 
-        setDrive(0);
+        //drive to knock off cap ball
+//        drive(TIME, 2200, 0.4);
+        setEnc(1100); // TODO: check if 1100 is perfect (previously 1000)
+        setDrive(0.5);
+        while (Math.abs(FL.getCurrentPosition() - FL.getTargetPosition()) > 10) {
+            telemetry.addData("BLUE", "WINS");
+            telemetry.update();
+        }
 
         stop();
-    }
-
-
-
-    private void turnCorner(int a){
-        while (Math.abs(navx.getYaw() - a) > 2 && opModeIsActive()) {
-            int scale;
-            if (navx.getYaw() - a > 0) {
-                //if robot has turned less than a degrees in left direction
-                scale = 1;
-            } else {
-                //if robot has turned more than a degrees in left direction
-                scale = -1;
-            }
-            if (Math.abs(navx.getYaw() - a) > 15){
-                //if robot has turned less than (a-15) degrees in either direction
-                //then turns robot at a faster speed
-                setDrive(0, scale * 0.4);
-            } else {
-                //if robot has turned more than (a-15) degrees in either direction
-                //turns robot at a slower speed
-                setDrive(0, scale * 0.07);
-            }
-        }
     }
 }

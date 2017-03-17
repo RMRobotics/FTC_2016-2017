@@ -12,14 +12,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class servoCalibration extends OpMode {
 
     private Servo servo;
-    private Servo h;
     private double servoValue = 0.5;
 
     @Override
     public void init() {
-        servo = hardwareMap.servo.get("swingArm");
-        h = hardwareMap.servo.get("h");
-        h.setPosition(0.5);
+        servo = hardwareMap.servo.get("indexer");
     }
 
     @Override

@@ -52,6 +52,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected int scale;
     protected double initTime;
 
+    protected Color left;
+    protected Color right;
+
     public void initialize(Color c, DcMotor.RunMode r, Direction direction) {
         // motor initialization
         FL = hardwareMap.dcMotor.get("FL");
@@ -138,6 +141,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 break;
         }
 
+        left = Color.NEITHER;
+        right = Color.NEITHER;
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -149,7 +155,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
         // initialize servo positions
         swingArm.setPosition(0.495);
         index.setPosition(0.1);
-        liftHold.setPosition(0.18);
+        liftHold.setPosition(0);
     }
 
     protected void drive(Drive type, int val, double power) {
@@ -236,6 +242,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
             mag = Math.abs(delta);
             dir = Math.signum(delta);
         }
+        setDrive(0);
     }
 
     protected void addTelemetry() {

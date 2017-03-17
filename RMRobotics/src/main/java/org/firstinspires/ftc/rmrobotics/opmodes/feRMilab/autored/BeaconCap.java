@@ -56,34 +56,57 @@ public class BeaconCap extends FeRMiLinear {
         turn(CENTER, -86, 0.2);
 
         // drive forward until close enough to beacon
-        drive(RANGE, 17, 0.1); // TODO: check if robot still drives in wrong direction
+        drive(RANGE, 17, 0.1);
 
         boolean detected = false;
         double initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
-            // move beacon pusher arm to appropriate location
             if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
+                left = Color.RED;
+            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
+                left = Color.BLUE;
+            } else {
+                left = Color.NEITHER;
+            }
+            if (Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {
+                right = Color.RED;
+            } else if (Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {
+                right = Color.BLUE;
+            } else {
+                right = Color.NEITHER;
+            }
+
+            // move beacon pusher arm to appropriate location
+            if (left == Color.RED && right == Color.BLUE) {
                 //left is red, right is blue
                 swingArm.setPosition(1.0);
                 detected = true;
-            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
+            } else if (left == Color.BLUE && right == Color.RED) {
                 swingArm.setPosition(0);
                 detected = true;
+            } else {
+                if (left == Color.RED || right == Color.BLUE) {
+                    swingArm.setPosition(1.0);
+                    detected = true;
+                } else if (left == Color.BLUE || right == Color.RED) {
+                    swingArm.setPosition(0);
+                    detected = true;
+                }
             }
         }
 
         // drive forward to hit beacon
         if (detected) {
-            sleep(150);
-            drive(TIME, 600, -0.15); // TODO: check if robot still drives in wrong direction
+            sleep(100);
+            drive(TIME, 500, -0.15);
         }
 
         // back away from beacon
-        drive(RANGE, 30, 0.2); // TODO: check if robot still drives in wrong direction
+        drive(RANGE, 30, 0.2);
         swingArm.setPosition(0.5);
 
         initTime = runtime.milliseconds();
-        while(runtime.milliseconds()-initTime < 4500 && opModeIsActive()) {
+        while(runtime.milliseconds()-initTime < 4000 && opModeIsActive()) {
             flyL.setPower(1.0);
             flyR.setPower(1.0);
             if (runtime.milliseconds() - initTime > 1000) {
@@ -103,15 +126,13 @@ public class BeaconCap extends FeRMiLinear {
         flyL.setPower(0);
         flyR.setPower(0);
 
-        sleep(200);
-
         // FIRST BEACON DONE
 
         // turn towards second line
-        turn(CENTER, -12, 0.15); // original power value was 0.15
+        turn(CENTER, -15, 0.15);
 
         // drive forward slightly to move center color sensor off the first line
-        drive(TIME, 350, -0.6); // TODO: check if robot still drives in wrong direction
+        drive(TIME, 500, -0.6);
 
         // drive forward until center color sensor detects second line
         initPos = Math.abs(FL.getCurrentPosition());
@@ -148,21 +169,44 @@ public class BeaconCap extends FeRMiLinear {
         detected = false;
         initTime = runtime.milliseconds();
         while (runtime.milliseconds() - initTime < 200 && opModeIsActive()) {
+            if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {
+                left = Color.RED;
+            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {
+                left = Color.BLUE;
+            } else {
+                left = Color.NEITHER;
+            }
+            if (Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {
+                right = Color.RED;
+            } else if (Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {
+                right = Color.BLUE;
+            } else {
+                right = Color.NEITHER;
+            }
+
             // move beacon pusher arm to appropriate location
-            if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 10) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 3) <= 1) {// && colorRightCache[0] == 3){
+            if (left == Color.RED && right == Color.BLUE) {
                 //left is red, right is blue
                 swingArm.setPosition(1.0);
                 detected = true;
-            } else if (Math.abs(colorLeftReader.read(0x04, 1)[0] - 3) <= 1) {// || Math.abs(colorRightReader.read(0x04, 1)[0] - 10) <= 1) {// && colorRightCache[0] == 10){
+            } else if (left == Color.BLUE && right == Color.RED) {
                 swingArm.setPosition(0);
                 detected = true;
+            } else {
+                if (left == Color.RED || right == Color.BLUE) {
+                    swingArm.setPosition(1.0);
+                    detected = true;
+                } else if (left == Color.BLUE || right == Color.RED) {
+                    swingArm.setPosition(0);
+                    detected = true;
+                }
             }
         }
 
         // drive forward to hit beacon
         if (detected) {
-            sleep(150);
-            drive(TIME, 600, -.15);
+            sleep(100);
+            drive(TIME, 700, -0.15);
         }
 
         // back away from beacon
@@ -170,10 +214,16 @@ public class BeaconCap extends FeRMiLinear {
         swingArm.setPosition(0.5);
 
         //turn towards center goal
-        turn(CENTER, -60, 0.4);
+        turn(CENTER, -70, 0.4);
 
         //drive to knock off cap ball
-        drive(TIME, 2000, 0.4);
+//        drive(TIME, 2200, 0.4);
+        setEnc(1100); // TODO: check if 1100 is perfect on red (works on blue)
+        setDrive(0.5);
+        while (Math.abs(FL.getCurrentPosition() - FL.getTargetPosition()) > 10) {
+            telemetry.addData("RED", "WINS");
+            telemetry.update();
+        }
 
         stop();
     }
