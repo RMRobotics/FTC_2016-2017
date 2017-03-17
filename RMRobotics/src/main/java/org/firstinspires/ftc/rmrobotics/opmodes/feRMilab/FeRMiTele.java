@@ -56,8 +56,9 @@ public class FeRMiTele extends OpMode {
         beaconArm = hardwareMap.servo.get("swingArm");
         beaconArm.setPosition(0.495);
         index = hardwareMap.servo.get("indexer");
-        index.setPosition(0.1);
+        index.setPosition(0.12);
         liftHold = hardwareMap.servo.get("liftHold");
+        liftHold.setPosition(0.4);
 
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -141,9 +142,9 @@ public class FeRMiTele extends OpMode {
         }
 
         if(gamepad2.x){
-            beaconArm.setPosition(.68);
+            beaconArm.setPosition(1.0);
         } else if (gamepad2.b){
-            beaconArm.setPosition(.20);
+            beaconArm.setPosition(0);
         }
 
         if (gamepad2.left_bumper){
@@ -162,11 +163,11 @@ public class FeRMiTele extends OpMode {
 
         if (gamepad2.dpad_down) {
             liftHold.setPosition(1);
-//            triggered = true;
-//        } else if (triggered) {
-//            liftHold.setPosition(0);
+            triggered = true;
+        } else if (triggered) {
+            liftHold.setPosition(0.5);
         } else {
-            liftHold.setPosition(0);
+            liftHold.setPosition(0.4);
         }
 
         addTelemetry();
