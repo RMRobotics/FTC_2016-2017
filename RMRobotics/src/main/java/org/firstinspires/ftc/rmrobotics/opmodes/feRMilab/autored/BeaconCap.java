@@ -3,7 +3,7 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.FeRMiLinear;
+import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 
 import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
@@ -16,7 +16,6 @@ import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
  * Created by Simon on 1/6/16.
  */
 // RED TEAM
-
 
 @Autonomous(name = "RED: Beacon")
 public class BeaconCap extends FeRMiLinear {
@@ -98,7 +97,7 @@ public class BeaconCap extends FeRMiLinear {
         // drive forward to hit beacon
         if (detected) {
             sleep(100);
-            drive(TIME, 500, -0.15);
+            drive(TIME, 700, -0.15);
         }
 
         // back away from beacon
@@ -107,8 +106,9 @@ public class BeaconCap extends FeRMiLinear {
 
         initTime = runtime.milliseconds();
         while(runtime.milliseconds()-initTime < 4000 && opModeIsActive()) {
-            flyL.setPower(1.0);
-            flyR.setPower(1.0);
+            power = flyMC.getVoltage()*-0.1242 + 2.421;
+            flyL.setPower(power);
+            flyR.setPower(power);
             if (runtime.milliseconds() - initTime > 1000) {
                 index.setPosition(.5);
                 belt.setPower(0.5);

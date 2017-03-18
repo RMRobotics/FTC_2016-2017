@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.tele;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,9 +13,10 @@ import java.util.List;
 /**
  * Created by michaelblob on 12/4/16.
  */
+// V.JOSH
 
-@TeleOp(name = "feRMi - TELEOP", group = "feRMi")
-public class FeRMiTele extends OpMode {
+@TeleOp(name = "feRMi - CALIBRATION", group = "feRMi")
+public class FeRMiCalibration extends OpMode {
 
     private DcMotor FL;
     private DcMotor FR;
@@ -31,6 +32,7 @@ public class FeRMiTele extends OpMode {
     private Servo liftHold;
 
     private boolean triggered = false;
+    private double power = 0;
 
     @Override
     public void init() {
@@ -73,10 +75,6 @@ public class FeRMiTele extends OpMode {
         double forward = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double rotate = gamepad1.right_stick_x;
-//        telemetry.addData("FL: forward: ", forward + "+ strafe: " + strafe + "+ rotate: " + rotate);
-//        telemetry.addData("FR: forward: ", forward + "- strafe: " + strafe + "- rotate: " + rotate);
-//        telemetry.addData("BL: forward: ", forward + "- strafe: " + strafe + "+ rotate: " + rotate);
-//        telemetry.addData("BR: forward: ", forward + "+ strafe: " + strafe + "- rotate: " + rotate);
 
         List l = new ArrayList<>();
         l.add(Math.abs(forward + strafe + rotate));
@@ -86,11 +84,6 @@ public class FeRMiTele extends OpMode {
         if ((double) Collections.max(l) > max) {
             max = (double) Collections.max(l);
         }
-
-//        double driveWeight = 1.0;
-//        double turnWeight = 1.0;
-//        double res = 0.4;
-//        double[] voltages = DriveUtil.mecanumDrive(strafe, forward, driveWeight, rotate, turnWeight, res, false);
 
         if (gamepad1.dpad_up) {
             setDrive(1, 1, 1, 1);
@@ -105,12 +98,7 @@ public class FeRMiTele extends OpMode {
             FR.setPower((forward - strafe - rotate) / max);
             BL.setPower((forward - strafe + rotate) / max);
             BR.setPower((forward + strafe - rotate) / max);
-//            FL.setPower(voltages[0]);
-//            FR.setPower(voltages[1]);
-//            BL.setPower(voltages[2]);
-//            BR.setPower(voltages[3]);
         }
-//        telemetry.addData("1 Voltages:", voltages[0] + " " + voltages[1] + " " + voltages[2] + " " + voltages[3]);
 
         boolean harvest = gamepad1.right_bumper;
         boolean eject = gamepad1.left_bumper;
@@ -125,27 +113,34 @@ public class FeRMiTele extends OpMode {
         }
 
         if (gamepad2.y) {
-            flyL.setPower(.985);
-            flyR.setPower(.985);
+            flyL.setPower(power);
+            flyR.setPower(power);
         } else if (gamepad2.a) {
             flyL.setPower(-.985);
             flyR.setPower(-.985);
         } else if (gamepad2.right_bumper) {
             flyL.setPower(1);
             flyR.setPower(1);
-//        } else if (gamepad2.left_bumper) {
-//            flyL.setPower(-1);
-//            flyR.setPower(-1);
         } else {
             flyL.setPower(0);
             flyR.setPower(0);
         }
 
-        if(gamepad2.x){
-            beaconArm.setPosition(1.0);
-        } else if (gamepad2.b){
-            beaconArm.setPosition(0);
+        if (gamepad2.x) {
+            power -= 0.0001;
+        } else if (gamepad2.b) {
+            power += 0.0001;
         }
+
+        telemetry.addData("power", power);
+
+//        if(gamepad2.x){
+//            beaconArm.setPosition(1.0);
+//        } else if (gamepad2.b){
+//            beaconArm.setPosition(0);
+//        } else {
+//            beaconArm.setPosition(0.495);
+//        }
 
         if (gamepad2.left_bumper){
             index.setPosition(.5);
@@ -153,24 +148,25 @@ public class FeRMiTele extends OpMode {
             index.setPosition(.12);
         }
 
-        if (gamepad2.left_trigger > 0.3) {
-            lift.setPower(gamepad2.left_trigger/2);
-        } else if (gamepad2.right_trigger > 0.3) {
-            lift.setPower(-gamepad2.right_trigger);
-        } else {
-            lift.setPower(0);
-        }
+//        if (gamepad2.left_trigger > 0.3) {
+//            lift.setPower(-gamepad2.left_trigger);
+//        } else if (gamepad2.right_trigger > 0.3) {
+//            lift.setPower(gamepad2.right_trigger/2);
+//        } else {
+//            lift.setPower(0);
+//        }
 
-        if (gamepad2.dpad_down) {
-            liftHold.setPosition(1);
-            triggered = true;
-        } else if (triggered) {
-            liftHold.setPosition(0.5);
-        } else {
-            liftHold.setPosition(0.4);
-        }
+//        if (gamepad2.dpad_down) {
+//            liftHold.setPosition(1);
+//            triggered = true;
+//        } else if (triggered) {
+//            liftHold.setPosition(0);
+//        } else {
+//            liftHold.setPosition(0.4);
+//        }
+        liftHold.setPosition(0.4);
 
-        addTelemetry();
+//        addTelemetry();
 
     }
     private void addTelemetry() {

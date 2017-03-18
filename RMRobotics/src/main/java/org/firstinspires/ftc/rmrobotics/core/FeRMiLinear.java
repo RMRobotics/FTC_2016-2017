@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.core;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.rmrobotics.util.Color;
@@ -37,6 +38,8 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected AHRS navx;
 
+    protected VoltageSensor flyMC;
+
     protected I2cDevice colorCenter;
     protected I2cDeviceSynch colorCenterReader;
     protected I2cDevice colorRight;
@@ -51,6 +54,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected int scale;
     protected double initTime;
+    protected double power;
 
     protected Color left;
     protected Color right;
@@ -85,6 +89,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
             telemetry.addData("Status", !navx.isCalibrating());
             telemetry.update();
         }
+
+        // voltage sensor initialization
+        flyMC = hardwareMap.voltageSensor.get("Flywheel Controller 1");
 
         // center color sensor
         colorCenter = hardwareMap.i2cDevice.get("colorCenter");

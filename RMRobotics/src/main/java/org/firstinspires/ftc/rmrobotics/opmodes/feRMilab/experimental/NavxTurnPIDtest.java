@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.experimental;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 

@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.experimental;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 import org.firstinspires.ftc.rmrobotics.util.Drive;
@@ -12,7 +14,8 @@ import org.firstinspires.ftc.rmrobotics.util.Drive;
  */
 
 @Autonomous(name = "Test Functions")
-public class turnFunctions extends FeRMiLinear{
+@Disabled
+public class turnFunctions extends FeRMiLinear {
 
     @Override
     public void runOpMode() throws InterruptedException {
