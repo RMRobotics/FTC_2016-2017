@@ -27,8 +27,8 @@ public class ShootCap extends FeRMiLinear {
         setDrive(0);
 
         // shoot at .95 power
-        flyL.setPower(0.95);
-        flyR.setPower(0.95);
+        flyL.setPower(0.985);
+        flyR.setPower(0.985);
         // wait for .2 seconds for flywheel to speed up
         sleep(200);
         // open indexer

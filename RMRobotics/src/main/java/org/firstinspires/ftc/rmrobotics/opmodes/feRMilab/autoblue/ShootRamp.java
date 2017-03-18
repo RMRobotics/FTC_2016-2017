@@ -24,12 +24,12 @@ public class ShootRamp extends FeRMiLinear{
         // sleep(10000);
 
         // drive for .1 seconds at .4 power
-        drive(TIME, 100, 0.4);
+        drive(TIME, 700, 0.5);
         sleep(200);
 
         // turn on flywheels to .975 power
-        flyL.setPower(0.975);
-        flyR.setPower(0.975);
+        flyL.setPower(0.985);
+        flyR.setPower(0.985);
         sleep(200);
 
         // open indexer
@@ -38,16 +38,20 @@ public class ShootRamp extends FeRMiLinear{
 
         //turn on belt
         belt.setPower(1.0);
-        sleep(3000);
+        sleep(2000);
+        flyL.setPower(0);
+        flyR.setPower(0);
+        belt.setPower(0);
+
 
         //turn at an angle
-        turn(Direction.RIGHT, 45, 0.4);
+        turn(Direction.LEFT, 45, 0.4);
 
         //drive forward
-        drive(TIME, 700, 0.4);
+        drive(TIME, 2000, 0.4);
 
         //face ramp
-        turn(Direction.CENTER, 130, 0.4);
+        // turn(Direction.CENTER, 130, 0.4);
 
         //drive onto ramp
         drive(ENCODER, 2500, 0.4);
