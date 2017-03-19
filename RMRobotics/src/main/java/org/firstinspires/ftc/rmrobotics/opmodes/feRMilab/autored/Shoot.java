@@ -24,11 +24,11 @@ public class Shoot extends FeRMiLinear {
         //sleep for 10 seconds
         // sleep(10000);
 
-        // drive for .1 seconds at .4 power
+        // drive for .1 seconds at .4 voltage
         drive(TIME, 100, 0.4);
         sleep(200);
 
-        // turn on flywheels to .975 power
+        // turn on flywheels to .975 voltage
         flyL.setPower(0.975);
         flyR.setPower(0.975);
         sleep(200);

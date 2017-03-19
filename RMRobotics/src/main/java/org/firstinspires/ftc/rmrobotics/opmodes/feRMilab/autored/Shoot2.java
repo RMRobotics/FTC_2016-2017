@@ -22,7 +22,7 @@ public class Shoot2 extends FeRMiLinear {
         //sleep for 10 seconds
         // sleep(10000);
 
-        // drive for .5 seconds at .4 power
+        // drive for .5 seconds at .4 voltage
         drive(TIME, 500, 0.4);
         setDrive(0);
 

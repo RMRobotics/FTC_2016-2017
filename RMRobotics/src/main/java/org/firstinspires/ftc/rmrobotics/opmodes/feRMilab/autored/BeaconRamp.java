@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autoblue;
+package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autored;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,25 +8,24 @@ import org.firstinspires.ftc.rmrobotics.util.Color;
 
 import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
 import static org.firstinspires.ftc.rmrobotics.util.Direction.CENTER;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.RIGHT;
+import static org.firstinspires.ftc.rmrobotics.util.Direction.LEFT;
 import static org.firstinspires.ftc.rmrobotics.util.Drive.RANGE;
 import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
 
 /**
  * Created by Simon on 1/6/16.
  */
-// BLUE TEAM
+// RED TEAM
 
-
-@Autonomous(name = "BLUE: Beacon")
-public class BeaconCap extends FeRMiLinear {
+@Autonomous(name = "RED: Beacon Ramp")
+public class BeaconRamp extends FeRMiLinear {
 
     @Override
     public void runOpMode() {
-        super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, BACKWARD);
 
         // turn towards first beacon
-        turn(RIGHT, 42, 0.4);
+        turn(LEFT, -40, 0.4);
 
         // drive forward until center color sensor detects line
         double initPos = Math.abs(FL.getCurrentPosition());
@@ -44,19 +43,16 @@ public class BeaconCap extends FeRMiLinear {
             }
         }
         setDrive(0);
-        sleep(150);
+        sleep(100);
 
         // drives backwards to correct for overshooting
-//        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
-//            setDrive(0.07);
-//        }
-        drive(TIME,200,0.3);
+        while (colorCenterReader.read(0x08, 1)[0] < 25 && opModeIsActive()) {
+            setDrive(0.07);
+        }
         setDrive(0);
 
-        // turn right towards beacon
-        turn(CENTER, 86, 0.2);
-
-        sleep(100);
+        // turn left towards beacon
+        turn(CENTER, -90, 0.2);
 
         // drive forward until close enough to beacon
         drive(RANGE, 17, 0.1);
@@ -82,17 +78,17 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (left == Color.RED && right == Color.BLUE) {
                 //left is red, right is blue
-                swingArm.setPosition(0);
+                swingArm.setPosition(1.0);
                 detected = true;
             } else if (left == Color.BLUE && right == Color.RED) {
-                swingArm.setPosition(1.0);
+                swingArm.setPosition(0);
                 detected = true;
             } else {
                 if (left == Color.RED || right == Color.BLUE) {
-                    swingArm.setPosition(0);
+                    swingArm.setPosition(1.0);
                     detected = true;
                 } else if (left == Color.BLUE || right == Color.RED) {
-                    swingArm.setPosition(1.0);
+                    swingArm.setPosition(0);
                     detected = true;
                 }
             }
@@ -101,26 +97,16 @@ public class BeaconCap extends FeRMiLinear {
         // drive forward to hit beacon
         if (detected) {
             sleep(100);
-            drive(TIME, 1500, -0.15);
+            drive(TIME, 1000, -0.15);
         }
 
         // back away from beacon
         drive(RANGE, 30, 0.2);
         swingArm.setPosition(0.5);
 
-//        double power;
-//        double voltageLimit = 0;
-//        if (voltage < voltageLimit){
-//            power = 1;
-//        }
-//        else{
-//            power = .93;
-//        }
-
         initTime = runtime.milliseconds();
         while(runtime.milliseconds()-initTime < 4000 && opModeIsActive()) {
-            // voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.;
-
+//            voltage = flyMC.getVoltage()*-0.1242 + 2.421 + ;
             flyL.setPower(0.93);
             flyR.setPower(0.93);
             if (runtime.milliseconds() - initTime > 1000) {
@@ -143,7 +129,7 @@ public class BeaconCap extends FeRMiLinear {
         // FIRST BEACON DONE
 
         // turn towards second line
-        turn(CENTER, 7, 0.15);
+        turn(CENTER, -8, 0.15);
 
         // drive forward slightly to move center color sensor off the first line
         drive(TIME, 500, -0.6);
@@ -174,13 +160,8 @@ public class BeaconCap extends FeRMiLinear {
         }
         setDrive(0);
 
-        drive(TIME,100,-0.3);
-        setDrive(0);
-
-        //turn right towards beacon
-        turn(CENTER, 90, 0.2);
-
-        sleep(100);
+        //turn left towards beacon
+        turn(CENTER, -90, 0.2);
 
         // drive forward until close enough to beacon
         drive(RANGE, 14, 0.1);
@@ -206,17 +187,17 @@ public class BeaconCap extends FeRMiLinear {
             // move beacon pusher arm to appropriate location
             if (left == Color.RED && right == Color.BLUE) {
                 //left is red, right is blue
-                swingArm.setPosition(0);
+                swingArm.setPosition(1.0);
                 detected = true;
             } else if (left == Color.BLUE && right == Color.RED) {
-                swingArm.setPosition(1.0);
+                swingArm.setPosition(0);
                 detected = true;
             } else {
                 if (left == Color.RED || right == Color.BLUE) {
-                    swingArm.setPosition(0);
+                    swingArm.setPosition(1.0);
                     detected = true;
                 } else if (left == Color.BLUE || right == Color.RED) {
-                    swingArm.setPosition(1.0);
+                    swingArm.setPosition(0);
                     detected = true;
                 }
             }
@@ -225,7 +206,7 @@ public class BeaconCap extends FeRMiLinear {
         // drive forward to hit beacon
         if (detected) {
             sleep(100);
-            drive(TIME, 1500, -0.15);
+            drive(TIME, 700, -0.15);
         }
 
         // back away from beacon
@@ -233,20 +214,16 @@ public class BeaconCap extends FeRMiLinear {
         swingArm.setPosition(0.5);
 
         //turn towards center goal
-        turn(CENTER, 50, 0.4);
+        turn(CENTER, -15, 0.4);
 
-        sleep(100);
-
-        // drive to knock off cap ball
-        drive(TIME, 2200, 0.4);
-        //setEnc(1100); // TODO: check if 1100 is perfect (previously 1000)
-        //setDrive(0.5);
+        //drive to knock off cap ball
+//        drive(TIME, 2200, 0.4);
+        setEnc(3500); // TODO: check if 1100 is perfect on red (works on blue)
+        setDrive(0.5);
         while (Math.abs(FL.getCurrentPosition() - FL.getTargetPosition()) > 10 && opModeIsActive()) {
-            telemetry.addData("BLUE", "WINS");
+            telemetry.addData("RED", "WINS");
             telemetry.update();
         }
-
-        setDrive(0);
 
         stop();
     }

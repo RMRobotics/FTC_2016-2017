@@ -37,7 +37,7 @@ public class voltage extends OpMode {
     public void loop() {
         telemetry.addData("voltage", mc.getVoltage());
         double yee = mc.getVoltage()*-0.1242 + 2.421;
-        telemetry.addData("power", yee);
+        telemetry.addData("voltage", yee);
         index.setPosition(0.5);
         belt.setPower(-1.0);
         flyL.setPower(yee);

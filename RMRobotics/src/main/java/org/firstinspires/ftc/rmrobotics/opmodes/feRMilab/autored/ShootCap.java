@@ -19,38 +19,39 @@ public class ShootCap extends FeRMiLinear {
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
-        // sleep 10 seconds
-        // sleep(10000);
+        // sleep 15 seconds
+        sleep(20000);
 
-        // drive for .7 seconds on .5 power
-        drive(TIME, 700, 0.5);
+        // drive for .7 seconds on .5 voltage
+        drive(TIME, 1300, 0.5);
         setDrive(0);
 
-        // shoot at .95 power
-        flyL.setPower(0.985);
-        flyR.setPower(0.985);
-        // wait for .2 seconds for flywheel to speed up
-        sleep(200);
+        // shoot at .95 voltage
+        flyL.setPower(0.88);
+        flyR.setPower(0.88);
+        sleep(700);
         // open indexer
         index.setPosition(0.5);
         sleep(200);
-        // turn on belt at power 1
-        belt.setPower(1.0);
-        sleep(3000);
+        // turn on belt at voltage 1
+        belt.setPower(0.85);
+        sleep(2000);
         //stop flywheels and belt
         flyL.setPower(0);
         flyR.setPower(0);
         belt.setPower(0);
 
-        //drive for 1.35 seconds on .5 power
-        drive(TIME, 1350, 0.5);
+        // END SHOOTING
+
+        //drive for 1.35 seconds on .5 voltage
+        drive(TIME, 1000, 0.5);
         setDrive(0);
 
         //program continues to run until stop button pressed
-        while (opModeIsActive()) {
-            telemetry.addData("yee", "eet");
-            telemetry.update();
-        }
+//        while (opModeIsActive()) {
+//            telemetry.addData("yee", "eet");
+//            telemetry.update();
+//        }
 
         stop();
     }

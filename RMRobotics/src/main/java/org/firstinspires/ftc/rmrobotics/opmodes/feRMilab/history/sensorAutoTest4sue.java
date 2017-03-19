@@ -138,7 +138,7 @@ public class sensorAutoTest4sue extends OpMode {
                         power /= 2*Math.abs(power);
                     }
                     setDrive(power, 0, power, 0);
-                    telemetry.addData("power", power);
+                    telemetry.addData("voltage", power);
                 }
                 break;
             case ALIGN_1:
@@ -148,7 +148,7 @@ public class sensorAutoTest4sue extends OpMode {
                         power /= 2*Math.abs(power);
                     }
                     setDrive(power, 0, power, 0);
-                    telemetry.addData("power", power);
+                    telemetry.addData("voltage", power);
                 } else {
                     status = State.DRIVE_2;
                 }

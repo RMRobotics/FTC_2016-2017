@@ -148,10 +148,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
 //            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
 //            if (Math.abs(power) > 0.35) {
-//                power /= Math.abs(power);
+//                voltage /= Math.abs(voltage);
 //                power *= 0.3;
 //            }
-//            setDrive(power, 0, power, 0);
+//            setDrive(voltage, 0, voltage, 0);
             addTelemetry();
             //turns robot towards first beacon
         }
@@ -328,10 +328,10 @@ public class sensorAutoLinear2 extends LinearOpMode {
             }
 //            double power = -(((navx.getYaw() + 45) / 30) * 0.3);
 //            if (Math.abs(power) > 0.35) {
-//                power /= Math.abs(power);
+//                voltage /= Math.abs(voltage);
 //                power *= 0.3;
 //            }
-//            setDrive(power, 0, power, 0);
+//            setDrive(voltage, 0, voltage, 0);
             addTelemetry();
             //turns robot towards first beacon
         }

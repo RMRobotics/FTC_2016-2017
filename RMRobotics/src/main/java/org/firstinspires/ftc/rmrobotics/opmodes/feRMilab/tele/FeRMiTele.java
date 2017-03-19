@@ -32,6 +32,8 @@ public class FeRMiTele extends OpMode {
     private Servo index;
     private Servo liftHold;
 
+    private double SCALED_POWER;
+
     private VoltageSensor flyMC;
 
     private boolean triggered = false;
@@ -71,6 +73,8 @@ public class FeRMiTele extends OpMode {
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        SCALED_POWER = flyMC.getVoltage()*-0.1242 + 2.421;
 
     }
 
@@ -117,13 +121,12 @@ public class FeRMiTele extends OpMode {
             belt.setPower(0);
         }
 
-        power = flyMC.getVoltage()*-0.1242 + 2.421;
         if (gamepad2.y) {
-            flyL.setPower(power);
-            flyR.setPower(power);
+            flyL.setPower(0.93);
+            flyR.setPower(0.93);
         } else if (gamepad2.a) {
-            flyL.setPower(-power);
-            flyR.setPower(-power);
+            flyL.setPower(-SCALED_POWER);
+            flyR.setPower(-SCALED_POWER);
         } else if (gamepad2.right_bumper) {
             flyL.setPower(1);
             flyR.setPower(1);

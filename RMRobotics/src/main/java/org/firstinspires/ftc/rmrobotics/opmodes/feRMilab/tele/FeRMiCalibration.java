@@ -132,7 +132,7 @@ public class FeRMiCalibration extends OpMode {
             power += 0.0001;
         }
 
-        telemetry.addData("power", power);
+        telemetry.addData("voltage", power);
 
 //        if(gamepad2.x){
 //            beaconArm.setPosition(1.0);

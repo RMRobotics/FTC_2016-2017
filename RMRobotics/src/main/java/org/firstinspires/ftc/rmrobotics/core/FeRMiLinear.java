@@ -54,7 +54,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected int scale;
     protected double initTime;
-    protected double power;
+    protected double voltage;
 
     protected Color left;
     protected Color right;
@@ -151,6 +151,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
         left = Color.NEITHER;
         right = Color.NEITHER;
 
+        voltage = flyMC.getVoltage();
+
+        telemetry.addData("Voltage", voltage);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 

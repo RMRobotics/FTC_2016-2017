@@ -7,7 +7,6 @@ import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.util.Color;
 import org.firstinspires.ftc.rmrobotics.util.Direction;
 
-import static org.firstinspires.ftc.rmrobotics.util.Drive.ENCODER;
 import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
 
 /**
@@ -20,46 +19,51 @@ public class ShootRamp extends FeRMiLinear {
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
-        //sleep for 10 seconds
-        // sleep(10000);
+        voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.1;
+        telemetry.addData("voltage", voltage);
+        telemetry.update();
 
-        // drive for .1 seconds at .4 power
-        drive(TIME, 700, 0.5);
+        // sleep for 10 seconds
+         sleep(10000);
+
+        // drive for .1 seconds at .4 voltage
+        drive(TIME, 1300, 0.5);
         sleep(200);
 
-        // turn on flywheels to .975 power
-        flyL.setPower(0.985);
-        flyR.setPower(0.985);
-        sleep(200);
+        // turn on flywheels to .985 voltage
+//        voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.05;
+        flyL.setPower(voltage);
+        flyR.setPower(voltage);
+        sleep(1000);
 
         // open indexer
         index.setPosition(0.5);
         sleep(200);
 
         //turn on belt
-        belt.setPower(1.0);
+        belt.setPower(0.85);
         sleep(2000);
         flyL.setPower(0);
         flyR.setPower(0);
         belt.setPower(0);
 
-
+        // END SHOOTING
 
         //turn at an angle
         turn(Direction.RIGHT, -45, 0.4);
 
         //drive forward
-        drive(TIME, 700, 0.4);
+        drive(TIME, 1000, 0.4);
 
         //face ramp
-        turn(Direction.CENTER, -130, 0.4);
+        turn(Direction.CENTER, -90, 0.4);
 
         //drive onto ramp
-        drive(ENCODER, 2500, 0.4);
+        drive(TIME, 1750, 0.4);
 
-        while (opModeIsActive()){
-            addTelemetry();
-        }
+//        while (opModeIsActive()){
+//            addTelemetry();
+//        }
     }
 
 }
