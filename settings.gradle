@@ -1,2 +1,3 @@
 include ':FtcRobotController'
 include ':RMRobotics'
+include ':openCVLibrary2411'
