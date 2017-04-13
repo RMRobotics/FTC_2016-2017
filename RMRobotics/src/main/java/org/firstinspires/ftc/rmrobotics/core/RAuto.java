@@ -7,9 +7,12 @@ public abstract class RAuto extends ROpMode {
         super.init();
     }
 
+    public abstract void runState();
+
     @Override
-    public void updateInput(){
-        //TODO: Add state machine input
+    public void loop(){
+        runState();
+        addTelemetry();
     }
 
 }

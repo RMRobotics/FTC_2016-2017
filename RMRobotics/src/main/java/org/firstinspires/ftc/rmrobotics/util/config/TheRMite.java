@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.rmrobotics.hardware.motor;
 import org.firstinspires.ftc.rmrobotics.util.MotorType;
+import org.firstinspires.ftc.rmrobotics.util.Robot;
 
 import java.util.Arrays;
 
-public class TheRMite extends Robot{
+public class TheRMite extends Robot {
     private motor FL;
     private motor FR;
     private motor BL;

@@ -8,12 +8,11 @@ import org.firstinspires.ftc.rmrobotics.control.RControl;
 import org.firstinspires.ftc.rmrobotics.hardware.crservo;
 import org.firstinspires.ftc.rmrobotics.hardware.motor;
 import org.firstinspires.ftc.rmrobotics.hardware.servo;
-import org.firstinspires.ftc.rmrobotics.util.config.Robot;
+import org.firstinspires.ftc.rmrobotics.util.Robot;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("unchecked")
-public abstract class ROpMode extends OpMode {
+abstract class ROpMode extends OpMode {
 
     private ArrayList<motor> motors = new ArrayList<>();
     private ArrayList<servo> servos =  new ArrayList<>();
@@ -37,37 +36,10 @@ public abstract class ROpMode extends OpMode {
         }
     }
 
-    public void init_loop() {
-        //this.addTelemetry();
-    }
-
     @Override
     public void start(){
         runtime.reset();
     }
-
-    @Override
-    public void loop() {
-        this.updateInput();
-        this.calculate();
-        this.updateHardware();
-        //this.addTelemetry();
-    }
-
-    public void stop() {
-        for (motor m : motors) {
-            m.setPower(0);
-        }
-        for (crservo c : crservos) {
-            c.setPower(0);
-        }
-        updateHardware();
-        //addTelemetry();
-    }
-
-    protected abstract void updateInput();
-
-    protected abstract void calculate();
 
     protected void updateHardware() {
         for (motor m : motors) {
