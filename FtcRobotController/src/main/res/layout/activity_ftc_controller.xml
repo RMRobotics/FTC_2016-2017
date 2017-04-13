@@ -150,7 +150,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           android:rotation="-90"
           android:id="@+id/imageViewId"
           />
-      <org.firstinspires.ftc.rmrobotics.opmodes.AutoNav.RMCameraView
+      <org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav.RMCameraView
           android:layout_width="fill_parent"
           android:layout_height="fill_parent"
           android:visibility="gone"

@@ -11,9 +11,8 @@
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 dependencies {
-    compile project(':imagenav')
     compile project(':FtcRobotController')
-    compile project(':openCVLibrary320')
+    compile project(':OpenCV320')
 }
 android {
     buildToolsVersion '25.0.0'

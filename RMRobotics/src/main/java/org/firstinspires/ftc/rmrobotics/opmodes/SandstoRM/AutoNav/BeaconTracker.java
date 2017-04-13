@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -16,8 +16,8 @@ import org.opencv.core.Size;
 
 import java.util.List;
 
-import pm.BeaconRecognizer;
-import pm.ButtonFinder;
+import org.firstinspires.ftc.rmrobotics.util.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.ButtonFinder;
 
 /**
  * Created by Peter on 1/23/2017.

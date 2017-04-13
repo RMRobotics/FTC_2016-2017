@@ -2,7 +2,7 @@
  * Created by Peter on 2/11/2017.
  */
 
-package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
 
 import android.widget.ImageView;
 

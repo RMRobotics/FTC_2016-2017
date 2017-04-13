@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
 
 
 import android.graphics.Bitmap;
@@ -25,7 +25,6 @@ import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
-import org.firstinspires.ftc.rmrobotics.R;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -43,10 +42,8 @@ import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import org.firstinspires.ftc.robotcore.internal.VuforiaLocalizerImpl;
-import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -54,8 +51,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import pm.BeaconRecognizer;
-import pm.ButtonFinder;
+import org.firstinspires.ftc.rmrobotics.util.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.ButtonFinder;
 
 
 /**

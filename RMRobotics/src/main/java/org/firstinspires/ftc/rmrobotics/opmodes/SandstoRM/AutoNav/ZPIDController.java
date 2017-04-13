@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.IDataArrivalSubscriber;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
 
 import android.util.Log;
 
@@ -12,9 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.opencv.core.Mat;
-
-import java.text.DecimalFormat;
 
 import static java.lang.Thread.sleep;
 
