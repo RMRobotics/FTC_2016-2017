@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM;
+package org.firstinspires.ftc.rmrobotics.util.autonav;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;

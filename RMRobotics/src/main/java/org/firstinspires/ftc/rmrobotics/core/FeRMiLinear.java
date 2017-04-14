@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.rmrobotics.util.Color;
-import org.firstinspires.ftc.rmrobotics.util.Direction;
-import org.firstinspires.ftc.rmrobotics.util.Drive;
+import org.firstinspires.ftc.rmrobotics.util.enums.Color;
+import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
+import org.firstinspires.ftc.rmrobotics.util.enums.Drive;
 
 /**
  * Created by Simon on 2/6/17.

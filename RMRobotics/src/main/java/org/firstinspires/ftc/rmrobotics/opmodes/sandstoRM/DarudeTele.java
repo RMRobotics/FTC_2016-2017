@@ -1,14 +1,11 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM;
+package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,6 +18,7 @@ import java.util.List;
  */
 
 @TeleOp(name="DarudeTele", group="SandstoRM")
+@Disabled
 public class DarudeTele extends OpMode {
     //      private double servoHeight;
     private ElapsedTime timer;

@@ -1,13 +1,12 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
 
 import android.graphics.Bitmap;
-import android.util.JsonReader;
-import android.util.JsonWriter;
 import android.widget.ImageView;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,6 +24,9 @@ import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
+import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
+import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
+import org.firstinspires.ftc.rmrobotics.util.autonav.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -33,17 +35,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.firstinspires.ftc.robotcore.internal.VuforiaLocalizerImpl;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -51,8 +46,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import org.firstinspires.ftc.rmrobotics.util.BeaconRecognizer;
-import org.firstinspires.ftc.rmrobotics.util.ButtonFinder;
+import org.firstinspires.ftc.rmrobotics.util.autonav.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.autonav.ButtonFinder;
 
 
 /**
@@ -60,6 +55,7 @@ import org.firstinspires.ftc.rmrobotics.util.ButtonFinder;
  */
 
 @Autonomous(name = "BetterDarudeAutoNav", group = "AutoNav")
+@Disabled
 public class BetterDarudeAutoNav extends LinearOpMode {
 
     //runtime calculations
@@ -656,7 +652,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         return array[0] * 10;
     }
 
-    class TimestampedData {
+    public static class TimestampedData {
         public double X;
         public double time;
 
@@ -666,7 +662,7 @@ public class BetterDarudeAutoNav extends LinearOpMode {
         }
     }
 
-    class Integrator {
+    public static class Integrator {
         private int delay = 0;
         private double S = 0;
         ArrayList<TimestampedData> history = new ArrayList<TimestampedData>();
@@ -753,70 +749,3 @@ public class BetterDarudeAutoNav extends LinearOpMode {
     }
 }
 
-class AutoNavConfig {
-    public boolean isRed = false;
-    public String firstBeacon = "";
-    public String secondBeacon = "";
-    public boolean isRight = true;
-
-    public void ReadConfig(FtcRobotControllerActivity act) {
-        try {
-            InputStream in = act.openFileInput("DarudeAutoNavCfg");
-            JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-            reader.beginObject();
-            reader.nextName();
-            isRed = reader.nextBoolean();
-            reader.nextName();
-            firstBeacon = reader.nextString();
-            reader.nextName();
-            secondBeacon = reader.nextString();
-            reader.nextName();
-            isRight = reader.nextBoolean();
-            reader.endObject();
-            reader.close();
-        } catch (FileNotFoundException ex) {
-            RobotLog.d("Cannot create config file, creating default");
-            // Create default file
-            firstBeacon = "Wheels";
-            secondBeacon = "Tools";
-            WriteConfig(act);
-        } catch (IOException ex) {
-            RobotLog.d("Cannot create config file");
-        }
-    }
-
-    public void WriteConfig(FtcRobotControllerActivity act) {
-        try {
-            OutputStream out = act.openFileOutput("DarudeAutoNavCfg",0);
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
-            writer.setIndent("  ");
-            writer.beginObject();
-            writer.name("red").value(isRed);
-            writer.name("firstBeacon").value(firstBeacon);
-            writer.name("secondBeacon").value(secondBeacon);
-            writer.name("isRight").value(isRight);
-            writer.endObject();
-            writer.close();
-        } catch (FileNotFoundException ex) {
-            RobotLog.d("Cannot create config file");
-        } catch (IOException ex) {
-            RobotLog.d("Cannot create config file");
-        }
-    }
-}
-
-class RMVuforia extends VuforiaLocalizerImpl {
-    RMVuforia(VuforiaLocalizer.Parameters parameters) {
-        super(parameters);
-    }
-
-    // Pause and release camera
-    public void RMPause() {
-        pauseAR();
-    }
-
-    // Resume Vuforia
-    public void RMResume() {
-        resumeAR();
-    }
-}

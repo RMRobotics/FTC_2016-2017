@@ -9,7 +9,7 @@ import org.firstinspires.ftc.rmrobotics.control.Controller;
 import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
 import org.firstinspires.ftc.rmrobotics.util.DriveUtil;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
 
 @TeleOp(name="tMecanum", group="TheRMite")

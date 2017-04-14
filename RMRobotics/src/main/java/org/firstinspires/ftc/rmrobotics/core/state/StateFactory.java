@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.core.state;
 
-import org.firstinspires.ftc.rmrobotics.util.StateNames;
+import org.firstinspires.ftc.rmrobotics.util.enums.StateNames;
 
 import java.util.Map;
 
@@ -9,8 +9,8 @@ import java.util.Map;
  */
 public class StateFactory {
     public static void addStates(Map<StateNames, State> StateNames, StateNames name){
-        if(name == org.firstinspires.ftc.rmrobotics.util.StateNames.init) {
-            StateNames.put(org.firstinspires.ftc.rmrobotics.util.StateNames.init, States.timed(5));
+        if(name == org.firstinspires.ftc.rmrobotics.util.enums.StateNames.init) {
+            StateNames.put(org.firstinspires.ftc.rmrobotics.util.enums.StateNames.init, States.timed(5));
         }
     }
 }

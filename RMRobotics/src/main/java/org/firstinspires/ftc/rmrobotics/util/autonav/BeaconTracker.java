@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
+package org.firstinspires.ftc.rmrobotics.util.autonav;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -16,18 +16,16 @@ import org.opencv.core.Size;
 
 import java.util.List;
 
-import org.firstinspires.ftc.rmrobotics.util.BeaconRecognizer;
-import org.firstinspires.ftc.rmrobotics.util.ButtonFinder;
-
 /**
  * Created by Peter on 1/23/2017.
  */
 
 interface Tracker {
-    public enum State {RECOGNIZING, RECOGNIZED, TRACKING, LOST};
-    public Mat Recognize(Mat m);
-    public Mat Track(Mat m);
-    public State GetState();
+    enum State {RECOGNIZING, RECOGNIZED, TRACKING, LOST}
+
+    Mat Recognize(Mat m);
+    Mat Track(Mat m);
+    State GetState();
 }
 
 // OpenCV calls methods from this class to detect buttons when new frame is available
@@ -118,7 +116,7 @@ class OpenCVVideo implements CameraBridgeViewBase.CvCameraViewListener2 {
                 openCvCameraView.setVisibility(SurfaceView.VISIBLE);
                 openCvCameraView.setCvCameraViewListener(obj);
 
-                openCvCameraView.setCameraIndex(openCvCameraView.CAMERA_ID_FRONT);
+                openCvCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
                 openCvCameraView.enableView();
             }
         });

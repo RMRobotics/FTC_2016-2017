@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM;
+package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,12 +11,14 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.rmrobotics.util.autonav.AutoFxns;
 
 /**
  * Created by Gregory on 12/13/2016.
  */
 @Autonomous(name="DarudeAutoSensorsR", group="SandstoRM")
+@Disabled
 public class BackupAuto extends LinearOpMode {
 
     private DcMotor wheelFL;

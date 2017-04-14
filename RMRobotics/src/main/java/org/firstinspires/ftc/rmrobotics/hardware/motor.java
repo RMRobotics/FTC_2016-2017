@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.rmrobotics.util.MotorType;
+import org.firstinspires.ftc.rmrobotics.util.enums.MotorType;
 
 /**
  * Created by Simon on 9/3/2016.

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
+package org.firstinspires.ftc.rmrobotics.util.autonav;
 
 import android.util.Log;
 
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM.BetterDarudeAutoNav;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 
@@ -63,7 +64,7 @@ public class Drive2 implements Runnable {
     private int prevBLEnc;
     private int prevBREnc;
 
-    Drive2(
+    public Drive2(
             DcMotor fl,
             DcMotor fr,
             DcMotor bl,

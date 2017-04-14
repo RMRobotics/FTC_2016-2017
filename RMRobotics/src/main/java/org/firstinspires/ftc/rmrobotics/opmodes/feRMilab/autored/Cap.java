@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
-import org.firstinspires.ftc.rmrobotics.util.Color;
-import org.firstinspires.ftc.rmrobotics.util.Direction;
-import org.firstinspires.ftc.rmrobotics.util.Drive;
+import org.firstinspires.ftc.rmrobotics.util.enums.Color;
+import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
+import org.firstinspires.ftc.rmrobotics.util.enums.Drive;
 
 /**
  * Created by RM Robotics on 2/4/2017.

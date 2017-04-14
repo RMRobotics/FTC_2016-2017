@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.rmrobotics.core.RAuto;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.FeRMilab;
 
 /**

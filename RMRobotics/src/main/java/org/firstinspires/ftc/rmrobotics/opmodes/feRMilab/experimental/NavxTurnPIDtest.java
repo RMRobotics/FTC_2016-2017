@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
-import org.firstinspires.ftc.rmrobotics.util.Color;
-import org.firstinspires.ftc.rmrobotics.util.Direction;
+import org.firstinspires.ftc.rmrobotics.util.enums.Color;
+import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
 
 import java.text.DecimalFormat;
 

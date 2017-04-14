@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.util;
+package org.firstinspires.ftc.rmrobotics.util.config;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;

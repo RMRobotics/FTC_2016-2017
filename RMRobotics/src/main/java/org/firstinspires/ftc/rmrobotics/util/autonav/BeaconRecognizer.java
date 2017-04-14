@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.util;
+package org.firstinspires.ftc.rmrobotics.util.autonav;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;

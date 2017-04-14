@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.util;
+package org.firstinspires.ftc.rmrobotics.util.enums;
 
 /**
  * Created by Simon on 2/6/17.

@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
-
+package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,10 @@ import android.widget.RadioGroup;
 import android.widget.Space;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 
 /**
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
  */
 
 @Autonomous(name = "AutonomousConfig", group = "AutoConf")
+
 public class AutonomousConfig extends LinearOpMode {
 
     static LinearLayout layout;

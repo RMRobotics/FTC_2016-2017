@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.rmrobotics.core.RAuto;
 import org.firstinspires.ftc.rmrobotics.core.state.State;
 import org.firstinspires.ftc.rmrobotics.core.state.StateFactory;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
-import org.firstinspires.ftc.rmrobotics.util.StateNames;
+import org.firstinspires.ftc.rmrobotics.util.enums.StateNames;
 
 import java.util.ArrayList;
 import java.util.HashMap;

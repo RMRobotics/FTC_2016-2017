@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
+package org.firstinspires.ftc.rmrobotics.util.autonav;
 
 import android.util.Log;
 
@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM.BetterDarudeAutoNav;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 

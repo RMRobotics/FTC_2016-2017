@@ -1,22 +1,16 @@
 /* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
-
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without modification,
 are permitted (subject to the limitations in the disclaimer below) provided that
 the following conditions are met:
-
 Redistributions of source code must retain the above copyright notice, this list
 of conditions and the following disclaimer.
-
 Redistributions in binary form must reproduce the above copyright notice, this
 list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
-
 Neither the name of Qualcomm Technologies Inc nor the names of its contributors
 may be used to endorse or promote products derived from this software without
 specific prior written permission.
-
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
@@ -47,12 +41,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -94,85 +86,12 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
 
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import ftc.vision.FrameGrabber;
-
 public class FtcRobotControllerActivity extends Activity {
-
-  // Loads camera view of OpenCV for us to use. This lets us see using OpenCV
-  private CameraBridgeViewBase cameraBridgeViewBase;
-
-  void myOnCreate(){
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-    cameraBridgeViewBase = (JavaCameraView) findViewById(R.id.show_camera_activity_java_surface_view);
-    new FrameGrabber(cameraBridgeViewBase);
-  }
-
-  //when the "Grab" button is pressed
-  public void frameButtonOnClick(View v){
-  }
-
-  void myOnPause(){
-    if (cameraBridgeViewBase != null) {
-      cameraBridgeViewBase.disableView();
-    }
-  }
-
-  void myOnResume(){
-    if (!OpenCVLoader.initDebug()) {
-      Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-      OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, this, mLoaderCallback);
-    } else {
-      Log.d(TAG, "OpenCV library found inside package. Using it!");
-      mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-    }
-  }
-
-  public void myOnDestroy() {
-    if (cameraBridgeViewBase != null) {
-      cameraBridgeViewBase.disableView();
-    }
-  }
-
-  private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-    @Override
-    public void onManagerConnected(int status) {
-      switch (status) {
-        case LoaderCallbackInterface.SUCCESS:
-          Log.i(TAG, "OpenCV Manager Connected");
-          //from now onwards, you can use OpenCV API
-//          Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
-          cameraBridgeViewBase.enableView();
-          break;
-        case LoaderCallbackInterface.INIT_FAILED:
-          Log.i(TAG, "Init Failed");
-          break;
-        case LoaderCallbackInterface.INSTALL_CANCELED:
-          Log.i(TAG, "Install Cancelled");
-          break;
-        case LoaderCallbackInterface.INCOMPATIBLE_MANAGER_VERSION:
-          Log.i(TAG, "Incompatible Version");
-          break;
-        case LoaderCallbackInterface.MARKET_ERROR:
-          Log.i(TAG, "Market Error");
-          break;
-        default:
-          Log.i(TAG, "OpenCV Manager Install");
-          super.onManagerConnected(status);
-          break;
-      }
-    }
-  };
 
   public static final String TAG = "RCActivity";
 
@@ -315,7 +234,7 @@ public class FtcRobotControllerActivity extends Activity {
     dimmer.longBright();
 
     programmingModeController = new ProgrammingModeControllerImpl(
-        this, (TextView) findViewById(R.id.textRemoteProgrammingMode));
+            this, (TextView) findViewById(R.id.textRemoteProgrammingMode));
 
     updateUI = createUpdateUI();
     callback = createUICallback(updateUI);
@@ -478,11 +397,11 @@ public class FtcRobotControllerActivity extends Activity {
       if (cfgFileMgr.getActiveConfig().isNoConfig()) {
         // Tell the user they must configure the robot before starting programming mode.
         AppUtil.getInstance().showToast(
-            context, context.getString(R.string.toastConfigureRobotBeforeProgrammingMode));
+                context, context.getString(R.string.toastConfigureRobotBeforeProgrammingMode));
       } else {
         Intent programmingModeIntent = new Intent(ProgrammingModeActivity.launchIntent);
         programmingModeIntent.putExtra(
-            LaunchActivityConstantsList.PROGRAMMING_MODE_ACTIVITY_NETWORK_TYPE, networkType);
+                LaunchActivityConstantsList.PROGRAMMING_MODE_ACTIVITY_NETWORK_TYPE, networkType);
         startActivity(programmingModeIntent);
       }
       return true;
@@ -524,7 +443,7 @@ public class FtcRobotControllerActivity extends Activity {
       return true;
     }
 
-   return super.onOptionsItemSelected(item);
+    return super.onOptionsItemSelected(item);
   }
 
   @Override

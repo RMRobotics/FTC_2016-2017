@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
-import org.firstinspires.ftc.rmrobotics.util.Color;
+import org.firstinspires.ftc.rmrobotics.util.enums.Color;
 
-import static org.firstinspires.ftc.rmrobotics.util.Direction.BACKWARD;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.CENTER;
-import static org.firstinspires.ftc.rmrobotics.util.Direction.LEFT;
-import static org.firstinspires.ftc.rmrobotics.util.Drive.RANGE;
-import static org.firstinspires.ftc.rmrobotics.util.Drive.TIME;
+import static org.firstinspires.ftc.rmrobotics.util.enums.Direction.BACKWARD;
+import static org.firstinspires.ftc.rmrobotics.util.enums.Direction.CENTER;
+import static org.firstinspires.ftc.rmrobotics.util.enums.Direction.LEFT;
+import static org.firstinspires.ftc.rmrobotics.util.enums.Drive.RANGE;
+import static org.firstinspires.ftc.rmrobotics.util.enums.Drive.TIME;
 
 /**
  * Created by Simon on 1/6/16.

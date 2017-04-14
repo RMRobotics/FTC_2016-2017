@@ -8,7 +8,7 @@ import org.firstinspires.ftc.rmrobotics.control.RControl;
 import org.firstinspires.ftc.rmrobotics.hardware.crservo;
 import org.firstinspires.ftc.rmrobotics.hardware.motor;
 import org.firstinspires.ftc.rmrobotics.hardware.servo;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 
 import java.util.ArrayList;
 

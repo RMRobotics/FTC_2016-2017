@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
 import com.kauailabs.navx.ftc.AHRS;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.rmrobotics.core.DataLogger;
 
 @TeleOp(name = "feRMi - DataCollection", group = "feRMi")
+@Disabled
 public class dataCollection extends OpMode{
 
     private DcMotor FL;

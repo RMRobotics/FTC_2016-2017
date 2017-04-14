@@ -12,9 +12,8 @@ import org.firstinspires.ftc.rmrobotics.control.Dpad;
 import org.firstinspires.ftc.rmrobotics.control.Joystick;
 import org.firstinspires.ftc.rmrobotics.core.RTeleOp;
 import org.firstinspires.ftc.rmrobotics.util.DriveUtil;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.config.Robot;
 import org.firstinspires.ftc.rmrobotics.util.config.FeRMilab;
-import org.firstinspires.ftc.rmrobotics.util.config.TheRMite;
 
 /**
  * Created by Simon on 11/30/16.

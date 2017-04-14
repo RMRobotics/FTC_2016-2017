@@ -5,11 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.rmrobotics.hardware.crservo;
 import org.firstinspires.ftc.rmrobotics.hardware.motor;
 import org.firstinspires.ftc.rmrobotics.hardware.servo;
-import org.firstinspires.ftc.rmrobotics.util.MotorType;
-import org.firstinspires.ftc.rmrobotics.util.Robot;
+import org.firstinspires.ftc.rmrobotics.util.enums.MotorType;
 
 import java.util.Arrays;
 

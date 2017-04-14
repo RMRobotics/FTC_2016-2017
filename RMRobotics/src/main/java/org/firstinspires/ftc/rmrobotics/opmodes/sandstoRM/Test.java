@@ -2,12 +2,13 @@
  * Created by Peter on 2/11/2017.
  */
 
-package org.firstinspires.ftc.rmrobotics.opmodes.SandstoRM.AutoNav;
+package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
 import android.widget.ImageView;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,6 +24,9 @@ import com.vuforia.HINT;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
+import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
+import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
+import org.firstinspires.ftc.rmrobotics.util.autonav.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -37,6 +41,7 @@ import org.opencv.core.Mat;
  */
 
 @Autonomous(name = "Test", group = "AutoNav")
+@Disabled
 public class Test extends LinearOpMode {
 
     //runtime calculations
