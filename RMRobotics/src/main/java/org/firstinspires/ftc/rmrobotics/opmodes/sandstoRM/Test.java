@@ -26,7 +26,7 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
 import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
-import org.firstinspires.ftc.rmrobotics.util.autonav.RMVuforia;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;

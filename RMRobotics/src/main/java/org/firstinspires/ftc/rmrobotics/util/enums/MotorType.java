@@ -8,7 +8,8 @@ public enum MotorType {
     TETRIX(0),
     NVRST20(20),
     NVRST40(40),
-    NVRST60(60);
+    NVRST60(60),
+    NVRST(0);
 
     private int motorTypeName;
 

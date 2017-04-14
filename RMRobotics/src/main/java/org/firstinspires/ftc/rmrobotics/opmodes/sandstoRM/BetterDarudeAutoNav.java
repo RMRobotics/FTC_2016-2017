@@ -26,7 +26,7 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
 import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
-import org.firstinspires.ftc.rmrobotics.util.autonav.RMVuforia;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -46,8 +46,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import org.firstinspires.ftc.rmrobotics.util.autonav.BeaconRecognizer;
-import org.firstinspires.ftc.rmrobotics.util.autonav.ButtonFinder;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.ButtonFinder;
 
 
 /**

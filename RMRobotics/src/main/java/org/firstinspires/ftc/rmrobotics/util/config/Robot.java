@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.rmrobotics.util.config;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.rmrobotics.hardware.i2csensor;
 import org.firstinspires.ftc.rmrobotics.hardware.crservo;
 import org.firstinspires.ftc.rmrobotics.hardware.motor;
 import org.firstinspires.ftc.rmrobotics.hardware.servo;
+import org.firstinspires.ftc.rmrobotics.util.enums.Op;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,9 @@ public abstract class Robot {
     protected ArrayList<motor> motors = new ArrayList<>();
     protected ArrayList<servo> servos = new ArrayList<>();
     protected ArrayList<crservo> crservos = new ArrayList<>();
-    protected boolean opMode; //true for teleOp
+    protected ArrayList<i2csensor> sensors = new ArrayList<>();
+    protected AHRS navx;
+    protected Op opMode;
     protected DcMotor.RunMode motorMode;
 
     public Robot(HardwareMap h){
@@ -37,5 +40,9 @@ public abstract class Robot {
 
     public ArrayList crservos() {
         return crservos;
+    }
+
+    public ArrayList sensors() {
+        return sensors;
     }
 }
