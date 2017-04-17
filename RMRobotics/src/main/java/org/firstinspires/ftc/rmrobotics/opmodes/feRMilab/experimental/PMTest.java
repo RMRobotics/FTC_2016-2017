@@ -21,6 +21,7 @@ import org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM.BetterDarudeAutoNav;
 import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
 import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizerAlternate;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.ButtonFinder;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -322,7 +323,7 @@ public class PMTest extends LinearOpMode{
         telemetry.update();
 
         ButtonFinder.EllipseLocationResult btn = null;
-        BeaconRecognizer br = new BeaconRecognizer();
+        BeaconRecognizerAlternate br = new BeaconRecognizerAlternate();
 
         double start_time = runtime.milliseconds();
 
