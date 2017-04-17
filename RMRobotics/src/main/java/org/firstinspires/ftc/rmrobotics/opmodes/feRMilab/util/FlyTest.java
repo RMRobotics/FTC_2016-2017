@@ -1,18 +1,29 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.util;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Created by Simon on 4/17/17.
  */
 
 @TeleOp(name = "FlyTest")
-public class FlyTest extends FeRMiLinear {
+public class FlyTest extends LinearOpMode {
+
+    DcMotor flyL;
+    DcMotor flyR;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        flyL = hardwareMap.dcMotor.get("flyL");
+        flyR = hardwareMap.dcMotor.get("flyR");
+        flyL.setDirection(DcMotorSimple.Direction.REVERSE);
+        flyR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        waitForStart();
+
         double power = 0;
         while (opModeIsActive()) {
             if (power > 0.7) {
