@@ -27,6 +27,8 @@ public class FlyTest extends FeRMiLinear {
             }
             flyL.setPower(power);
             flyR.setPower(power);
+            telemetry.addData("Power:", power);
+            telemetry.update();
         }
     }
 }
