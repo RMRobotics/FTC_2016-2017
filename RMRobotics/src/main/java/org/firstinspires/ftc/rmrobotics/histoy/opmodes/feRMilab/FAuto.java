@@ -19,17 +19,17 @@ public class FAuto extends RAuto {
     private FeRMilab config;
 
     @Override
-    public void runState() {
-
-    }
-
-    @Override
-    protected void calculate() {
-
-    }
-
-    @Override
     protected Robot setRobot() {
         return config = new FeRMilab(hardwareMap, Op.AUTON);
+    }
+
+    @Override
+    protected void setAlliance() {
+
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
     }
 }

@@ -7,13 +7,14 @@ import org.firstinspires.ftc.rmrobotics.control.Axis;
 import org.firstinspires.ftc.rmrobotics.control.Button;
 import org.firstinspires.ftc.rmrobotics.control.Controller;
 import org.firstinspires.ftc.rmrobotics.control.Joystick;
+import org.firstinspires.ftc.rmrobotics.core.RTele;
+import org.firstinspires.ftc.rmrobotics.histoy.library.theRMite.TheRMite;
 import org.firstinspires.ftc.rmrobotics.util.DriveUtil;
 import org.firstinspires.ftc.rmrobotics.util.config.Robot;
-import org.firstinspires.ftc.rmrobotics.histoy.library.theRMite.TheRMite;
 
 @TeleOp(name="tMecanum", group="TheRMite")
 @Disabled
-public class TMecanum extends RTeleOp {
+public class TMecanum extends RTele {
 
     private TheRMite config;
     private boolean resTog = false;
