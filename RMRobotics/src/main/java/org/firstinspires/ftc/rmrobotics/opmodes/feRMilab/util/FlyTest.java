@@ -16,11 +16,13 @@ public class FlyTest extends LinearOpMode {
     DcMotor flyR;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         flyL = hardwareMap.dcMotor.get("flyL");
         flyR = hardwareMap.dcMotor.get("flyR");
         flyL.setDirection(DcMotorSimple.Direction.REVERSE);
         flyR.setDirection(DcMotorSimple.Direction.REVERSE);
+        flyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
 
