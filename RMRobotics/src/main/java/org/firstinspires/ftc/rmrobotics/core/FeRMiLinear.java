@@ -2,6 +2,7 @@ package org.firstinspires.ftc.rmrobotics.core;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -35,6 +36,9 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected Servo swingArm;
     protected Servo index;
     protected Servo liftHold;
+
+    protected CRServo pushLeft;
+    protected CRServo pushRight;
 
     protected AHRS navx;
 
@@ -81,6 +85,10 @@ public abstract class FeRMiLinear extends LinearOpMode {
         swingArm = hardwareMap.servo.get("swingArm");
         index = hardwareMap.servo.get("indexer");
         liftHold = hardwareMap.servo.get("liftHold");
+
+        // crservo initialization
+        pushLeft = hardwareMap.crservo.get("pL");
+        pushRight = hardwareMap.crservo.get("pR");
 
         // navx initialization and calibration
         dim = hardwareMap.deviceInterfaceModule.get("dim");

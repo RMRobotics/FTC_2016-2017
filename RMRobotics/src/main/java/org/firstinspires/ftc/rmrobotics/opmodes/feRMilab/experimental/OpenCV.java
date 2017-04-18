@@ -3,13 +3,8 @@ package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.experimental;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.HINT;
@@ -17,13 +12,16 @@ import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
+import org.firstinspires.ftc.rmrobotics.core.FeRMiLinear;
 import org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM.BetterDarudeAutoNav;
-import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
 import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
+import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizer;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizerAlternate;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.ButtonFinder;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.RMVuforia;
+import org.firstinspires.ftc.rmrobotics.util.enums.Color;
+import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -46,35 +44,15 @@ import java.util.Arrays;
  * Created by Simon on 4/13/2017.
  */
 
-@Autonomous(name = "PMTest")
-public class PMTest extends LinearOpMode{
+@Autonomous(name = "OpenCV")
+public class OpenCV extends FeRMiLinear{
 
     //runtime calculations
     static ElapsedTime runtime = new ElapsedTime();
 
-    RMVuforia vuforia;
-
-    //motors
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
-    private DcMotor shootL;
-    private DcMotor shootR;
-
+    private RMVuforia vuforia;
 
     private Drive2 drive = null;
-
-    //servo
-    CRServo leftPusher;
-    Servo rightPusher;
-    Servo latch;
-
-    //navx
-    private final int NAVX_DIM_I2C_PORT = 0;
-    private AHRS navx_device;
-    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-    I2cDeviceSynch rangeSensor = null;
 
     private ImageView mImageView;
 
@@ -86,7 +64,8 @@ public class PMTest extends LinearOpMode{
     private final int REPOSITION_DIST = 480; // Distance to back up if out of position to recognize button
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
+        super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.BACKWARD);
         {
             // Read config file
             AutoNavConfig cfg = new AutoNavConfig();
@@ -113,74 +92,42 @@ public class PMTest extends LinearOpMode{
             mImageView = (ImageView) ((FtcRobotControllerActivity) hardwareMap.appContext).findViewById(com.qualcomm.ftcrobotcontroller.R.id.imageViewId);
 
             //gets trackable objects and puts them in an array
-            VuforiaTrackable wheels = targets.get(0);
-            wheels.setName("Wheels");
-            VuforiaTrackable tools = targets.get(1);
-            tools.setName("Tools");
-            VuforiaTrackable legos = targets.get(2);
-            legos.setName("Legos");
-            VuforiaTrackable gears = targets.get(3);
-            gears.setName("Gears");
-
-            VuforiaTrackable firstTarget = null;
-            VuforiaTrackable secondTarget = null;
-
-            //Sets two targets to be the ones that will be tracked based on config.
-
-            for (int it = 0; it < 4; it++) {
-                if (targets.get(it).getName().equals(cfg.firstBeacon))
-                    firstTarget = targets.get(it);
-                if (targets.get(it).getName().equals(cfg.secondBeacon))
-                    secondTarget = targets.get(it);
-            }
-            targets.activate();
-
+//            VuforiaTrackable wheels = targets.get(0);
+//            wheels.setName("Wheels");
+//            VuforiaTrackable tools = targets.get(1);
+//            tools.setName("Tools");
+//            VuforiaTrackable legos = targets.get(2);
+//            legos.setName("Legos");
+//            VuforiaTrackable gears = targets.get(3);
+//            gears.setName("Gears");
+//
+//            VuforiaTrackable firstTarget = null;
+//            VuforiaTrackable secondTarget = null;
+//
+//            //Sets two targets to be the ones that will be tracked based on config.
+//
+//            for (int it = 0; it < 4; it++) {
+//                if (targets.get(it).getName().equals(cfg.firstBeacon))
+//                    firstTarget = targets.get(it);
+//                if (targets.get(it).getName().equals(cfg.secondBeacon))
+//                    secondTarget = targets.get(it);
+//            }
+//            targets.activate();
+//
 //            List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
 //            allTrackables.addAll(targets);
-
-//            //init motors
-//            frontLeft = hardwareMap.dcMotor.get("wheelFL");
-//            frontRight = hardwareMap.dcMotor.get("wheelFR");
-//            backLeft = hardwareMap.dcMotor.get("wheelBL");
-//            backRight = hardwareMap.dcMotor.get("wheelBR");
-//            shootL = hardwareMap.dcMotor.get("shootL");
-//            shootR = hardwareMap.dcMotor.get("shootR");
-//            shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//
-//            //and servo
-//            leftPusher = hardwareMap.crservo.get("leftP");
-//            leftPusher.setPower(0);
-//            rightPusher = hardwareMap.servo.get("rightP");
-//            rightPusher.setPosition(0);
-//
-//            latch = hardwareMap.servo.get("latch");
-//            latch.setPosition(0.5);
-//
-//            // Create NAVX device
-//            DeviceInterfaceModule dim = hardwareMap.deviceInterfaceModule.get("dim");
-//            ADBLog(dim.toString());
-//
-//            navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
-//                    NAVX_DIM_I2C_PORT,
-//                    AHRS.DeviceDataType.kProcessedData,
-//                    NAVX_DEVICE_UPDATE_RATE_HZ);
 //
 //            ADBLog("NavX is ready");
 //
-//            // Create optical sensor
-//            rangeSensor = new I2cDeviceSynchImpl(
-//                    hardwareMap.i2cDevice.get("range"),
-//                    I2cAddr.create8bit(0x62), // Sensor I2C address.
-//                    false);
-//            rangeSensor.engage();
 //            //drive class for big roboto
+//            FR.setDirection(DcMotorSimple.Direction.FORWARD);
+//            BR.setDirection(DcMotorSimple.Direction.FORWARD);
 //            drive = new Drive2(
-//                    frontLeft,
-//                    frontRight,
-//                    backLeft,
-//                    backRight,
-//                    navx_device,
+//                    FL,
+//                    FR,
+//                    BL,
+//                    BR,
+//                    navx,
 //                    telemetry,
 //                    this
 //            );
@@ -190,21 +137,21 @@ public class PMTest extends LinearOpMode{
 //            float x = 0;
 //            float y = 0;
 //            Mat img = null;
-
-            sleep(500);
-            ADBLog("Initialization complete");
-            telemetry.clear();
-            telemetry.addData("Finished", "the initialization");
-            telemetry.update();
-            waitForStart();
+//
+//            sleep(500);
+//            ADBLog("Initialization complete");
+//            telemetry.clear();
+//            telemetry.addData("Finished", "the initialization");
+//            telemetry.update();
+//            waitForStart();
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 // Start here
-            // Start the engine!!!
-            // 1 encoder tick ~ 1 mm
+//             Start the engine!!!
+//             1 encoder tick ~ 1 mm
 
             test(cfg);
 
@@ -214,20 +161,20 @@ public class PMTest extends LinearOpMode{
 //                ADBLog("Start");
 //                new Thread(drive).start();
 //
-//                shootL.setPower(-1);
-//                shootR.setPower(-1);
+//                flyL.setPower(1);
+//                flyR.setPower(1);
 //                drive.DriveByEncoders(0, 0.4, 335);
 //                drive.brake();
 //                sleep(1000);
-//                latch.setPosition(1.1);
+//                index.setPosition(1.1); // TODO: check position
 //                sleep(760);
-//                latch.setPosition(.5);
+//                index.setPosition(.5); // TODO: check position
 //                sleep(1000);
-//                latch.setPosition(1.1);
+//                index.setPosition(1.1); // TODO: check position
 //                sleep(1500);
-//                latch.setPosition(.5);
-//                shootL.setPower(0);
-//                shootR.setPower(0);
+//                index.setPosition(.5); // TODO: check position
+//                flyL.setPower(0);
+//                flyR.setPower(0);
 //
 //                ADBLog("Step 1");
 //                drive.DriveByEncoders(63 * dir, 0.4, 590);
@@ -263,8 +210,8 @@ public class PMTest extends LinearOpMode{
 //                }
 //
 //
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //                // Go to the second beacon
 //                ADBLog("Step 1-2");
 //                drive.DriveByEncoders(90 * dir, -0.3, 100);
@@ -277,8 +224,8 @@ public class PMTest extends LinearOpMode{
 //                drive.TurnToAngle(90 * dir);
 //                ADBLog("Step 5");
 //
-//                rightPusher.setPosition(0);
-//                leftPusher.setPower(0);
+//                pushLeft.setPower(0);
+//                pushRight.setPower(0);
 //
 //                // Approaching first target
 //                while (opModeIsActive()) {
@@ -301,22 +248,22 @@ public class PMTest extends LinearOpMode{
 //                drive.DriveByEncoders(90 * dir, -0.2, 100);
 //                drive.brake();
 //                sleep(50);
-//                rightPusher.setPosition(0);
-//                leftPusher.setPower(0);
+//                pushLeft.setPower(0);
+//                pushRight.setPower(0);
 //            } finally {
 //                ADBLog("Exiting opmode");
 //                drive.Stop();
-//                leftPusher.setPower(0);
-//                leftPusher.close();
-//                rightPusher.setPosition(0.1);
-//                rightPusher.close();
-//                latch.setPosition(0.5);
-//                latch.close();
-//                navx_device.close();
-                stop();
-            }
+//                pushLeft.setPower(0);
+//                pushLeft.close();
+//                pushRight.setPower(0);
+//                pushRight.close();
+//                index.setPosition(0.5); // TODO: check position
+//                index.close();
+//                navx.close();
+//                stop();
+//            }
         }
-//    }
+    }
 
     private void test(AutoNavConfig c) {
         telemetry.addData("cfg", c.isRed + " " + c.firstBeacon + " " + c.isRight + " " + c.secondBeacon);
@@ -362,7 +309,7 @@ public class PMTest extends LinearOpMode{
     }
 
     private int RangeDist() {
-        byte[] array = rangeSensor.read(0x04, 2);
+        byte[] array = rangeReader.read(0x04, 2);
         //amplifies the y value to emphasize it in the vector (it is in centimeters so it needs to be increased)
         return array[0] * 10;
     }
@@ -631,10 +578,10 @@ public class PMTest extends LinearOpMode{
         // Now push!
         if (btn.isRight) {
             ADBLog("============= Pushing right");
-            rightPusher.setPosition(1);
+            pushRight.setPower(1); // TODO: check direction
         } else {
             ADBLog("============= Pushing left");
-            leftPusher.setPower(-1);
+            pushLeft.setPower(-1); // TODO: check direction
         }
         sleep(100);
 
@@ -644,9 +591,9 @@ public class PMTest extends LinearOpMode{
         sleep(100);
 
         if (btn.isRight) {
-            rightPusher.setPosition(0.1);
+            pushRight.setPower(1);
         } else {
-            leftPusher.setPower(1);
+            pushLeft.setPower(1);
         }
 
         return true;
@@ -669,7 +616,7 @@ public class PMTest extends LinearOpMode{
     }
 
     public int getRangeSensor() {
-        byte[] array = rangeSensor.read(0x04, 2);
+        byte[] array = rangeReader.read(0x04, 2);
         //amplifies the y value to emphasize it in the vector (it is in centimeters so it needs to be increased)
         return array[0] * 10;
     }
