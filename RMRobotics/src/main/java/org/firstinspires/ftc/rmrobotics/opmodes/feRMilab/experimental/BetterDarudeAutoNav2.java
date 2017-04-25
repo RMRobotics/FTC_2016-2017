@@ -188,7 +188,7 @@ public class BetterDarudeAutoNav2 extends LinearOpMode {
                     telemetry,
                     this
             );
-            drive.ReverseDirection2();
+            drive.ReverseDirection();
 
             targets.activate();
             float x = 0;
