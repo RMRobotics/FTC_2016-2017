@@ -46,12 +46,12 @@ import java.util.Arrays;
 
 
 /**
- * Created by Simon on 4/18/2017.
+ * Created by Peter on 12/15/2016.
  */
 
-@Autonomous(name = "AutoExperimental2")
+@Autonomous(name = "BetterDarudeAutoNav", group = "AutoNav")
 //@Disabled
-public class AutoExperimental2 extends LinearOpMode {
+public class BetterDarudeAutoNav2 extends LinearOpMode {
 
     //runtime calculations
     static ElapsedTime runtime = new ElapsedTime();
@@ -59,10 +59,10 @@ public class AutoExperimental2 extends LinearOpMode {
     RMVuforia vuforia;
 
     //motors
-    protected DcMotor frontLeft;
-    protected DcMotor frontRight;
-    protected DcMotor backLeft;
-    protected DcMotor backRight;
+    private DcMotor frontLeft;
+    private DcMotor frontRight;
+    private DcMotor backLeft;
+    private DcMotor backRight;
     private DcMotor shootL;
     private DcMotor shootR;
 
@@ -149,8 +149,6 @@ public class AutoExperimental2 extends LinearOpMode {
             backRight = hardwareMap.dcMotor.get("BR");
             shootL = hardwareMap.dcMotor.get("flyL");
             shootR = hardwareMap.dcMotor.get("flyR");
-//            shootL.setDirection(DcMotorSimple.Direction.REVERSE);
-//            shootR.setDirection(DcMotorSimple.Direction.REVERSE);
             shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -190,7 +188,7 @@ public class AutoExperimental2 extends LinearOpMode {
                     telemetry,
                     this
             );
-            drive.ReverseDirection();
+            drive.ReverseDirection2();
 
             targets.activate();
             float x = 0;
@@ -218,9 +216,9 @@ public class AutoExperimental2 extends LinearOpMode {
                 ADBLog("Start");
                 new Thread(drive).start();
 
-                //shootL.setPower(-1);
-                //shootR.setPower(-1);
-                drive.DriveByEncoders(0, -0.4, 335);
+                shootL.setPower(-1);
+                shootR.setPower(-1);
+                drive.DriveByEncoders(0, 0.4, 335);
                 drive.brake();
                 sleep(1000);
                 latch.setPosition(1.1);
@@ -230,16 +228,16 @@ public class AutoExperimental2 extends LinearOpMode {
                 latch.setPosition(1.1);
                 sleep(1500);
                 latch.setPosition(.5);
-                //shootL.setPower(0);
-                //shootR.setPower(0);
+                shootL.setPower(0);
+                shootR.setPower(0);
 
                 ADBLog("Step 1");
-                drive.DriveByEncoders(63 * dir, -0.4, 590);
-                drive.DriveByEncoders(63 * dir, -0.5, 750);
-                drive.DriveByEncoders(63 * dir, -0.5, 100);
+                drive.DriveByEncoders(63 * dir, 0.4, 590);
+                drive.DriveByEncoders(63 * dir, 0.5, 750);
+                drive.DriveByEncoders(63 * dir, 0.5, 100);
                 ADBLog("Step 2");
-                drive.DriveByEncoders(0 * dir, -0.5, 300);
-                drive.DriveByEncoders(0 * dir, -0.4, 300); // original 100
+                drive.DriveByEncoders(0 * dir, 0.5, 300);
+                drive.DriveByEncoders(0 * dir, 0.4, 100);
                 drive.brake();
                 ADBLog("Step 4");
                 drive.TurnToAngle(90 * dir);
@@ -271,11 +269,11 @@ public class AutoExperimental2 extends LinearOpMode {
 ///////////////////////////////////////////////////////////////////////
                 // Go to the second beacon
                 ADBLog("Step 1-2");
-                drive.DriveByEncoders(90 * dir, 0.3, 100);
+                drive.DriveByEncoders(90 * dir, -0.3, 100);
                 ADBLog("Step 2-2");
-                drive.DriveByEncoders(172 * dir, 0.4, 400);
-                drive.DriveByEncoders(172 * dir, 0.5, 500);
-                drive.DriveByEncoders(172 * dir, 0.5, 1070);
+                drive.DriveByEncoders(172 * dir, -0.4, 400);
+                drive.DriveByEncoders(172 * dir, -0.5, 500);
+                drive.DriveByEncoders(172 * dir, -0.5, 1070);
                 drive.brake();
                 ADBLog("Step 3-2");
                 drive.TurnToAngle(90 * dir);
@@ -342,7 +340,7 @@ public class AutoExperimental2 extends LinearOpMode {
         return array[0] * 10;
     }
 
-    Integrator I = new Integrator(200); // originally 400
+    Integrator I = new Integrator(400);
     double prevX = 0;
     double prevY = 0;
     double prevT = runtime.milliseconds();
@@ -443,10 +441,7 @@ public class AutoExperimental2 extends LinearOpMode {
                 }
 
                 ADBLog("x:" + X + ", xi:" + xi + ", y:" + Y + ", XE:" + XE + ", YE:" + YE + ", XV: " + XV + ", YV:" + YV + ", xd:" + x_dir + ", yd:" + y_dir + ", sp:" + sp);
-                drive.VecDriveBalanced(-y_dir, -x_dir/2, sp, 2000);
-                telemetry.addData("X Y", -y_dir + " " + -x_dir);
-                telemetry.addData("FL FR BL BR:", frontLeft.getPower() + " " + frontRight.getPower() + " " + backLeft.getPower() + " " + backRight.getPower());
-                telemetry.update();
+                drive.VecDriveBalanced(y_dir, x_dir, sp, 2000);
 
 
                 prevX = X;
@@ -609,7 +604,7 @@ public class AutoExperimental2 extends LinearOpMode {
          // Now push!
          if (btn.isRight) {
              ADBLog("============= Pushing right");
-             rightPusher.setPower(1);
+             rightPusher.setPower(-1);
          } else {
              ADBLog("============= Pushing left");
              leftPusher.setPower(-1);
@@ -617,12 +612,12 @@ public class AutoExperimental2 extends LinearOpMode {
         sleep(100);
 
         int Y = getRangeSensor();
-        drive.DriveByEncoders(90 * -dir, 0.2, Y + 180);
+        drive.DriveByEncoders(90 * dir, 0.2, Y + 180);
         drive.brake();
         sleep(100);
 
         if (btn.isRight) {
-            rightPusher.setPower(0.1);
+            rightPusher.setPower(1);
         } else {
             leftPusher.setPower(1);
         }

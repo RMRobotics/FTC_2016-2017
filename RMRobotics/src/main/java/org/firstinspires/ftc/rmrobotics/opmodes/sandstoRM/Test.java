@@ -8,12 +8,10 @@ import android.widget.ImageView;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
@@ -31,7 +29,6 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 import org.opencv.core.Mat;
 
 
@@ -40,8 +37,8 @@ import org.opencv.core.Mat;
  * Created by Peter on 12/15/2016.
  */
 
-@Autonomous(name = "Test", group = "AutoNav")
-@Disabled
+@Autonomous(name = "Test2", group = "AutoNav")
+//@Disabled
 public class Test extends LinearOpMode {
 
     //runtime calculations
@@ -61,7 +58,7 @@ public class Test extends LinearOpMode {
 
     //servo
     CRServo leftPusher;
-    Servo rightPusher;
+    CRServo rightPusher;
     Servo latch;
 
     //navx
@@ -129,22 +126,22 @@ public class Test extends LinearOpMode {
 
 
         //init motors
-        frontLeft = hardwareMap.dcMotor.get("wheelFL");
-        frontRight = hardwareMap.dcMotor.get("wheelFR");
-        backLeft = hardwareMap.dcMotor.get("wheelBL");
-        backRight = hardwareMap.dcMotor.get("wheelBR");
-        shootL = hardwareMap.dcMotor.get("shootL");
-        shootR = hardwareMap.dcMotor.get("shootR");
+        frontLeft = hardwareMap.dcMotor.get("FL");
+        frontRight = hardwareMap.dcMotor.get("FR");
+        backLeft = hardwareMap.dcMotor.get("BL");
+        backRight = hardwareMap.dcMotor.get("BR");
+        shootL = hardwareMap.dcMotor.get("flyL");
+        shootR = hardwareMap.dcMotor.get("flyR");
         shootL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shootR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //and servo
-        leftPusher = hardwareMap.crservo.get("leftP");
+        leftPusher = hardwareMap.crservo.get("pL");
         leftPusher.setPower(0);
-        rightPusher = hardwareMap.servo.get("rightP");
-        rightPusher.setPosition(0);
+        rightPusher = hardwareMap.crservo.get("pR");
+        rightPusher.setPower(0);
 
-        latch = hardwareMap.servo.get("latch");
+        latch = hardwareMap.servo.get("indexer");
         latch.setPosition(0.5);
 
         // Create NAVX device
@@ -161,7 +158,7 @@ public class Test extends LinearOpMode {
         // Create optical sensor
         rangeSensor = new I2cDeviceSynchImpl(
                 hardwareMap.i2cDevice.get("range"),
-                I2cAddr.create8bit(0x62), // Sensor I2C address.
+                I2cAddr.create8bit(0x60), // Sensor I2C address.
                 false);
         rangeSensor.engage();
         //drive class for big roboto
@@ -227,11 +224,11 @@ public class Test extends LinearOpMode {
             sleep(1000);
             telemetry.update();
 
-            rightPusher.setPosition(0.9);
+            rightPusher.setPower(0.9);
             leftPusher.setPower(-1);
             sleep(1000);
             leftPusher.setPower(0);
-            rightPusher.setPosition(0);
+            rightPusher.setPower(0);
             leftPusher.setPower(1);
             sleep(1500);
 
@@ -254,7 +251,7 @@ public class Test extends LinearOpMode {
             drive.Stop();
             leftPusher.setPower(0);
             leftPusher.close();
-            rightPusher.setPosition(0.1);
+            rightPusher.setPower(0.1);
             rightPusher.close();
             latch.setPosition(0.5);
             latch.close();

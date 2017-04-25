@@ -62,6 +62,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
     protected Color left;
     protected Color right;
+    protected Direction beacon;
 
     public void initialize(Color c, DcMotor.RunMode r, Direction direction) {
         // motor initialization
@@ -88,7 +89,10 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
         // crservo initialization
         pushLeft = hardwareMap.crservo.get("pL");
+        pushLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         pushRight = hardwareMap.crservo.get("pR");
+        pushLeft.setPower(0);
+        pushRight.setPower(0);
 
         // navx initialization and calibration
         dim = hardwareMap.deviceInterfaceModule.get("dim");
@@ -158,6 +162,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
 
         left = Color.NEITHER;
         right = Color.NEITHER;
+        beacon = Direction.NONE;
 
         voltage = flyMC.getVoltage();
 
@@ -176,6 +181,11 @@ public abstract class FeRMiLinear extends LinearOpMode {
         liftHold.setPosition(0);
     }
 
+    protected void driveStop(Drive type, int val, double power) {
+        drive(type, val, power);
+        setDrive(0);
+    }
+
     protected void drive(Drive type, int val, double power) {
         switch (type) {
             case TIME:
@@ -183,7 +193,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
                 while (runtime.milliseconds() - initTime < val && opModeIsActive()) {
                     setDrive(power);
                 }
-                setDrive(0);
+//                setDrive(0);
                 break;
             case ENCODER:
                 double mag = Math.abs(power);
@@ -204,7 +214,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
                         setDrive(scale * dir * mag);
                     }
                 }
-                setDrive(0);
+//                setDrive(0);
                 break;
             case RANGE:
                 float delta = val - rangeReader.read(0x04, 2)[0];
@@ -218,7 +228,7 @@ public abstract class FeRMiLinear extends LinearOpMode {
                         setDrive(scale*power);
                     }
                 }
-                setDrive(0);
+//                setDrive(0);
                 break;
             default:
                 break;

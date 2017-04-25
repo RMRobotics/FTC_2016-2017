@@ -11,5 +11,6 @@ public enum Direction {
     RIGHT,
     CENTER,
     CLOCKWISE,
-    COUNTERCLOCKWISE
+    COUNTERCLOCKWISE,
+    NONE
 }

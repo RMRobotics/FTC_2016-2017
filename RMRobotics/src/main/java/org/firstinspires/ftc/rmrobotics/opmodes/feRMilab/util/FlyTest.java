@@ -15,6 +15,8 @@ public class FlyTest extends LinearOpMode {
     DcMotor flyL;
     DcMotor flyR;
 
+    DcMotor belt;
+
     @Override
     public void runOpMode() {
         flyL = hardwareMap.dcMotor.get("flyL");
@@ -23,6 +25,9 @@ public class FlyTest extends LinearOpMode {
         flyR.setDirection(DcMotorSimple.Direction.REVERSE);
         flyL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flyR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        belt = hardwareMap.dcMotor.get("belt");
+        belt.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
@@ -38,8 +43,20 @@ public class FlyTest extends LinearOpMode {
             } else if (gamepad1.a) {
                 power -= 0.001;
             }
-            flyL.setPower(power);
-            flyR.setPower(power);
+            if (gamepad1.dpad_up) {
+                belt.setPower(1.0);
+            } else if (gamepad1.dpad_down) {
+                belt.setPower(-1.0);
+            } else {
+                belt.setPower(0);
+            }
+            if (gamepad1.right_bumper) {
+                flyL.setPower(power);
+                flyR.setPower(power);
+            } else {
+                flyL.setPower(0);
+                flyR.setPower(0);
+            }
             telemetry.addData("Power:", power);
             telemetry.update();
         }
