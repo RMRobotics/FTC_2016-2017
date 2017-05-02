@@ -12,6 +12,7 @@ import static org.firstinspires.ftc.rmrobotics.util.enums.Drive.TIME;
 /**
  * Created by Simon on 2/12/17.
  */
+// RED TEAM
 
 @Autonomous(name = "RED: Shoot Ramp")
 public class ShootRamp extends FeRMiLinear {
@@ -19,28 +20,28 @@ public class ShootRamp extends FeRMiLinear {
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.RED, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
-        voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.1;
+        // voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.1;
         telemetry.addData("voltage", voltage);
         telemetry.update();
 
         // sleep for 10 seconds
-         sleep(10000);
+        sleep(15000);
 
-        // drive for .1 seconds at .4 voltage
-        drive(TIME, 1300, 0.5);
-        sleep(200);
+        // drive forwards
+        drive(TIME, 200, 0.1);
+        drive(TIME, 200, 0.3);
 
-        // turn on flywheels to .985 voltage
-//        voltage = flyMC.getVoltage()*-0.1242 + 2.421 + 0.05;
-        flyL.setPower(voltage);
-        flyR.setPower(voltage);
-        sleep(1000);
+        // begin flywheel spin up
+        flyL.setPower(1.0);
+        flyR.setPower(1.0);
+        driveStop(TIME, 1000, 0.5);
+        sleep(2000);
 
         // open indexer
         index.setPosition(0.5);
         sleep(200);
 
-        //turn on belt
+        // turn on belt
         belt.setPower(0.85);
         sleep(2000);
         flyL.setPower(0);
@@ -49,24 +50,22 @@ public class ShootRamp extends FeRMiLinear {
 
         // END SHOOTING
 
-        //turn at an angle
+        liftHold.setPosition(0.03);
+
+        // turn at an angle
         turn(Direction.RIGHT, -45, 0.4);
 
-        //drive forward
-        drive(TIME, 1000, 0.4);
+        // drive forward
+        driveStop(TIME, 1000, 0.4);
 
-        //face ramp
-        turn(Direction.CENTER, -90, 0.4);
+        // face ramp
+        turn(Direction.CENTER, -85, 0.4);
 
-        //drive onto ramp
-        drive(TIME, 1750, 0.4);
+        // drive onto ramp
+        driveStop(TIME, 1750, 0.4);
 
-//        while (opModeIsActive()){
-//            addTelemetry();
-//        }
+        while (opModeIsActive()) {
+            addTelemetry();
+        }
     }
-
 }
-
-
-

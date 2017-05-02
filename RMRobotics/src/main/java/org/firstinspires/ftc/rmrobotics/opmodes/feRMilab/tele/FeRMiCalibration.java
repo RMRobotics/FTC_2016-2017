@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,11 +12,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by michaelblob on 12/4/16.
+ * Created by Simon on 12/4/16.
  */
 // V.JOSH
 
 @TeleOp(name = "feRMi - CALIBRATION", group = "feRMi")
+@Disabled
 public class FeRMiCalibration extends OpMode {
 
     private DcMotor FL;

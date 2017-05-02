@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by Simon on 1/11/2017.
  */
 
-@TeleOp(name = "servoCalibration")
+@TeleOp(name = "servoTest")
 @Disabled
-public class servoCalibration extends OpMode {
+public class servoTest extends OpMode {
 
     private Servo servo;
     private double servoValue = 0.5;
@@ -25,9 +25,9 @@ public class servoCalibration extends OpMode {
     public void loop() {
         //turns beacon pusher servo;+
         if (gamepad1.x) {
-            servoValue+=.01;
+            servoValue = 0.93;
         } else if (gamepad1.b) {
-            servoValue -= .01;
+            servoValue = 0;
         }
         servo.setPosition(servoValue);
         telemetry.addData("pos", servo.getPosition());

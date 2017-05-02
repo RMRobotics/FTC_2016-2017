@@ -33,7 +33,6 @@ public abstract class FeRMiLinear extends LinearOpMode {
     protected DcMotor flyR;
     protected DcMotor belt;
 
-    protected Servo swingArm;
     protected Servo index;
     protected Servo liftHold;
 
@@ -79,13 +78,15 @@ public abstract class FeRMiLinear extends LinearOpMode {
         flyR = hardwareMap.dcMotor.get("flyR");
         flyL.setDirection(DcMotorSimple.Direction.REVERSE);
         flyR.setDirection(DcMotorSimple.Direction.REVERSE);
+        flyL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flyR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         belt = hardwareMap.dcMotor.get("belt");
         belt.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // servo initialization
-        swingArm = hardwareMap.servo.get("swingArm");
         index = hardwareMap.servo.get("indexer");
         liftHold = hardwareMap.servo.get("liftHold");
+        liftHold.setPosition(0.93);
 
         // crservo initialization
         pushLeft = hardwareMap.crservo.get("pL");
@@ -176,9 +177,8 @@ public abstract class FeRMiLinear extends LinearOpMode {
         navx.zeroYaw(); // reset navx yaw value
 
         // initialize servo positions
-        swingArm.setPosition(0.495);
         index.setPosition(0.1);
-        liftHold.setPosition(0);
+        liftHold.setPosition(0.33);
     }
 
     protected void driveStop(Drive type, int val, double power) {

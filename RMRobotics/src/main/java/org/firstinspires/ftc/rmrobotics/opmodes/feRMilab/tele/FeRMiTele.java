@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by michaelblob on 12/4/16.
+ * Created by Simon on 12/4/16.
  */
 // V.JOSH
 
@@ -28,7 +28,6 @@ public class FeRMiTele extends OpMode {
     private DcMotor belt;
     private DcMotor lift;
 
-    private Servo beaconArm;
     private Servo index;
     private Servo liftHold;
 
@@ -37,7 +36,6 @@ public class FeRMiTele extends OpMode {
     private VoltageSensor flyMC;
 
     private boolean triggered = false;
-    private double power;
 
     @Override
     public void init() {
@@ -62,12 +60,10 @@ public class FeRMiTele extends OpMode {
 
         flyMC = hardwareMap.voltageSensor.get("Flywheel Controller 1");
 
-        beaconArm = hardwareMap.servo.get("swingArm");
-        beaconArm.setPosition(0.495);
         index = hardwareMap.servo.get("indexer");
         index.setPosition(0.12);
         liftHold = hardwareMap.servo.get("liftHold");
-        liftHold.setPosition(0.4);
+        liftHold.setPosition(0.05);
 
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -80,6 +76,8 @@ public class FeRMiTele extends OpMode {
 
     @Override
     public void loop() {
+
+        // DRIVE
         double max = 1.0;
         double forward = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
@@ -109,6 +107,7 @@ public class FeRMiTele extends OpMode {
             BR.setPower((forward + strafe - rotate) / max);
         }
 
+        // HARVESTER AND BELT
         boolean harvest = gamepad1.right_bumper;
         boolean eject = gamepad1.left_bumper;
         if (harvest && eject) {
@@ -121,6 +120,7 @@ public class FeRMiTele extends OpMode {
             belt.setPower(0);
         }
 
+        // FLYWHEEL
         if (gamepad2.y) {
             flyL.setPower(0.93);
             flyR.setPower(0.93);
@@ -135,20 +135,14 @@ public class FeRMiTele extends OpMode {
             flyR.setPower(0);
         }
 
-        if(gamepad2.x){
-            beaconArm.setPosition(1.0);
-        } else if (gamepad2.b){
-            beaconArm.setPosition(0);
-        } else {
-            beaconArm.setPosition(0.495);
-        }
-
+        // INDEXER
         if (gamepad2.left_bumper){
             index.setPosition(.5);
         } else {
             index.setPosition(.12);
         }
 
+        // LIFT
         if (gamepad2.left_trigger > 0.3) {
             lift.setPower(-gamepad2.left_trigger);
         } else if (gamepad2.right_trigger > 0.3) {
@@ -157,18 +151,21 @@ public class FeRMiTele extends OpMode {
             lift.setPower(0);
         }
 
-        if (gamepad2.dpad_down) {
-            liftHold.setPosition(1);
+        // LIFT DEPLOYMENT
+        if (gamepad2.dpad_up) {
             triggered = true;
-        } else if (triggered) {
-            liftHold.setPosition(0);
+        }
+        if (gamepad2.dpad_down) {
+            liftHold.setPosition(0.93);
+        } else if (triggered){
+            liftHold.setPosition(0.35);
         } else {
-            liftHold.setPosition(0.4);
+            liftHold.setPosition(0.03);
         }
 
         addTelemetry();
-
     }
+
     private void addTelemetry() {
         telemetry.addData("1 Motor", FL.getPower() + " " + FR.getPower() + " " + BL.getPower() + " " + BR.getPower());
         telemetry.addData("2 Encoder", FL.getCurrentPosition() + " " + FR.getCurrentPosition() + " " + BL.getCurrentPosition() + " " + BR.getCurrentPosition());

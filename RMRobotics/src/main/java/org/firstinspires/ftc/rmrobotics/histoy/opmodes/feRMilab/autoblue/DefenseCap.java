@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.rmrobotics.opmodes.feRMilab.autoblue;
+package org.firstinspires.ftc.rmrobotics.histoy.opmodes.feRMilab.autoblue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -11,28 +11,28 @@ import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
 import static org.firstinspires.ftc.rmrobotics.util.enums.Drive.TIME;
 
 /**
- * Created by Simon on 3/17/17.
+ * Created by Simon on 3/18/17.
  */
 // BLUE TEAM
 
-@Autonomous(name = "BLUE: Shoot Ramp")
+@Autonomous(name = "BLUE: Defense Cap")
 @Disabled
-public class ShootRamp extends FeRMiLinear{
+public class DefenseCap extends FeRMiLinear{
     @Override
     public void runOpMode() throws InterruptedException {
         super.initialize(Color.BLUE, DcMotor.RunMode.RUN_USING_ENCODER, Direction.FORWARD);
 
-        // sleep for 15 seconds
-        sleep(15000);
+        // sleep for 9 seconds
+        sleep(9000);
 
-        // drive for 1.2 seconds at 0.5 voltage
-        drive(TIME, 1200, 0.5);
+        // drive for .1 seconds at .4 voltage
+        drive(TIME, 700, 0.5);
         sleep(200);
 
-        // turn on flywheels to 0.94 voltage
-        flyL.setPower(0.94);
-        flyR.setPower(0.94);
-        sleep(2000);
+        // turn on flywheels to .975 voltage
+        flyL.setPower(0.975);
+        flyR.setPower(0.975);
+        sleep(1000);
 
         // open indexer
         index.setPosition(0.5);
@@ -47,24 +47,18 @@ public class ShootRamp extends FeRMiLinear{
 
         // END SHOOTING
 
-        drive(TIME, 500, 0.4);
-
         // turn at an angle
-        turn(Direction.LEFT, 45, 0.4);
+        turn(Direction.LEFT, 15, 0.4);
 
         // drive forward
-        drive(TIME, 1000, 0.4);
+        drive(TIME, 800, 0.4);
 
         // face ramp
-        turn(Direction.CENTER, 90, 0.4);
+        turn(Direction.CENTER, 110, 0.4);
 
-        //drive onto ramp
-        drive(TIME, 1700, 0.3);
+        // drive onto ramp
+        drive(TIME, 2750, 0.2);
 
-        while (opModeIsActive()){
-            addTelemetry();
-        }
         stop();
     }
-
 }
