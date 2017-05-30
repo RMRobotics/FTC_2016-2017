@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.rmrobotics.histoy.opmodes.feRMilab.experimental;
 
-
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -44,7 +43,6 @@ import org.opencv.imgproc.Imgproc;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 
 /**
  * Created by Simon on 4/18/2017.

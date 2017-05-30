@@ -10,7 +10,7 @@ import org.firstinspires.ftc.rmrobotics.util.enums.Direction;
 import org.firstinspires.ftc.rmrobotics.util.enums.Drive;
 
 /**
- * Created by poofs on 2/19/2017.
+ * Created by Sue on 2/19/2017.
  */
 
 @Autonomous(name = "Test Functions")

@@ -52,7 +52,6 @@ public class Drive2 implements Runnable {
     private final double MINX = 20; // Stop if within this distance from 0
     private final double MINY = 20; // Stop if within this distance from 0
 
-
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -136,7 +135,6 @@ public class Drive2 implements Runnable {
         yawPIDController.setP(YAW_PID_P);
         yawPIDController.enable(true);
         yawPIDResult = new ZPIDController.PIDResult();
-
     }
 
     private volatile VectorF reqV = new VectorF(0, 0);

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.rmrobotics.opmodes.sandstoRM;
 
-
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -11,12 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.HINT;
@@ -26,6 +23,8 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.rmrobotics.util.autonav.AutoNavConfig;
 import org.firstinspires.ftc.rmrobotics.util.autonav.Drive2;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizer;
+import org.firstinspires.ftc.rmrobotics.util.autonav.vision.ButtonFinder;
 import org.firstinspires.ftc.rmrobotics.util.autonav.vision.RMVuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -34,11 +33,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -46,9 +40,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import org.firstinspires.ftc.rmrobotics.util.autonav.vision.BeaconRecognizer;
-import org.firstinspires.ftc.rmrobotics.util.autonav.vision.ButtonFinder;
-
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Peter on 12/15/2016.

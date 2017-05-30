@@ -26,7 +26,6 @@ public class ButtonFinder {
     private static int MAX_ELLIPSE = 150;
     private static int MIN_ELLIPSE = 25;
 
-
     public static ArrayList<EllipseLocationResult> locateEllipses(Mat origMat, Mat searchAreaG, Mat searchAreaG0, double X, double D, double H, Rect searchRect) {
         Imgproc.GaussianBlur(searchAreaG, searchAreaG, new Size(25,25), 0);
 

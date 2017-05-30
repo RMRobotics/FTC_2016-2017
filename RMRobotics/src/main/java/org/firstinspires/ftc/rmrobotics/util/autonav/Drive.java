@@ -17,7 +17,6 @@ import java.util.Stack;
 
 import static java.lang.Thread.sleep;
 
-
 public class Drive implements Runnable {
 
     //runtime calculations
@@ -45,7 +44,6 @@ public class Drive implements Runnable {
     private final double TRAN_STEP_TIME = 15; // Duration of transition step
     private final double MINX = 20; // Stop if within this distance from 0
     private final double MINY = 20; // Stop if within this distance from 0
-
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -114,8 +112,8 @@ public class Drive implements Runnable {
         yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
         yawPIDController.enable(true);
         yawPIDResult = new navXPIDController.PIDResult();
-
     }
+
     private volatile VectorF currentVector = new VectorF(0,0);
     private volatile VectorF goalVector = new VectorF(0,0);
     private volatile Stack<VectorF> stackVector = new Stack<>();

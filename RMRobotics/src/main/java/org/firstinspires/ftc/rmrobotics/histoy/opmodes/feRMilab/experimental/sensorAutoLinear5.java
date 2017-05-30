@@ -15,8 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Created by Simon on 1/6/16.
  */
-// RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
-
+// RED TEAM
 
 @Autonomous(name = "sensors9")
 @Disabled

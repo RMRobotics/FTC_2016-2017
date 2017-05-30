@@ -16,8 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Josh on 1/31/16.
  */
-// RED TEAMMMMMMMMMMMMMMMMMMMEMEMMMMMMMMMMMMM
-
+// RED TEAM
 
 @Autonomous(name = "PIDtest")
 @Disabled

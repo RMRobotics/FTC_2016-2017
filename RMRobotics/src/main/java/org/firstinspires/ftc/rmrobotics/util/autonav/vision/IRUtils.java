@@ -34,7 +34,6 @@ public class IRUtils {
         return r;
     }
 
-
     static public Rect intersectAndAdjust(Rect bound, Rect intern, Rect toAdjust) {
         assert (intern.width == toAdjust.width || intern.height == toAdjust.height);
         Rect r = intersect(bound, intern);

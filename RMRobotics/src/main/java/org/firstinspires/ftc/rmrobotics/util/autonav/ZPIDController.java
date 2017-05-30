@@ -7,7 +7,6 @@ import com.kauailabs.navx.ftc.IDataArrivalSubscriber;
  * Created by Peter on 2/1/2017.
  */
 
-
 public class ZPIDController implements IDataArrivalSubscriber {
     private final Object sync_event = new Object();
     private boolean timestamped = true;
